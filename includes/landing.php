@@ -55,7 +55,7 @@
 </div>
 <!--/.Carousel Wrapper-->
 
-<div class=" border border-2 border-success row " style="text-align: center !important;" 
+<div class=" border border-2 border-success row p-0 m-0" style="text-align: center !important;" 
 <?php if(isset($dchex)){ ?>
 style="border-color:<?php echo $dchex; ?> !important"
 

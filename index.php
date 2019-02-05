@@ -50,7 +50,7 @@ a {
         <!-- Logo -->
         <li>
           <div class="logo-wrapper" style="height:160px;">
-            <a href="#"><img src="images/logo/<?php echo $slogo ; ?>" class="img-fluid flex-center img-circle  waves-light" ></a>
+            <a href="?"><img src="images/logo/<?php echo $slogo ; ?>" class="img-fluid flex-center img-circle  waves-light" ></a>
           </div>
         </li>
         <!--/. Logo -->
@@ -84,7 +84,7 @@ a {
             <li><a class="collapsible-header waves-effect arrow-r"><i class="fas fa-chevron-right"></i> <?php echo $register; ?><i class="fas fa-angle-down rotate-icon"></i></a>
               <div class="collapsible-body">
                 <ul>
-                  <li><a href="#" class="waves-effect"><?php echo $asvoter; ?></a>
+                  <li><a href="?page=voterregister" class="waves-effect"><?php echo $asvoter; ?></a>
                   </li>
                   <li><a href="#" class="waves-effect"><?php echo $asinstitution; ?></a>
                   </li>
@@ -135,7 +135,32 @@ a {
 
   <!--Main Layout-->
   <main class="mx-0 px-0 py-0">
-  <?php include 'includes/landing.php'; ?>
+  <?php 
+  $page = $_GET['page'];
+  $loginid = @SESSION['loginid'];
+  if(isset($page)){
+
+    if($page == 'home' || $page == '' || !file_exists('includes/'.$page.'.php')){
+
+      if(isset($loginid)){  
+      include 'includes/home.php';
+      }else{  
+      include 'includes/landing.php';
+      }
+
+    }else{
+
+      include 'includes/'.$page.'.php';
+
+    }
+
+
+
+  }else{
+      include 'includes/landing.php';
+  }
+
+  ?>
   </main>
   <!--Main Layout-->
 

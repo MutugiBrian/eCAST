@@ -10,6 +10,8 @@ $dc = "default-color";
 $dchex = "#71bf45";
 //SECOND COLOR
 $secondhex = "#0072bb";
+//THIRD COLOR
+$hex3 = "#0072BB";
 //SITELOGO  -  Name in the images/logo folder
 $slogo = "vote.png";
 //SITEICON - Name in the images/logo folder
