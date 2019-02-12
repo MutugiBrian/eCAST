@@ -224,6 +224,9 @@ toastr.options = {
 }
 ?>
 <style>
+.far , .fas{
+  font-size:23px !important;
+}
 .input-group-text{
 background-color: <?php echo $dchex; ?> !important;
 color:white;
@@ -247,44 +250,86 @@ color:white;
 <div class="row p-0 m-0">
 <div class="mt-5 px-lg-4 p-0 p-lg-2 col-md-12 col-lg-8 col-xl-8">
 <!-- Default form register -->
-<form class="text-center border border-light px-5 pt-5 rounded needs-validation" action="<?php $_SERVER['PHP_SELF']; ?>" method="post" id="voterreg" novalidate>
+<form class="text-center border border-light px-5 pt-5 rounded needs-validation" action="<?php $_SERVER['PHP_SELF']; ?>" method="post" id="instreg" novalidate>
 
     <p class="h4 mb-4 font-weight-bold" style="
 <?php if(isset($hex3)){ ?>
 color:<?php echo $hex3; ?> !important;
-<?php }?>">Sign Up to <?php echo $sn; ?></p>
+<?php }?>"><?php echo $sn; ?> institution registration</p>
 
     <div class="border border-slight p-3 rounded mb-4 ig" >
+
+    <div class="form-row">
+        <div class="col-lg-12 col-sm-12 col-xl-12 col-md-12 m-0">
+            <!-- First name -->
+             <div class="">
+      <!-- Default input -->
+      <label class="sr-only" for="firstname">institution name</label>
+      <div class="input-group mb-4">
+        <div class="input-group-prepend">
+          <div class="input-group-text"><i class="fas fa-landmark"></i></div>
+        </div>
+        <input type="text" class="form-control py-0" id="iname" name="iname" placeholder="Institution Name" required>
+        <div class="invalid-feedback">
+          Please enter institution name.
+        </div>
+      </div>
+    </div>
+        </div>
+    </div>
 
     <div class="form-row">
         <div class="col-lg-6 col-sm-12 col-xl-6 col-md-6 m-0">
             <!-- First name -->
              <div class="">
       <!-- Default input -->
-      <label class="sr-only" for="firstname">Firstname</label>
+      <label class="sr-only" for="firstname">institution initials</label>
       <div class="input-group mb-4">
         <div class="input-group-prepend">
-          <div class="input-group-text"><i class="far fa-user"></i></div>
+          <div class="input-group-text"><i class="fas fa-landmark"></i></div>
         </div>
-        <input type="text" class="form-control py-0" id="firstname" name="firstname" placeholder="Firstname" required>
+        <input type="text" class="form-control py-0" id="init" name="init" placeholder="Institution Initials" required>
         <div class="invalid-feedback">
-          Please enter your firstname.
+          Please enter institution initials.
         </div>
       </div>
     </div>
-        </div>
-        <div class="col-lg-6 col-sm-12 col-xl-6 col-md-6 m-0">
-            <!-- Last name -->
-           <div class="">
+  </div>
+
+
+    <div class="col-lg-6 col-sm-12 col-xl-6 col-md-6 m-0">
+    <div class="">
       <!-- Default input -->
-      <label class="sr-only" for="lastname">Lastname</label>
+      <label class="sr-only" for="email">Email</label>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <div class="input-group-text"><i class="far fa-envelope" ></i></div>
+        </div>
+        <input type="email" class="form-control py-0" id="iemail" name="iemail"  placeholder="Institution Email" required>
+        <div class="invalid-feedback">
+          Please enter institution your email.
+        </div>
+      </div>
+    </div>
+  </div>
+        </div>
+
+
+
+
+          <div class="form-row">
+        <div class="col-lg-12 col-sm-12 col-xl-12 col-md-12 m-0">
+            <!-- First name -->
+             <div class="">
+      <!-- Default input -->
+      <label class="sr-only" for="firstname">institution address</label>
       <div class="input-group mb-4">
         <div class="input-group-prepend">
-          <div class="input-group-text"><i class="far fa-user"></i></div>
+          <div class="input-group-text"><i class="fas fa-map-marked-alt"></i></div>
         </div>
-        <input type="text" class="form-control py-0" id="lastname" name="lastname"  placeholder="Lastname" required>
+        <input type="text" class="form-control py-0" id="iaddress" name="iaddress" placeholder="institution address" required>
         <div class="invalid-feedback">
-          Please enter your lastname.
+          Please enter institution address
         </div>
       </div>
     </div>
@@ -293,26 +338,40 @@ color:<?php echo $hex3; ?> !important;
 
     <!-- E-mail -->
 
-    <div class="">
+    
+
+
+    <div class="form-row">
+        <div class="col-lg-12 col-sm-12 col-xl-12 col-md-12 m-0">
+            <!-- First name -->
+             <div class="">
       <!-- Default input -->
-      <label class="sr-only" for="email">Email</label>
-      <div class="input-group">
+      <label class="sr-only" for="firstname">name of officer</label>
+      <div class="input-group mb-4">
         <div class="input-group-prepend">
-          <div class="input-group-text"><i class="far fa-envelope" ></i></div>
+          <div class="input-group-text"><i class="far fa-user"></i></div>
         </div>
-        <input type="email" class="form-control py-0" id="email" name="email"  placeholder="Email" required>
+        <input type="text" class="form-control py-0" id="iincharge" name="iincharge" placeholder="officer-in-charge" required>
         <div class="invalid-feedback">
-          Please enter your email.
+          Please enter officer in charge.
         </div>
       </div>
     </div>
+        </div>
+    </div>
+
+
+
+
+   
+
 
   </div>
 
      
     <div class="border border-slight p-2 rounded mb-4 ig" >
     <div class="form-group ">
-      <label for="phoneno" style="font-size:13px;">Phone Number</label>
+      <label for="phoneno" style="font-size:13px;">Institution Phone Number</label>
       <div class="col-auto">
       <!-- Default input -->
       <label class="sr-only" for="phoneno">phone number</label>
@@ -328,24 +387,9 @@ color:<?php echo $hex3; ?> !important;
     </div>
     </div>
     </div>
-    
+
 
 <!-- Button trigger modal -->
-
-<!-- Modal -->
-<div class="modal fade" id="existmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-  aria-hidden="true" >
-  <div class="modal-dialog" role="document">
-    <div class="modal-content" style="background-color: red !important;color:white !important;">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">USER ALREADY EXISTS!</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
 
 
      
@@ -357,14 +401,15 @@ color:<?php echo $hex3; ?> !important;
         <div class="input-group-prepend">
           <div class="input-group-text" ><i class="fas fa-landmark"></i></div>
         </div>
-        <select class="browser-default custom-select" id="institution" name="institution" style="font-size: 17px;" required>
-  <option value="" selected>Choose your Institution</option>
-  <option value="TUK">Technical University of Kenya</option>
-  <option value="UoN">University of Nairobi</option>
-  <option value="KU">Kenyatta University</option>
+        <select class="browser-default custom-select" id="itype" name="itype" style="font-size: 17px;" required>
+  <option value="" selected>Institution Type</option>
+  <option value="uni">University</option>
+  <option value="College">College</option>
+  <option value="Bs">Business</option>
+   <option value="Other">Other</option>
      </select>
      <div class="invalid-feedback">
-          Please select your institution.
+          Please select your institution type.
         </div>
       </div>
     
@@ -372,14 +417,14 @@ color:<?php echo $hex3; ?> !important;
 
     <div class="">
       <!-- Default input -->
-      <label class="sr-only" for="regno">Registration/Admn. Number</label>
+      <label class="sr-only" for="regno">Registration/ ISO no.</label>
       <div class="input-group ">
         <div class="input-group-prepend">
           <div class="input-group-text"><i class="far fa-address-card"></i></div>
         </div>
-        <input type="text" class="form-control py-0" id="regno" name="regno"  placeholder="Registration/Admn. Number" required>
+        <input type="text" class="form-control py-0" id="iregno" name="iregno"  placeholder="Registration/ ISO no." required>
         <div class="invalid-feedback">
-          Please enter your Reg/Admin. number.
+          Please enter institution Registration/ ISO no.
         </div>
       </div>
     </div>

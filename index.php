@@ -1,9 +1,14 @@
 <?php 
+session_start();
+error_reporting(E_ALL);
+ini_set("display_errors", 0); 
 include 'includes/strings.php';
+include 'includes/functions.php';
 ?>
 <!DOCTYPE html>
 <html>
 <head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -73,11 +78,44 @@ a {
             <li><a href="#" class="icons-sm pin-ic"><i class="fab fa-pinterest"> </i></a></li>
             <li><a href="#" class="icons-sm gplus-ic"><i class="fab fa-google-plus-g"> </i></a></li>
             <li><a href="#" class="icons-sm tw-ic"><i class="fab fa-twitter"> </i></a></li> -->
+            
           </ul>
         </li>
         <!-- Side navigation links -->
         <li>
           <ul class="collapsible collapsible-accordion">
+            <?php 
+
+            if(isset($_SESSION['phone'])){
+              //if user has logged in ?>
+
+
+
+
+
+            <li><a class="collapsible-header waves-effect arrow-r"><i class="fas fa-chevron-right"></i> ELECTIONS<i class="fas fa-angle-down rotate-icon"></i></a>
+              <div class="collapsible-body">
+                <ul>
+                  <li><a href="?page=voterregister" class="waves-effect">election 1 </a>
+                  </li>
+                  <li><a href="#" class="waves-effect">election 2</a>
+                  </li>
+                  <li><a href="#" class="waves-effect">election 3</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+
+
+            <li><a class="collapsible-header waves-effect arrow-r" href="?page=logout"><i class="fas fa-power-off" style="color: red !important;"></i> LOG OUT</a>
+
+
+
+
+
+
+            <?php }else{ 
+              //if user not logged in?>
             <li><a class="collapsible-header waves-effect arrow-r"><i class="fas fa-chevron-right"></i> <?php echo $login; ?></i></a>
               
             </li>
@@ -86,13 +124,14 @@ a {
                 <ul>
                   <li><a href="?page=voterregister" class="waves-effect"><?php echo $asvoter; ?></a>
                   </li>
-                  <li><a href="#" class="waves-effect"><?php echo $asinstitution; ?></a>
+                  <li><a href="?page=instregister" class="waves-effect"><?php echo $asinstitution; ?></a>
                   </li>
                   <li><a href="#" class="waves-effect"><?php echo $asobserver; ?></a>
                   </li>
                 </ul>
               </div>
             </li>
+            <?php } ?>
             <li><a class="collapsible-header waves-effect arrow-r"><i class="fas fa-chevron-right"></i> <?php echo $contact; ?><i
                   class="fas fa-angle-down rotate-icon"></i></a>
               <div class="collapsible-body">

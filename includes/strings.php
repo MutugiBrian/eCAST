@@ -42,6 +42,22 @@ $contactinfo = "CONTACT INFORMATION";
 
 
 
+//SERVER NAME
+global $server;
+$server = "localhost";
+//DATABASE NAME
+global $dbname;
+$dbname = "ecast";
+//DATABASE USERNAME
+global $dbuser;
+$dbuser = "root";
+//DATABASE PASSWORD
+global $dbpass;
+$dbpass = NULL;
+
+
+
+
 
 
 ?>

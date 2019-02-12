@@ -76,11 +76,12 @@ style="border-color:<?php echo $dchex; ?> !important"
 <?php } ?>>
     <div>
       <h5 class="pink-text"
-      ><i class="fas fa-vote-yea"></i> VOTING </h5>
+      ><i class="fas fa-vote-yea"></i> 
+      VOTING </h5>
       <h3 class="card-title pt-2"> <strong>Online Casting</strong></h3>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellat fugiat, laboriosam, voluptatem,
-        optio vero odio nam sit officia accusamus minus error nisi architecto nulla ipsum dignissimos.
-        Odit sed qui, dolorum!.</p>
+      <p>
+     <?php echo $_SESSION['phone']; ?>
+      </p>
       
     </div>
   </div>
