@@ -58,7 +58,7 @@ toastr.options = {
 
 
   $t = time();
-  $sql= "INSERT INTO `usermaster` (`id`, `firstname`, `lastname`,`password`, `institution`, `regno`, `email`, `phoneno`,`createdat`) VALUES (NULL, '$voterfn', '$voterln','$voterpass','$voterinst', '$voterregno' , '$voteremail', '$voterphone', '$t')";
+  $sql= "INSERT INTO `usermaster` (`id`, `usertype`, `firstname`, `lastname`,`password`, `institution`, `regno`, `email`, `phoneno`,`createdat`) VALUES (NULL,'voter','$voterfn', '$voterln','$voterpass','$voterinst', '$voterregno' , '$voteremail', '$voterphone', '$t')";
    
    if ($result = mysqli_query($conn,$sql)){
 
@@ -252,7 +252,7 @@ color:white;
     <p class="h4 mb-4 font-weight-bold" style="
 <?php if(isset($hex3)){ ?>
 color:<?php echo $hex3; ?> !important;
-<?php }?>">Sign Up to <?php echo $sn; ?></p>
+<?php }?>"><?php echo $sn; ?> voter registration</p>
 
     <div class="border border-slight p-3 rounded mb-4 ig" >
 

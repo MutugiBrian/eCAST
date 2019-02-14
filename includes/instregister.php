@@ -1,14 +1,15 @@
 
-<?php if(isset($_POST['voterregsubmit'])){
+<?php if(isset($_POST['instregsubmit'])){
 
-  $voterfn = $_POST['firstname'];
-  $voterln = $_POST['lastname'];
-  $voteremail = $_POST['email'];
-  $voterpass = $_POST['password'];
-  $voterphone = $_POST['phoneno'];
-  $voterinst = $_POST['institution'];
-  $voterregno = $_POST['regno'];
-  $voterpass = $_POST['password'];
+  $iname = $_POST['iname'];
+  $init = $_POST['init'];
+  $iemail = $_POST['iemail'];
+  $iadd = $_POST['iaddress'];
+  $iphone = $_POST['phoneno'];
+  $iincharge = $_POST['iincharge'];
+  $iregno = $_POST['iregno'];
+  $itype = $_POST['itype'];
+  $ipass = $_POST['password'];
 
 
 
@@ -19,7 +20,7 @@
    if (mysqli_connect_errno($conn)){
       echo "Failed to connect to MySQL: " . mysqli_connect_error();
    }else{
-   $sql = "SELECT * FROM usermaster WHERE phoneno = '$voterphone' AND password = '$voterpass'";
+   $sql = "SELECT * FROM usermaster WHERE phoneno = '$iphone' AND usertype = 'institution'";
    
    if ($result = mysqli_query($conn,$sql)){
       $rowcount = mysqli_num_rows($result);
@@ -29,7 +30,7 @@
 
  <script type="text/javascript">
   $(document).ready(function(){
-  Command: toastr["error"]("", "USER ALREADY EXISTS")
+  Command: toastr["error"]("", "INSTITUTION ALREADY EXISTS")
 
 toastr.options = {
   "closeButton": true,
@@ -58,19 +59,20 @@ toastr.options = {
 
 
   $t = time();
-  $sql= "INSERT INTO `usermaster` (`id`, `firstname`, `lastname`,`password`, `institution`, `regno`, `email`, `phoneno`,`createdat`) VALUES (NULL, '$voterfn', '$voterln','$voterpass','$voterinst', '$voterregno' , '$voteremail', '$voterphone', '$t')";
+
+  $sql= "INSERT INTO `usermaster` (`id`, `usertype`, `iname`, `initials`, `iaddress`, `iincharge`,`password`, `institution`, `regno`, `email`, `phoneno`,`createdat`) VALUES (NULL, 'institution','$iname','$init','$iadd', '$iincharge','$ipass','$itype', '$iregno' , '$iemail', '$iphone', '$t')";
    
    if ($result = mysqli_query($conn,$sql)){
 
 
-      $_SESSION['utype'] = "voter";
-  $_SESSION['fname'] = $firstname;
-  $_SESSION['lname'] = $lastname;
-  $_SESSION['inst'] = $voterinst;
-  $_SESSION['regno'] = $voterregno;
-  $_SESSION['inst'] = $voterinst;
-  $_SESSION['email'] = $voteremail;
-  $_SESSION['phone'] = $voterphone;
+      $_SESSION['utype'] = "institution";
+  $_SESSION['iname'] =  $iname;
+  $_SESSION['init'] = $init;
+  $_SESSION['inst'] = $itype;
+  $_SESSION['regno'] = $iregno;
+  $_SESSION['inst'] = $itype;
+  $_SESSION['email'] = $iemail;
+  $_SESSION['phone'] = $iphone;
   $loggedin = 'TRUE';
 
         ?>
@@ -99,7 +101,7 @@ toastr.options = {
 
  <script type="text/javascript">
   $(document).ready(function(){
-  Command: toastr["error"]("please try again", "ERROR")
+  Command: toastr["error"]("check details and try again", "ERROR")
 
 toastr.options = {
   "closeButton": true,
@@ -494,7 +496,7 @@ color:<?php echo $hex3; ?> !important;
     <center>
 
 
-<button type="submit" name="voterregsubmit" id="voterregsubmit" class="btn btn-success btn-lg btn-rounded text-lg font-weight-bold" style="width:60% !important;<?php if(isset($dchex) & isset($hex3) ){ ?>
+<button type="submit" name="instregsubmit" id="instregsubmit" class="btn btn-success btn-lg btn-rounded text-lg font-weight-bold" style="width:60% !important;<?php if(isset($dchex) & isset($hex3) ){ ?>
 background-color:<?php echo $hex3; ?> !important;
 <?php } ?>"><i class="fas fa-check fa-2x pr-2"
         aria-hidden="true" style="font-size: 20px;<?php if(isset($dchex) & isset($hex3) ){ ?>

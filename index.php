@@ -29,6 +29,12 @@ include 'includes/functions.php';
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css">
 
 <style type="text/css">
+@media (max-width:801px) {
+.navbar  {
+  min-height: 12% !important;
+}
+
+}
 a {
 
 	color: white !important;
@@ -116,7 +122,7 @@ a {
 
             <?php }else{ 
               //if user not logged in?>
-            <li><a class="collapsible-header waves-effect arrow-r"><i class="fas fa-chevron-right"></i> <?php echo $login; ?></i></a>
+            <li><a href="?page=login"class="collapsible-header waves-effect arrow-r"><i class="fas fa-chevron-right"></i> <?php echo $login; ?></i></a>
               
             </li>
             <li><a class="collapsible-header waves-effect arrow-r"><i class="fas fa-chevron-right"></i> <?php echo $register; ?><i class="fas fa-angle-down rotate-icon"></i></a>
@@ -155,7 +161,7 @@ a {
     </div>
     <!--/. Sidebar navigation -->
     <!-- Navbar -->
-    <nav class="navbar fixed-top navbar-toggleable-md navbar-expand-lg scrolling-navbar double-nav <?php echo $dc; ?>" style="min-height:8%;">
+    <nav class="navbar fixed-top navbar-toggleable-md navbar-expand-lg scrolling-navbar double-nav <?php echo $dc; ?>" style="min-height:9%;">
       <!-- SideNav slide-out button -->
       <div class="float-left">
         <a href="#" data-activates="slide-out" class="button-collapse"><i class="fas fa-bars"></i></a>
