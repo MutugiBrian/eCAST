@@ -25,12 +25,13 @@ if(isset($_POST['loginsub'])){
           
 
    $_SESSION['utype'] = $row["usertype"];
+   $_SESSION['uid'] = $row["id"];
 
 
-   if($_SESSION['utype'] == 'voter'){
+   if($_SESSION['utype'] == 'voter' || $_SESSION['utype'] == ''){
 
-  $_SESSION['firstname'] = $firstname;
-  $_SESSION['lastname'] = $lastname;
+  $_SESSION['firstname'] = $row["firstname"];
+  $_SESSION['lastname'] = $row["lastname"];
 
    }else{
 
@@ -44,6 +45,7 @@ if(isset($_POST['loginsub'])){
   $_SESSION['inst'] = $row["institution"];
   $_SESSION['email'] = $row["email"];
   $_SESSION['phone'] = $row["phoneno"];
+  $_SESSION['loggedin'] = "TRUE";
   $loggedin = 'TRUE';
 
 

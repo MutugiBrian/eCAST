@@ -12,6 +12,8 @@ $dchex = "#71bf45";
 $secondhex = "#0072bb";
 //THIRD COLOR
 $hex3 = "#0072BB";
+//MAINBACKGROUND COLOR
+$mainbg = "#EFEFEF";
 //SITELOGO  -  Name in the images/logo folder
 $slogo = "vote.png";
 //SITEICON - Name in the images/logo folder
@@ -43,17 +45,14 @@ $contactinfo = "CONTACT INFORMATION";
 
 
 //SERVER NAME
-global $server;
 $server = "localhost";
-//DATABASE NAME
-global $dbname;
+//DATABASE NAM
 $dbname = "ecast";
 //DATABASE USERNAME
-global $dbuser;
 $dbuser = "root";
 //DATABASE PASSWORD
-global $dbpass;
 $dbpass = NULL;
+
 
 
 

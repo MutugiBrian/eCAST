@@ -1,4 +1,341 @@
+<?php 
+$ut = $_SESSION['utype'];
 
+if(isset($_POST['newelec'])){ 
+
+
+   $elecname = $_POST['elecname'];
+  $elecstart = strtotime($_POST['elecstart']);
+  $elecend = strtotime($_POST['elecend']);
+  $elecannounce = strtotime($_POST['elecannounce']);
+  $uid = $_SESSION['uid'];
+  $now = time();
+
+
+  $query = "INSERT INTO `elections` (`id`, `instid`, `name`, `startdate`, `enddate`, `announcedate`, `createdby`, `createdat`, `updatedat`) VALUES (NULL, '".$uid."', '".$elecname."', '".$elecstart."', '".$elecend."', '".$elecannounce."', ".$uid.", '".$now."', '".$now."')";
+  $qa = makequery($query);
+
+  if($qa[0] == 'success'){
+
+    
+
+    ?>
+
+
+     <script type="text/javascript">
+  $(document).ready(function(){
+
+ window.location.href = "?home";
+  Command: toastr["success"]("", "NEW ELECTION CREATED")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 2000,
+  "extendedTimeOut": 1000,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+});
+</script>
+
+
+  <?php
+  endpost(); 
+}else{
+  ?>
+
+   <script type="text/javascript">
+  $(document).ready(function(){
+
+    window.location.href = "?home";
+  Command: toastr["error"]("", "ERROR CREATING ELECTION")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 2000,
+  "extendedTimeOut": 1000,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+});
+</script>
+
+  <?php 
+  endpost();
+}
+?>
+
+<?php
+
+}
+
+if(isset($_POST['newdep'])){
+  $depname = $_POST['depname'];
+  $dephod = $_POST['dephod'];
+  $depemail = $_POST['depemail'];
+  $depphone = $_POST['depphone'];
+  $uid = $_SESSION['uid'];
+
+
+  $query = "INSERT INTO `departments` ( `instid`,`name`, `hod`, `hodemail`, `hodphone`, `createdby`, `updatedby`) VALUES (  ".$uid.",'".$depname."', '".$dephod."', '".$depemail."', '".$depphone."', ".$uid.", ".$uid.")";
+  $qa = makequery($query);
+
+  if($qa[0] == 'success'){
+
+    
+
+    ?>
+
+
+     <script type="text/javascript">
+  $(document).ready(function(){
+
+ window.location.href = "?home";
+  Command: toastr["success"]("", "NEW DEPARTMENT CREATED")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 2000,
+  "extendedTimeOut": 1000,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+});
+</script>
+
+
+  <?php
+  endpost(); 
+}else{
+  ?>
+
+   <script type="text/javascript">
+  $(document).ready(function(){
+
+    window.location.href = "?home";
+  Command: toastr["error"]("", "ERROR")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 2000,
+  "extendedTimeOut": 1000,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+});
+</script>
+
+  <?php 
+  endpost();
+}
+?>
+
+<?php
+}
+
+if(isset($_POST['deldep'])){
+
+    $deptid = $_POST['deptid'];
+  $query = "UPDATE `departments` SET `deleted` = '1' WHERE `departments`.`id` = '".$deptid."' ";
+  $qa = makequery($query);
+
+  if($qa[0] == 'success'){
+
+    
+
+    ?>
+
+
+     <script type="text/javascript">
+  $(document).ready(function(){
+
+ window.location.href = "?home";
+  Command: toastr["success"]("", "DEPARTMENT DELETED")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 2000,
+  "extendedTimeOut": 1000,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+});
+</script>
+
+
+  <?php
+  endpost(); 
+}else{
+  ?>
+
+   <script type="text/javascript">
+  $(document).ready(function(){
+
+    window.location.href = "?home";
+  Command: toastr["error"]("", "ERROR")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 2000,
+  "extendedTimeOut": 1000,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+});
+</script>
+
+  <?php 
+  endpost();
+}
+?>
+
+<?php
+
+
+}
+
+
+if(isset($_POST['delelec'])){
+
+    $elecid = $_POST['elecid'];
+  $query = "UPDATE `elections` SET `deleted` = '1' WHERE `elections`.`id` = '".$elecid."' ";
+  $qa = makequery($query);
+
+  if($qa[0] == 'success'){
+
+    
+
+    ?>
+
+
+     <script type="text/javascript">
+  $(document).ready(function(){
+
+ window.location.href = "?home";
+  Command: toastr["success"]("", "ELECTION DELETED")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 2000,
+  "extendedTimeOut": 1000,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+});
+</script>
+
+
+  <?php
+  endpost(); 
+}else{
+  ?>
+
+   <script type="text/javascript">
+  $(document).ready(function(){
+
+    window.location.href = "?home";
+  Command: toastr["error"]("", "ERROR DELETING ELECTION")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 2000,
+  "extendedTimeOut": 1000,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+});
+</script>
+
+  <?php 
+  endpost();
+}
+?>
+
+<?php
+
+
+}
+?>
   <style>
 
     .map-container{
@@ -6,6 +343,18 @@ overflow:hidden;
 padding-bottom:56.25%;
 position:relative;
 height:0;
+}
+.ab{
+ border-color:<?php echo $hex3; ?> !important;
+ color:<?php echo $hex3; ?> !important;
+}
+.mb{
+ border-color:<?php echo $dchex; ?> !important;
+ color:<?php echo $dchex; ?> !important;
+}
+.mbd{
+ border-color:red !important;
+ color:red !important;
 }
 .map-container iframe{
 left:0;
@@ -17,6 +366,9 @@ position:absolute;
 a.h{
 color: <?php echo $dchex; ?> !important; 
 }
+.mi{
+color: <?php echo $dchex; ?> !important;  
+}
 .cf .card-body .fas{
   color : <?php echo $dchex; ?> !important;
 }
@@ -25,8 +377,11 @@ color: <?php echo $dchex; ?> !important;
 }
 @media(min-width: 801px){
  .ac{
-  font-size:85px;
+  font-size:75px;
 } 
+.dl{
+  font-size:15px;
+}
 }
 @media(max-width: 801px){
  .ac{
@@ -39,6 +394,249 @@ color: <?php echo $dchex; ?> !important;
 ;
 }
   </style>
+
+
+
+ <div class="modal fade" id="deletedepartmentform" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content border border-success" 
+style="border-color:red!important;border-width: 3px !important;"
+>
+      <div class="modal-header text-center">
+        <h5 class="modal-title w-100 font-weight-bold">DELETE DEPARTMENT</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3 h6">
+      ARE YOU SURE YOU WANT TO DELETE <span id="deptname" style="color: red !important;"></span> ?
+      </div>
+      <div class="modal-footer d-flex justify-content-center">
+        <form id="deletedpt" action="" method="post">
+          <input type="hidden" name="deptid" id="deptid"/>
+        <button class="btn btn-outline-success waves-effect my-0 z-depth-0 mb" data-dismiss="modal">NO <i class="fas fa-paper-plane-o ml-1"></i></button>
+        <button class="btn btn-outline-danger waves-effect my-0 z-depth-0 mbd" type="submit" name="deldep" id="deldep">YES <i class="fas fa-paper-plane-o ml-1"></i></button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="deleteelectionform" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content border border-success" 
+style="border-color:red!important;border-width: 3px !important;"
+>
+      <div class="modal-header text-center">
+        <h5 class="modal-title w-100 font-weight-bold">DELETE ELECTION</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3 h6">
+      ARE YOU SURE YOU WANT TO DELETE <span id="elecname" style="color: red !important;"></span> ?
+      </div>
+      <div class="modal-footer d-flex justify-content-center">
+        <form id="deleteelec" action="" method="post">
+          <input type="hidden" name="elecid" id="elecid"/>
+        <button class="btn btn-outline-success waves-effect my-0 z-depth-0 mb" data-dismiss="modal">NO <i class="fas fa-paper-plane-o ml-1"></i></button>
+        <button class="btn btn-outline-danger waves-effect my-0 z-depth-0 mbd" type="submit" name="delelec" id="delelec">YES <i class="fas fa-paper-plane-o ml-1"></i></button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="modal fade" id="newelectionform" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content border border-success" <?php if(isset($dchex)){ ?>
+style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !important;"
+
+<?php } ?>>
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">CREATE ELECTION</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="POST" action="" id="newelection" name="newelection" class="needs-validation">
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <i class="fas fa-vote-yea prefix mi"></i>
+          <input type="text" id="elecname" name="elecname"  class="form-control" required>
+          <label data-error="wrong" data-success="right" for="form3">ELECTION NAME</label>
+        </div>
+
+
+
+         <div class="md-form mb-5">
+          <i class="fas fa-hourglass-start prefix mi"></i>
+          <input type="date" id="elecstart" name="elecstart" class="form-control datepicker edp" required>
+          <label data-error="wrong" data-success="right" for="form3">START DATE</label>
+        </div>
+
+         <div class="md-form mb-5">
+          <i class="fas fa-hourglass-end prefix mi"></i>
+          <input type="date" id="elecend" name="elecend" class="form-control datepicker edp" required>
+          <label data-error="wrong" data-success="right" for="form3">END DATE</label>
+        </div>
+         <div class="md-form mb-5">
+          <i class="fas fa-bullhorn prefix mi"></i>
+          <input type="text" id="elecannounce" name="elecannounce" class="form-control datepicker edp" required>
+          <label data-error="wrong" data-success="right" for="form3">ANNOUNCEMENT DATE</label>
+        </div>
+
+      </div>
+      <div class="modal-footer d-flex justify-content-center">
+        <button class="btn btn-outline-success waves-effect my-0 z-depth-0 mb" type="submit" name="newelec" id="newelec">CREATE <i class="fas fa-paper-plane-o ml-1"></i></button>
+      </div>
+
+
+    </form>
+    <script type="text/javascript">
+      $(newelec).click(function (){
+
+        var sd = $(elecstart).val();
+        var ed = $(elecend).val();
+        var ea = $(elecannounce).val();
+        var en = $(elecname).val();
+
+        if(sd === '' || ed === ''|| ea === ''){
+
+           Command: toastr["error"]("", "fill in all fields")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": true,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 100,
+  "extendedTimeOut": 100,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+
+
+return false;
+
+        }else{
+          alert(sd);
+         $(newelection).submit();
+        }
+      });
+    </script>
+    </div>
+  </div>
+</div>
+
+   <div class="modal fade" id="newdepartmentform" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content border border-success" <?php if(isset($dchex)){ ?>
+style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !important;"
+
+<?php } ?>>
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">CREATE DEPARTMENT</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="POST" action="" id="newdepartment" name="newdepartment" class="needs-validation">
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <i class="fas fa-building prefix mi"></i>
+          <input type="text" id="depname" name="depname"  class="form-control validate" required>
+          <label data-error="wrong" data-success="right" for="form3">DEPARTMENT NAME</label>
+        </div>
+
+         <div class="md-form mb-5">
+          <i class="fas fa-user prefix mi"></i>
+          <input type="text" id="dephod" name="dephod" class="form-control validate" required>
+          <label data-error="wrong" data-success="right" for="form3">HEAD OF DEPARTMENT / DIRECTOR</label>
+        </div>
+
+         <div class="md-form mb-5">
+          <i class="fas fa-envelope prefix mi"></i>
+          <input type="email" id="depemail" name="depemail" class="form-control validate" required>
+          <label data-error="wrong" data-success="right" for="form3">H.O.D EMAIL</label>
+        </div>
+         <div class="md-form mb-5">
+          <i class="fas fa-phone prefix mi"></i>
+          <input type="text" id="depphone" name="depphone" class="form-control validate" required>
+          <label data-error="wrong" data-success="right" for="form3">H.O.D PHONE NUMBER</label>
+        </div>
+
+      </div>
+      <div class="modal-footer d-flex justify-content-center">
+        <button class="btn btn-outline-success waves-effect my-0 z-depth-0 mb" type="submit" name="newdep" id="newdep">CREATE <i class="fas fa-paper-plane-o ml-1"></i></button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+
+
+
+   <div class="modal fade" id="newelectionform" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content border border-success" <?php if(isset($dchex)){ ?>
+style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !important;"
+
+<?php } ?>>
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">CREATE ELECTION</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+       <form method="POST" action="" id="newelection" name="newelection" class="needs-validation">
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <i class="fas fa-user prefix grey-text"></i>
+          <input type="text" id="form3" class="form-control validate">
+          <label data-error="wrong" data-success="right" for="form3">ELECTION NAME</label>
+        </div>
+
+         <div class="md-form mb-5">
+          <i class="fas fa-user prefix grey-text"></i>
+          <input type="date" id="form3" class="form-control " required>
+          <label data-error="wrong" data-success="right" for="form3">START DATE</label>
+        </div>
+
+         <div class="md-form mb-5">
+          <i class="fas fa-user prefix grey-text"></i>
+          <input type="date" id="form3" class="form-control" required>
+          <label data-error="wrong" data-success="right" for="form3">END DATE</label>
+        </div>
+
+         <div class="md-form mb-5">
+          <i class="fas fa-user prefix grey-text"></i>
+          <input type="date" id="form3" class="form-control" required>
+          <label data-error="wrong" data-success="right" for="form3">RESULTS DATE</label>
+        </div>
+
+      </div>
+    </form>
+      <div class="modal-footer d-flex justify-content-center">
+        <button class="btn btn-outline-success waves-effect my-0 z-depth-0 mb">CREATE <i class="fas fa-paper-plane-o ml-1"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 
@@ -56,14 +654,19 @@ color: <?php echo $dchex; ?> !important;
             <span>Dashboard</span>
           </h4>
 
-          <form class="d-flex justify-content-center">
-            <!-- Default input -->
-            <input type="search" placeholder="Type your query" aria-label="Search" class="form-control">
-            <button class="btn btn-primary btn-sm my-0 p" type="submit">
-              <i class="fas fa-search"></i>
-            </button>
 
-          </form>
+          <?php 
+          //var_dump($ena);
+          ?>
+
+          <h4 class="d-flex mb-2 mb-sm-0 pt-1">
+            <!-- Default input -->
+            <?php if($ut == 'institution') { 
+              echo $_SESSION['iname'];
+          }else{
+            echo 'Welcome, '.$_SESSION['firstname'];
+          }?>
+          </h4>
 
         </div>
 
@@ -74,6 +677,9 @@ color: <?php echo $dchex; ?> !important;
      <div class="container-fluid  ">
       <div class="row mb-3 text-center cf">
      
+     <?php
+      if($_SESSION['utype'] == 'voter' ||  $_SESSION['utype'] == '' ) {
+     ?>
      <div class="col-4 col-xl-2 col-md-3 col-lg-2 col-sm-4 px-0  mb-2 p-2">
         <div class="card card-image ">
           <div class="card-body text-center ac">
@@ -117,7 +723,7 @@ color: <?php echo $dchex; ?> !important;
            <i class="far fa-calendar-check"></i> 1
           </div>
           <div class="card-footer text-center af">
-          UPCOMING ELECTIONS
+          COMING ELECTIONS
           </div>
         </div>
       </div>
@@ -146,10 +752,235 @@ color: <?php echo $dchex; ?> !important;
         </div>
       </div>
 
+    <?php }elseif($_SESSION['utype'] == 'institution'){ ?>
+
+
+
+         <div class="col-4 col-xl-2 col-md-3 col-lg-2 col-sm-4 px-0  mb-2 p-2">
+        <div class="card card-image ">
+          <div class="card-body text-center ac">
+          <i class="fas fa-users"></i> 31
+          </div>
+          <div class="card-footer text-center af">
+          VOTERS
+          </div>
+        </div>
+      </div>
+
+        <div class="col-4 col-xl-2 col-md-3 col-lg-2 col-sm-4 px-0  mb-2 p-2">
+        <div class="card card-image">
+          <div class="card-body text-center ac">
+            <i class="fas fa-building"></i> <?php echo $departments; ?>
+          </div>
+          <div class="card-footer text-center af">
+          DEPARTMENT<?php if($departments>1){echo"S";}?>
+          </div>
+        </div>
+      </div>
+
+
+
+
+     <div class="col-4 col-xl-2 col-md-3 col-lg-2 col-sm-4 px-0  mb-2 p-2">
+          <div class="card card-image ">
+          <div class="card-body text-center ac">
+            <i class="fas fa-fist-raised"></i> 10
+          </div>
+          <div class="card-footer text-center af">
+          ASPIRANTS
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col-4 col-xl-2 col-md-3 col-lg-2 col-sm-4 px-0  mb-2 p-2">
+          <div class="card card-image ">
+          <div class="card-body text-center ac">
+            <i class="fas fa-check-square"></i> 3
+          </div>
+          <div class="card-footer text-center af">
+          ONGOING ELECTIONS
+          </div>
+        </div>
+      </div>
+
+
+       <div class="col-4 col-xl-2 col-md-3 col-lg-2 col-sm-4 px-0  mb-2 p-2">
+        <div class="card card-image ">
+          <div class="card-body text-center ac">
+           <i class="far fa-calendar-check"></i> <?php echo $upcomingelections; ?>
+          </div>
+          <div class="card-footer text-center af">
+          UPCOMING ELECTION<?php if($upcomingelections>1){echo"S";}?>
+          </div>
+        </div>
+      </div>
+
+
+       <div class="col-4 col-xl-2 col-md-3 col-lg-2 col-sm-4 px-0  mb-2 p-2">
+        <div class="card card-image">
+          <div class="card-body text-center ac">
+            <i class="fas fa-archive"></i> 2
+          </div>
+          <div class="card-footer text-center af">
+          ENDED ELECTIONS
+          </div>
+        </div>
+      </div>
+
+
+     
+
+
+    <?php } ?>
+
 
 
       </div>
     </div>
+
+
+
+    <hr />
+
+
+    <?php if($_SESSION['utype'] == 'institution'){ ?> 
+
+   <div class="container-fluid  ">
+      <div class="row mb-3 text-center cf card-deck">
+
+  
+    <!--    <div class="card border border-success col-12 col-lg-6 col-xl-6" <?php if(isset($dchex)){ ?>
+style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !important;"
+
+<?php } ?>>
+    <div class=" card-header font-weight-bold text-left" style="font-size:18px;background-color: white !important;color:<?php echo $dchex; ?> !important;">
+      ACTIONS  <span class="text-right float-right" style="float:right"><i class="fas fa-cog"></i></span>
+    </div>
+    <div class="card-body">
+    <div class="row text-center d-flex align-items-center">
+    <center>
+    <button type="button" class="btn btn-sm btn-outline-success waves-effect my-0 z-depth-0 ab my-2" data-toggle="modal" data-target="#newelectionform"> CREATE NEW ELECTION </button>
+     <button type="button" class="btn btn-sm btn-outline-success waves-effect my-0 z-depth-0 ab my-2"> CREATE ELECTION POST </button>
+      <button type="button" class="btn btn-sm btn-outline-success waves-effect my-0 z-depth-0 ab my-2"> END ELECTION </button>
+       <button type="button" class="btn btn-sm btn-outline-success waves-effect my-0 z-depth-0 ab my-2"> MAKE ANNOUNCEMENT </button>
+
+
+    </center>
+    </div>
+    <hr />
+    </div>
+    </div> -->
+
+
+
+
+       <div class="card border border-success col-12 col-lg-6 col-xl-6" <?php if(isset($dchex)){ ?>
+style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !important;"
+
+<?php } ?>>
+    <div class=" card-header font-weight-bold text-left" style="font-size:18px;background-color: white !important;color:<?php echo $dchex; ?> !important;">
+      DEPARTMENTS  <span class="text-right float-right" style="float:right"><i class="fas fa-building"></i></span>
+    </div>
+    <div class="card-body">
+    <div class=" text-left list-group list-group-flush">
+
+
+      <?php
+
+
+      if ($dna->num_rows > 0) {
+        while($row = $dna->fetch_assoc()){
+          /*  $GLOBALS['dn'] = $row;
+          $depts = $row["COUNT(*)"];
+          $GLOBALS['departments'] = $row["COUNT(*)"];*/
+          ?>
+          <div class="row mx-1 list-group-item list-group-item-action font-weight-bold dl"><?php echo $row["name"]; ?> 
+          <span class="badge badge-primary badge-pill pull-right"><?php echo $row["voters"]; ?></span>
+          <a style="color:red !important;right:0;" onclick="deletedept(<?php echo $row["id"];?>,'<?php echo $row["name"];?>')"><i class="fas fa-trash-alt float-right" style="color:red !important;"></i></a>
+          </div>
+          <?php
+          }
+        }else{?>
+
+            <div class="row mx-1 list-group-item list-group-item-action font-weight-bold dl" style="color:red;"> NO DEPARTMENTS CREATED YET
+          </div>
+
+        <?php }
+
+       ?>
+
+
+     
+     
+    </div>
+     <button type="button" class="btn btn-sm btn-outline-success waves-effect my-0 z-depth-0 ab my-2" data-toggle="modal" data-target="#newdepartmentform" style="float: right;width: 200px;"> CREATE NEW DEPARTMENT </button> 
+    
+    </div>
+    </div>
+
+
+
+
+       <div class="card border border-success col-12 col-lg-6 col-xl-6" <?php if(isset($dchex)){ ?>
+style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !important;"
+
+<?php } ?>>
+    <div class=" card-header font-weight-bold text-left" style="font-size:18px;background-color: white !important;color:<?php echo $dchex; ?> !important;">
+      ELECTIONS  <span class="text-right float-right" style="float:right"><i class="fas fa-vote-yea"></i></span>
+    </div>
+    <div class="card-body">
+    <div class=" text-left list-group list-group-flush">
+
+
+      <?php
+
+
+      if ($ena->num_rows > 0) {
+        while($row = $ena->fetch_assoc()){
+          /*  $GLOBALS['dn'] = $row;
+          $depts = $row["COUNT(*)"];
+          $GLOBALS['departments'] = $row["COUNT(*)"];*/
+          ?>
+          <div class="row mx-1 list-group-item list-group-item-action font-weight-bold dl"><?php echo $row["name"]; ?> 
+          <span class="badge badge-primary badge-pill pull-right"><?php echo $row["voters"]; ?></span>
+          <a style="color:red !important;right:0;" onclick="deleteelec(<?php echo $row["id"];?>,'<?php echo $row["name"];?>')"><i class="fas fa-trash-alt float-right" style="color:red !important;"></i></a>
+          </div>
+          <?php
+          }
+        }else{?>
+
+            <div class="row mx-1 list-group-item list-group-item-action font-weight-bold dl" style="color:red;"> NO ELECTIONS CREATED YET
+          </div>
+
+        <?php }
+
+       ?>
+
+
+     
+     
+    </div>
+     <button type="button" class="btn btn-sm btn-outline-success waves-effect my-0 z-depth-0 ab my-2" data-toggle="modal" data-target="#newelectionform" style="float: right;width: 200px;"> CREATE NEW ELECTION </button> 
+    
+    </div>
+    </div>
+
+
+
+
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+    <?php } ?>
 
 
      
@@ -1538,4 +2369,28 @@ color: <?php echo $dchex; ?> !important;
       }
     });
 
+  </script>
+  <script type="text/javascript">
+    function deletedept(id,name){
+      $(deptname).html(name);
+      $(deptid).val(id);
+      $("#deletedepartmentform").modal();
+    
+    }
+
+    function deleteelec(id,name){
+      $(elecname).html(name);
+      $(elecid).val(id);
+      $("#deleteelectionform").modal();
+    
+    }
+
+
+$('.edp').pickadate({
+// An integer (positive/negative) sets it relative to today.
+format: 'dd-mm-yyyy',
+min: +1
+// `true` sets it to today. `false` removes any limits.
+})
+   
   </script>

@@ -4,6 +4,7 @@ error_reporting(E_ALL);
 ini_set("display_errors", 0); 
 include 'includes/strings.php';
 include 'includes/functions.php';
+include 'includes/getdata.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -47,11 +48,15 @@ a {
 .<?php echo $dc; ?>{
 	background-color: <?php echo $dchex; ?> !important; 
 }
+.ig{
+    border-color:<?php echo $dchex; ?> !important;
+    border-style:dotted !important;
+}
 </style>
 </head>
 
 
-<body class="fixed-sn ">
+<body class="fixed-sn " style="background-color:  <?php echo $mainbg; ?> !important;">
 
   <!--Double navigation-->
   <header>
@@ -202,8 +207,14 @@ a {
 
 
   }else{
+    if($_SESSION['loggedin']){
+      include 'includes/home.php';
+    }else{
       include 'includes/landing.php';
-  }
+    }
+
+    }
+  
 
   ?>
   </main>
@@ -237,7 +248,9 @@ $(".button-collapse").sideNav();
 // SideNav Scrollbar Initialization
 var sideNavScrollbar = document.querySelector('.custom-scrollbar');
 Ps.initialize(sideNavScrollbar);
+
 </script>
+
 
 
 <!-- JS RAW END -->

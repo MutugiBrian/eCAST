@@ -12,6 +12,7 @@
 
 
 
+
     // Create connection
 
       $conn = mysqli_connect($server,$dbuser,$dbpass,$dbname);
@@ -252,7 +253,7 @@ color:white;
     <p class="h4 mb-4 font-weight-bold" style="
 <?php if(isset($hex3)){ ?>
 color:<?php echo $hex3; ?> !important;
-<?php }?>"><?php echo $sn; ?> voter registration</p>
+<?php }?>"><?php echo $sn; ?> voter registrations</p>
 
     <div class="border border-slight p-3 rounded mb-4 ig" >
 

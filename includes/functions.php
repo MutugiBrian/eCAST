@@ -1,4 +1,40 @@
 <?php 
+
+
+function makequery($query){
+
+  include 'includes/strings.php';
+
+   $conn = mysqli_connect($server,$dbuser,$dbpass,$dbname);
+
+   if (mysqli_connect_errno($conn)){
+       return $a = array('error', 'Failed to connect to MySQL: ' . mysqli_connect_error());
+   }else{
+   if ($result = mysqli_query($conn,$query)){
+      $rowcount = mysqli_num_rows($result);
+      return  $a = array('success',$result, $rowcount);
+      unset($_POST);
+    }else{
+      return $a  = array('error', $query, mysqli_error($conn)); 
+  }
+  mysqli_close($conn);
+}
+}
+
+function endpost(){
+	   unset($_POST);
+unset($_REQUEST);
+$_POST = array();
+$_REQUEST = array();
+
+if(isset($_GET['page'])){
+	$page = $_GET['page'];
+}else{
+	$page = '';
+}
+
+}
+
 class Calculation{
 	public $no = 3;
 	public function add ($a,$b){
