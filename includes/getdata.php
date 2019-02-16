@@ -36,11 +36,28 @@ if(isset($_SESSION['utype'])){
        }
     }
 
+    function getvotersno(){
+      $now = time();
+        $query = "SELECT COUNT(*) FROM usermaster where institution = ".$_SESSION['uid']." AND usermaster.banned = 0 ";
+        $dq = makequery($query);
+       if($dq[0] == 'success'){
+          $row = $dq[1]->fetch_assoc();
+            $GLOBALS['da'] = $row;
+          $depts = $row["COUNT(*)"];
+          $GLOBALS['voters'] = $row["COUNT(*)"];
+          
+        }else{
+          $GLOBALS['voters'] = 0;
+       }
+    }
+
     function getdepartmentnames(){
         $query = "SELECT * FROM departments where instid = ".$_SESSION['uid']." AND departments.deleted = 0 ";
         $dq = makequery($query);
        if($dq[0] == 'success'){
           $GLOBALS['dna'] = $dq[1];
+          $GLOBALS['dnf'] = $dq[1];
+          $GLOBALS['dnf'] = $dnf;
         }else{
           $GLOBALS['departments'] = 0;
        }
@@ -59,9 +76,24 @@ if(isset($_SESSION['utype'])){
      getdepartmentno();
      getdepartmentnames();
      getelectionnames();
+     getvotersno();
     }
 
 }else{
+
+
+   function getinstitutions(){
+        $query = "SELECT * FROM usermaster where usertype = 'institution' AND usermaster.banned = 0 ";
+        $dq = makequery($query);
+       if($dq[0] == 'success'){
+          $GLOBALS['ina'] = $dq[1];
+        }else{
+          $GLOBALS['ina'] = array();
+       }
+    }
+
+    getinstitutions();
+
 
 
 }

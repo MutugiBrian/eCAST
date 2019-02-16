@@ -472,6 +472,31 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
           <label data-error="wrong" data-success="right" for="form3">ELECTION NAME</label>
         </div>
 
+          
+          
+          <?php
+        
+           if ($dnf->num_rows > 0) {
+            ?>
+            <select class="mdb-select md-form" id="elecdep">
+          <option value="0">ALL DEPARTMENTS</option>
+          <?php 
+          while($row = $dnf->fetch_array()){
+          /*  $GLOBALS['dn'] = $row;
+          $depts = $row["COUNT(*)"];
+          $GLOBALS['departments'] = $row["COUNT(*)"];*/
+          ?>
+          <option value="<?php echo$row['id']?>"><?php echo$row['name']?></option>
+
+          <?php
+          }
+          ?>
+             </select>
+
+          <?php
+          } 
+          ?>
+        
 
 
          <div class="md-form mb-5">
@@ -759,10 +784,10 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
          <div class="col-4 col-xl-2 col-md-3 col-lg-2 col-sm-4 px-0  mb-2 p-2">
         <div class="card card-image ">
           <div class="card-body text-center ac">
-          <i class="fas fa-users"></i> 31
+          <i class="fas fa-users"></i> <?php echo $voters; ?>
           </div>
           <div class="card-footer text-center af">
-          VOTERS
+          VOTER<?php if($voters>1){echo"S";}?>
           </div>
         </div>
       </div>
@@ -2392,5 +2417,7 @@ format: 'dd-mm-yyyy',
 min: +1
 // `true` sets it to today. `false` removes any limits.
 })
+
+$("#elecdep").material_select();
    
   </script>

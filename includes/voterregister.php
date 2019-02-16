@@ -9,6 +9,7 @@
   $voterinst = $_POST['institution'];
   $voterregno = $_POST['regno'];
   $voterpass = $_POST['password'];
+  $department = $_POST['department'];
 
 
 
@@ -59,7 +60,7 @@ toastr.options = {
 
 
   $t = time();
-  $sql= "INSERT INTO `usermaster` (`id`, `usertype`, `firstname`, `lastname`,`password`, `institution`, `regno`, `email`, `phoneno`,`createdat`) VALUES (NULL,'voter','$voterfn', '$voterln','$voterpass','$voterinst', '$voterregno' , '$voteremail', '$voterphone', '$t')";
+  $sql= "INSERT INTO `usermaster` (`id`, `usertype`, `firstname`, `lastname`,`password`, `institution`,`department`, `regno`, `email`, `phoneno`,`createdat`) VALUES (NULL,'voter','$voterfn', '$voterln','$voterpass','$voterinst','$department', '$voterregno' , '$voteremail', '$voterphone', '$t')";
    
    if ($result = mysqli_query($conn,$sql)){
 
@@ -354,20 +355,59 @@ color:<?php echo $hex3; ?> !important;
     <div class="border border-slight p-3 rounded mb-4 ig" >
       <!-- Default input -->
       <label class="sr-only" for="Institution">Institution</label>
+
+
+      <select class="mdb-select md-form">
+  <option value="" disabled selected>Choose your option</option>
+  <option value="1">Option 1</option>
+  <option value="2">Option 2</option>
+  <option value="3">Option 3</option>
+</select>
+
       <div class="input-group mb-4" id="si">
         <div class="input-group-prepend">
           <div class="input-group-text" ><i class="fas fa-landmark"></i></div>
         </div>
-        <select class="browser-default custom-select" id="institution" name="institution" style="font-size: 17px;" required>
-  <option value="" selected>Choose your Institution</option>
-  <option value="TUK">Technical University of Kenya</option>
-  <option value="UoN">University of Nairobi</option>
-  <option value="KU">Kenyatta University</option>
+        <select class="browser-default custom-select mdb-select"  searchable="Search here.." id="institution" name="institution" style="font-size: 17px;" required>
+          <option value="" selected>Choose your Institution</option>
+          <?php 
+          if ($ina->num_rows > 0) {
+        while($row = $ina->fetch_assoc()){
+          ?>
+           <option value="<?php echo $row["id"]; ?>"><?php echo $row["iname"]; ?></option>
+        <?php }} ?>
      </select>
+
+
+
+
+
+
      <div class="invalid-feedback">
           Please select your institution.
         </div>
       </div>
+
+
+      <div class="input-group mb-4" id="sd" style="display: none;">
+        <div class="input-group-prepend">
+          <div class="input-group-text" ><i class="fas fa-building"></i></div>
+        </div>
+        <select class="browser-default custom-select mdb-select"  searchable="Search here.." id="department" name="department" style="font-size: 17px;" required>
+          <option value="" selected>Choose your Department </option>
+          
+     </select>
+
+
+
+
+
+
+     <div class="invalid-feedback">
+          Please select your department.
+        </div>
+      </div>
+    
     
 
 
@@ -617,4 +657,60 @@ function test(){
 }
 
 
+</script>
+<script type="text/javascript">
+ $('.mdb-select').materialSelect();
+
+
+
+
+   $(document).ready(function() {
+
+
+
+ });
+</script>
+<script type="text/javascript">
+    $('#institution').change(function() {
+
+    instid = $('#institution').val();
+
+//alert(instid);
+
+if(instid === ''){
+  $("#sd").css("display","none");
+}else{
+  $("#department option").remove();
+     var nc = 'ajax/getdepartments.php?instid=' + instid;
+     $('#department').load('ajax/getdepartments.php?instid=' + instid);
+ $('#department').load('ajax/getdepartments.php?instid=' + instid);
+ wto = setTimeout(function() {
+  
+   $('#department').material_select('destroy');   
+$('#department').load('ajax/getdepartments.php?instid=' + instid);
+$('#department').material_select();
+$('#department').load('ajax/getdepartments.php?instid=' + instid);
+    
+}, 500);
+ $("#sd").css("display","flex");
+}
+
+
+
+ /* $(function () {
+        $.ajax({
+            url: 'ajax/getdepartments.php?instid=' + instid,
+            dataType: "html",
+            type: "GET",
+            success: function (data) {
+                alert(data);
+            },
+            error(jqXHR, textStatus, errorThrown) {
+                alert(errorThrown)
+            }
+        });
+    });*/
+   
+
+  });
 </script>
