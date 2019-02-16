@@ -5,6 +5,7 @@ if(isset($_POST['newelec'])){
 
 
    $elecname = $_POST['elecname'];
+   $deptid = $_POST['deptid2'];
   $elecstart = strtotime($_POST['elecstart']);
   $elecend = strtotime($_POST['elecend']);
   $elecannounce = strtotime($_POST['elecannounce']);
@@ -12,7 +13,7 @@ if(isset($_POST['newelec'])){
   $now = time();
 
 
-  $query = "INSERT INTO `elections` (`id`, `instid`, `name`, `startdate`, `enddate`, `announcedate`, `createdby`, `createdat`, `updatedat`) VALUES (NULL, '".$uid."', '".$elecname."', '".$elecstart."', '".$elecend."', '".$elecannounce."', ".$uid.", '".$now."', '".$now."')";
+  $query = "INSERT INTO `elections` (`id`, `instid`,`deptid`, `name`, `startdate`, `enddate`, `announcedate`, `createdby`, `createdat`, `updatedat`) VALUES (NULL, '".$uid."','".$deptid."', '".$elecname."', '".$elecstart."', '".$elecend."', '".$elecannounce."', ".$uid.", '".$now."', '".$now."')";
   $qa = makequery($query);
 
   if($qa[0] == 'success'){
@@ -475,13 +476,15 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
           
           
           <?php
-        
-           if ($dnf->num_rows > 0) {
+        $dna->data_seek(0); 
+           if ($dna->num_rows > 0) {
             ?>
-            <select class="mdb-select md-form" id="elecdep">
+            <div class="md-form mb-5">
+          <i class="fas fa-building prefix mi"></i>
+            <select class="mdb-select ml-5" id="deptid2" name="deptid2">
           <option value="0">ALL DEPARTMENTS</option>
           <?php 
-          while($row = $dnf->fetch_array()){
+          while($row = $dna->fetch_array()){
           /*  $GLOBALS['dn'] = $row;
           $depts = $row["COUNT(*)"];
           $GLOBALS['departments'] = $row["COUNT(*)"];*/
@@ -492,6 +495,7 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
           }
           ?>
              </select>
+           </div>
 
           <?php
           } 
@@ -913,7 +917,7 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
 
       <?php
 
-
+       $dna->data_seek(0); 
       if ($dna->num_rows > 0) {
         while($row = $dna->fetch_assoc()){
           /*  $GLOBALS['dn'] = $row;
@@ -2418,6 +2422,6 @@ min: +1
 // `true` sets it to today. `false` removes any limits.
 })
 
-$("#elecdep").material_select();
+$("#deptid2").material_select();
    
   </script>
