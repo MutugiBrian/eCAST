@@ -36,6 +36,36 @@ if(isset($_SESSION['utype'])){
        }
     }
 
+    function getongoingelectionsno(){
+      $now = time();
+        $query = "SELECT COUNT(*) FROM elections where instid = ".$_SESSION['uid']." AND elections.startdate < ".$now." AND elections.enddate >".$now." AND elections.deleted = 0";
+        $doq = makequery($query);
+       if($doq[0] == 'success'){
+          $rowo = $doq[1]->fetch_assoc();
+            $GLOBALS['dra'] = $rowo;
+          $depts = $rowo["COUNT(*)"];
+          $GLOBALS['ongoingelections'] = $rowo["COUNT(*)"];
+          
+        }else{
+          $GLOBALS['ongoingelections'] = 0;
+       }
+    }
+
+     function getendedelectionsno(){
+      $now = time();
+        $query = "SELECT COUNT(*) FROM elections where instid = ".$_SESSION['uid']." AND elections.startdate < ".$now." AND elections.enddate <".$now." AND elections.deleted = 0 ";
+        $dq = makequery($query);
+       if($dq[0] == 'success'){
+          $row = $dq[1]->fetch_assoc();
+            $GLOBALS['dea'] = $row;
+          $depts = $row["COUNT(*)"];
+          $GLOBALS['endedelections'] = $row["COUNT(*)"];
+          
+        }else{
+          $GLOBALS['endedelections'] = 0;
+       }
+    }
+
     function getvotersno(){
       $now = time();
         $query = "SELECT COUNT(*) FROM usermaster where institution = ".$_SESSION['uid']." AND usermaster.banned = 0 ";
@@ -72,6 +102,9 @@ if(isset($_SESSION['utype'])){
            $GLOBALS['ena'] = '';
        }
     }
+    getongoingelectionsno();
+     getendedelectionsno();
+     
      getupcomingelectionsno();
      getdepartmentno();
      getdepartmentnames();

@@ -678,9 +678,8 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
         <div class="card-body d-sm-flex justify-content-between">
 
           <h4 class="mb-2 mb-sm-0 pt-1">
-            <a href="https://mdbootstrap.com/docs/jquery/" target="_blank" class="h">Home Page</a>
-            <span>/</span>
-            <span>Dashboard</span>
+            <a href="?" class="h">ADMIN PANEL</a>
+         
           </h4>
 
 
@@ -825,10 +824,10 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
       <div class="col-4 col-xl-2 col-md-3 col-lg-2 col-sm-4 px-0  mb-2 p-2">
           <div class="card card-image ">
           <div class="card-body text-center ac">
-            <i class="fas fa-check-square"></i> 3
+            <i class="fas fa-check-square"></i> <?php echo $ongoingelections; ?>
           </div>
           <div class="card-footer text-center af">
-          ONGOING ELECTIONS
+          ONGOING ELECTION<?php if($ongoingelections>1){echo"S";}?>
           </div>
         </div>
       </div>
@@ -849,10 +848,10 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
        <div class="col-4 col-xl-2 col-md-3 col-lg-2 col-sm-4 px-0  mb-2 p-2">
         <div class="card card-image">
           <div class="card-body text-center ac">
-            <i class="fas fa-archive"></i> 2
+            <i class="fas fa-archive"></i> <?php echo $endedelections; ?>
           </div>
           <div class="card-footer text-center af">
-          ENDED ELECTIONS
+          ENDED ELECTION<?php if($endedelections>1){echo"S";}?>
           </div>
         </div>
       </div>
@@ -971,7 +970,9 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
           $depts = $row["COUNT(*)"];
           $GLOBALS['departments'] = $row["COUNT(*)"];*/
           ?>
-          <div class="row mx-1 list-group-item list-group-item-action font-weight-bold dl"><?php echo $row["name"]; ?> 
+          <div class="row mx-1 list-group-item list-group-item-action font-weight-bold dl">
+            <a href="?page=election&elecid=<?php echo $row["id"];?>&elecname=<?php echo $row["name"]; ?>" style="color:black !important;"><?php echo $row["name"]; ?>
+            </a> 
           <span class="badge badge-primary badge-pill pull-right"><?php echo $row["voters"]; ?></span>
           <a style="color:red !important;right:0;" onclick="deleteelec(<?php echo $row["id"];?>,'<?php echo $row["name"];?>')"><i class="fas fa-trash-alt float-right" style="color:red !important;"></i></a>
           </div>
