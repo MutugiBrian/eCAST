@@ -2,6 +2,198 @@
 $ut = $_SESSION['utype'];
 $electionid = $_GET['elecid'];
 $electionname = $_GET['elecname'];
+
+
+  $query = "SELECT * FROM posts WHERE elecid = ".$electionid." AND posts.deleted = 0 ";
+        $dq = makequery($query);
+       if($dq[0] == 'success'){
+          $GLOBALS['epa'] = $dq[1];
+          $GLOBALS['epa'] = $dq[1];
+          $GLOBALS['eposts']  = $dq[1]->num_rows;
+
+        }else{
+          $GLOBALS['eposts'] = 0;
+       }
+
+
+
+if(isset($_POST['delpost'])){
+
+    $postid = $_POST['postid'];
+  $query = "UPDATE `posts` SET `deleted` = '1' WHERE `posts`.`id` = '".$postid."' ";
+  $qa = makequery($query);
+
+  if($qa[0] == 'success'){
+
+    
+
+    ?>
+
+
+     <script type="text/javascript">
+  $(document).ready(function(){
+
+ window.location.href = "?page=election&elecid=<?php echo $electionid; ?>&elecname=<?php echo $electionname; ?>";
+  Command: toastr["success"]("", "POST DELETED")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 2000,
+  "extendedTimeOut": 1000,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+});
+</script>
+
+
+  <?php
+  endpost(); 
+}else{
+  ?>
+
+   <script type="text/javascript">
+  $(document).ready(function(){
+
+    window.location.href = "?page=election&elecid=<?php echo $electionid; ?>&elecname=<?php echo $electionname; ?>";
+  Command: toastr["error"]("", "ERROR DELETING POST")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 2000,
+  "extendedTimeOut": 1000,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+});
+</script>
+
+  <?php 
+  endpost();
+}
+?>
+
+<?php
+
+
+}
+
+
+
+
+
+
+
+
+
+if(isset($_POST['newpost'])){ 
+
+          
+   $postname = $_POST['postname'];
+   $deptid = $_POST['deptid2'];
+    $uid = $_SESSION['uid'];
+  $now = time();
+
+
+  $query = "INSERT INTO `posts` (`id`, `name`, `instid`, `deptid`, `gender`, `createdat`, `updatedat`, `elecid`) VALUES (NULL, '".$postname."', ".$uid.", ".$deptid.", '', ".$now.", ".$now.", ".$electionid.")
+  ";
+  $qa = makequery($query);
+
+  if($qa[0] == 'success'){
+
+    
+
+    ?>
+
+
+     <script type="text/javascript">
+  $(document).ready(function(){
+
+ window.location.href = "?page=election&elecid=<?php echo $electionid; ?>&elecname=<?php echo $electionname; ?>";
+  Command: toastr["success"]("", "NEW POST CREATED")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 2000,
+  "extendedTimeOut": 1000,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+});
+</script>
+
+
+  <?php
+  endpost(); 
+}else{
+  ?>
+
+   <script type="text/javascript">
+  $(document).ready(function(){
+
+    window.location.href = "?page=election&elecid=<?php echo $electionid; ?>&elecname=<?php echo $electionname; ?>";
+  Command: toastr["error"]("", "ERROR CREATING POST")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 2000,
+  "extendedTimeOut": 1000,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+});
+</script>
+
+  <?php 
+  endpost();
+}
+?>
+
+<?php
+
+
+}
+
 ?>
  <style>
 
@@ -63,6 +255,36 @@ color: <?php echo $dchex; ?> !important;
   </style>
 
 
+
+
+   <div class="modal fade" id="deletepostform" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content border border-success" 
+style="border-color:red!important;border-width: 3px !important;"
+>
+      <div class="modal-header text-center">
+        <h5 class="modal-title w-100 font-weight-bold">DELETE POST</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3 h6">
+      ARE YOU SURE YOU WANT TO DELETE <span id="postname" style="color: red !important;"></span> POST ?
+      </div>
+      <div class="modal-footer d-flex justify-content-center">
+        <form id="deletedpost" action="" method="post">
+          <input type="hidden" name="postid" id="postid"/>
+        <button class="btn btn-outline-success waves-effect my-0 z-depth-0 mb" data-dismiss="modal">NO <i class="fas fa-paper-plane-o ml-1"></i></button>
+        <button class="btn btn-outline-danger waves-effect my-0 z-depth-0 mbd" type="submit" name="delpost" id="delpost">YES <i class="fas fa-paper-plane-o ml-1"></i></button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
   <div class="modal fade" id="newpostform" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
   aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -80,7 +302,7 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
       <div class="modal-body mx-3">
         <div class="md-form mb-5">
           <i class="fas fa-vote-yea prefix mi"></i>
-          <input type="text" id="elecname" name="elecname"  class="form-control" required>
+          <input type="text" id="postname" name="postname"  class="form-control" required>
           <label data-error="wrong" data-success="right" for="form3">POST NAME</label>
         </div>
 
@@ -118,7 +340,7 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
 
       </div>
       <div class="modal-footer d-flex justify-content-center">
-        <button class="btn btn-outline-success waves-effect my-0 z-depth-0 mb" type="submit" name="newelec" id="newelec">CREATE <i class="fas fa-paper-plane-o ml-1"></i></button>
+        <button class="btn btn-outline-success waves-effect my-0 z-depth-0 mb" type="submit" name="newpost" id="newpost">CREATE <i class="fas fa-paper-plane-o ml-1"></i></button>
       </div>
 
 
@@ -184,7 +406,7 @@ return false;
 
 
           <?php 
-          //var_dump($ena);
+         // var_dump($epa);
           ?>
 
           <h4 class="d-flex mb-2 mb-sm-0 pt-1">
@@ -238,10 +460,10 @@ return false;
       <div class="col-4 col-xl-2 col-md-3 col-lg-2 col-sm-4 px-0  mb-2 p-2">
         <div class="card card-image ">
           <div class="card-body text-center ac">
-          <i class="fas fa-user-tie"></i> 2
+          <i class="fas fa-user-tie"></i> <?php echo $eposts; ?>
           </div>
           <div class="card-footer text-center af">
-          POSTS
+          POST<?php if($eposts > 1){echo "S";} ?>
           </div>
         </div>
       </div>
@@ -313,16 +535,16 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
 
       <?php
 
-       $dna->data_seek(0); 
-      if ($dna->num_rows > 0) {
-        while($row = $dna->fetch_assoc()){
+       $epa->data_seek(0); 
+      if ($epa->num_rows > 0) {
+        while($row = $epa->fetch_assoc()){
           /*  $GLOBALS['dn'] = $row;
           $depts = $row["COUNT(*)"];
           $GLOBALS['departments'] = $row["COUNT(*)"];*/
           ?>
           <div class="row mx-1 list-group-item list-group-item-action font-weight-bold dl"><?php echo $row["name"]; ?> 
-          <span class="badge badge-primary badge-pill pull-right"><?php echo $row["voters"]; ?></span>
-          <a style="color:red !important;right:0;" onclick="deletedept(<?php echo $row["id"];?>,'<?php echo $row["name"];?>')"><i class="fas fa-trash-alt float-right" style="color:red !important;"></i></a>
+          <span class="badge badge-primary badge-pill pull-right"><?php echo $row["aspirants"]; ?></span>
+          <a style="color:red !important;right:0;" onclick="deletepost(<?php echo $row["id"];?>,'<?php echo $row["name"];?>')"><i class="fas fa-trash-alt float-right" style="color:red !important;"></i></a>
           </div>
           <?php
           }
@@ -332,6 +554,7 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
           </div>
 
         <?php }
+        $epa->data_seek(0);
 
        ?>
 
@@ -572,17 +795,12 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
 
   </script>
   <script type="text/javascript">
-    function deletedept(id,name){
-      $(deptname).html(name);
-      $(deptid).val(id);
-      $("#deletedepartmentform").modal();
-    
-    }
+  
 
-    function deleteelec(id,name){
-      $(elecname).html(name);
-      $(elecid).val(id);
-      $("#deleteelectionform").modal();
+    function deletepost(id,name){
+      $(postname).html(name);
+      $(postid).val(id);
+      $("#deletepostform").modal();
     
     }
 
