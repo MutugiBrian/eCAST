@@ -2,6 +2,8 @@
 $ut = $_SESSION['utype'];
 $electionid = $_GET['elecid'];
 $electionname = $_GET['elecname'];
+$uid = $_SESSION['uid'];
+$dept = $_SESSION['elecdept'];
 
 
   $query = "SELECT * FROM posts WHERE elecid = ".$electionid." AND posts.deleted = 0 ";
@@ -15,6 +17,116 @@ $electionname = $_GET['elecname'];
           $GLOBALS['eposts'] = 0;
        }
 
+ $query = "SELECT a.*, a.id as aspid, u.*,p.* FROM aspirants a,usermaster u,posts p WHERE a.elecid = ".$electionid." AND a.deleted = 0 AND u.id = a.uid AND p.id = a.postid";
+        $dq = makequery($query);
+       if($dq[0] == 'success'){
+          $GLOBALS['easpa'] = $dq[1];
+          $GLOBALS['easpa'] = $dq[1];
+          $GLOBALS['easpirants']  = $dq[1]->num_rows;
+
+        }else{
+          $GLOBALS['easpirants'] = 0;
+       }
+
+       if($dept == '' || $dept == 0){
+$query = "SELECT * FROM usermaster WHERE institution = ".$uid." AND usermaster.deleted = 0 AND  usermaster.banned = 0";
+       }else{
+$query = "SELECT * FROM usermaster WHERE institution = ".$uid." AND department = ".$dept." AND usermaster.deleted = 0 AND  usermaster.banned = 0";
+       }
+
+
+  
+        $dq = makequery($query);
+       if($dq[0] == 'success'){
+          $GLOBALS['eva'] = $dq[1];
+          $GLOBALS['eva'] = $dq[1];
+          $GLOBALS['elecvoters']  = $dq[1]->num_rows;
+
+        }else{
+          $GLOBALS['elecvoters'] = 0;
+       }
+
+
+if(isset($_POST['delasp'])){
+
+    $aspid = $_POST['delaspid'];
+  $query = "UPDATE `aspirants` SET `deleted` = 1 WHERE `aspirants`.`id` = '".$aspid."' ";
+  $qa = makequery($query);
+
+  if($qa[0] == 'success'){
+
+    
+
+    ?>
+
+
+     <script type="text/javascript">
+  $(document).ready(function(){
+
+ window.location.href = "?page=election&elecid=<?php echo $electionid; ?>&elecname=<?php echo $electionname; ?>";
+  Command: toastr["success"]("", "ASPIRANT REMOVED")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 2000,
+  "extendedTimeOut": 1000,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+});
+</script>
+
+
+  <?php
+  endpost(); 
+}else{
+  ?>
+
+   <script type="text/javascript">
+  $(document).ready(function(){
+
+    window.location.href = "?page=election&elecid=<?php echo $electionid; ?>&elecname=<?php echo $electionname; ?>";
+  Command: toastr["error"]("", "ERROR REMOVING ASPIRANT")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 2000,
+  "extendedTimeOut": 1000,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+});
+</script>
+
+  <?php 
+  endpost();
+}
+?>
+
+<?php
+
+
+}
 
 
 if(isset($_POST['delpost'])){
@@ -67,6 +179,99 @@ toastr.options = {
 
     window.location.href = "?page=election&elecid=<?php echo $electionid; ?>&elecname=<?php echo $electionname; ?>";
   Command: toastr["error"]("", "ERROR DELETING POST")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 2000,
+  "extendedTimeOut": 1000,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+});
+</script>
+
+  <?php 
+  endpost();
+}
+?>
+
+<?php
+
+
+}
+
+
+
+if(isset($_POST['newasp'])){ 
+
+          
+   $aspid = $_POST['aspid'];
+   $aspslogan = $_POST['aspslogan'];
+   $aspmanifesto = $_POST['aspmanifesto'];
+   $asppost = $_POST['asppost'];
+   $uid = $_SESSION['uid'];
+   $now = time();
+
+
+  $query = "
+  INSERT INTO `aspirants` (`id`, `uid`, `slogan`, `manifesto`, `instid`, `elecid`, `postid`,`createdat`, `updatedat`) VALUES (NULL, ".$aspid.", '".$aspslogan."', '".$aspmanifesto."', ".$uid.", ".$electionid.", ".$asppost.", ".$now.", ".$now.");
+  ";
+  $qa = makequery($query);
+
+  if($qa[0] == 'success'){
+
+    
+
+    ?>
+
+
+     <script type="text/javascript">
+  $(document).ready(function(){
+
+ window.location.href = "?page=election&elecid=<?php echo $electionid; ?>&elecdept=<?php echo $dept; ?>&elecname=<?php echo $electionname; ?>";
+  Command: toastr["success"]("", "NEW ASPIRANT ADDED")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 2000,
+  "extendedTimeOut": 1000,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+});
+</script>
+
+
+  <?php
+  endpost(); 
+}else{
+  ?>
+
+   <script type="text/javascript">
+  $(document).ready(function(){
+
+    window.location.href = "?page=election&elecid=<?php echo $electionid; ?>&elecdept=<?php echo $dept; ?>&elecname=<?php echo $electionname; ?>";
+  Command: toastr["error"]("", "ERROR ADDING ASPIRANT")
 
 toastr.options = {
   "closeButton": true,
@@ -284,6 +489,195 @@ style="border-color:red!important;border-width: 3px !important;"
 </div>
 
 
+   <div class="modal fade" id="deleteaspform" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content border border-success" 
+style="border-color:red!important;border-width: 3px !important;"
+>
+      <div class="modal-header text-center">
+        <h5 class="modal-title w-100 font-weight-bold">REMOVE ASPIRANT</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3 h6">
+      ARE YOU SURE YOU WANT TO REMOVE <span id="aspname" style="color: red !important;"></span> AS AN ASPIRANT ?
+      </div>
+      <div class="modal-footer d-flex justify-content-center">
+         <form id="deleteaspp" action="" method="post">
+          <input type="hidden" name="delaspid" id="delaspid"/>
+        <button class="btn btn-outline-success waves-effect my-0 z-depth-0 mb" data-dismiss="modal">NO <i class="fas fa-paper-plane-o ml-1"></i></button>
+        <button class="btn btn-outline-danger waves-effect my-0 z-depth-0 mbd" type="submit" name="delasp" id="delasp">YES <i class="fas fa-paper-plane-o ml-1"></i></button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+  <div class="modal fade" id="newaspirantform" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content border border-success" <?php if(isset($dchex)){ ?>
+style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !important;"
+
+<?php } ?>>
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">CREATE ASPIRANT</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="POST" action="" id="newaspirant" name="newaspirant" class="needs-validation">
+      <div class="modal-body mx-3">
+
+
+
+ <?php
+        $eva->data_seek(0); 
+           if ($eva->num_rows > 0) {
+            ?>
+            <div class="md-form mb-5">
+          <i class="fas fa-fist-raised prefix mi"></i>
+            <select class="mdb-select md-form ml-5" id="aspid" name="aspid" searchable="Search name or registration..">
+          <option value="" selected disabled>SELECT ASPIRANT NAME</option>
+          <?php 
+          while($row = $eva->fetch_array()){
+          /*  $GLOBALS['dn'] = $row;
+          $depts = $row["COUNT(*)"];
+          $GLOBALS['departments'] = $row["COUNT(*)"];*/
+          ?>
+          <option value="<?php echo$row['id']?>"><?php echo$row['firstname']." ".$row['lastname']." - ".$row['regno'];?></option>
+
+          <?php
+          }
+          ?>
+             </select>
+           </div>
+
+          <?php
+          }else{
+          	?>
+          	 <div class="md-form mb-5" style="color:red !important;">
+               ERROR - NO POTENTIAL ASPIRANTS
+          	 </div>
+
+          	<?php
+          }
+
+           $epa->data_seek(0); 
+          ?>
+
+
+          
+          
+         <?php
+        $epa->data_seek(0); 
+           if ($epa->num_rows > 0) {
+            ?>
+            <div class="md-form mb-5">
+          <i class="fas fa-user-tie prefix mi"></i>
+            <select class="mdb-select ml-5" id="asppost" name="asppost" searchable="Search post..">
+          <option value="" selected disabled>SELECT POST</option>
+          <?php 
+          while($row = $epa->fetch_array()){
+          /*  $GLOBALS['dn'] = $row;
+          $depts = $row["COUNT(*)"];
+          $GLOBALS['departments'] = $row["COUNT(*)"];*/
+          ?>
+          <option value="<?php echo$row['id']?>"><?php echo$row['name']?></option>
+
+          <?php
+          }
+          ?>
+             </select>
+           </div>
+
+          <?php
+          }else{?>
+          	 <div class="md-form mb-5" style="color:red !important;">
+               ERROR - NO POSTS
+          	 </div>
+          <?php }
+
+           $epa->data_seek(0); 
+          ?>
+
+           <div class="md-form mb-5">
+          <i class="fas fa-hand-spock prefix mi" style="font-size: 25px;"></i>
+          <input type="text" id="aspslogan" name="aspslogan" class="form-control validate ml-5">
+          <label data-error="wrong" data-success="right" for="form3" class="ml-5">SLOGAN</label>
+        </div>
+
+          <div class="form-group">
+          <label for="manifesto" ><i class="fas fa-book-reader prefix mi" style="font-size: 25px;"></i><span class="h6 ml-4">MANIFESTO</span></label>
+          <textarea class="form-control" id="aspmanifesto" name="aspmanifesto" rows="4"></textarea>
+          </div>
+
+
+        
+
+      </div>
+      <div class="modal-footer d-flex justify-content-center">
+        <button class="btn btn-outline-success waves-effect my-0 z-depth-0 mb" type="submit" name="newasp" id="newasp">CREATE <i class="fas fa-paper-plane-o ml-1"></i></button>
+      </div>
+
+
+    </form>
+    <script type="text/javascript">
+      $(newasp).click(function (){
+
+        var sd = $("#aspid :selected").val();
+        var ed = $("#asppost :selected").val();
+        var ea = $("#aspslogan").val();
+        var en = $("#aspmanifesto").val();
+
+        if(sd === '' || ed === ''|| ea === '' || en === ''){
+
+           Command: toastr["error"]("", "fill in all fields to continue")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": true,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 100,
+  "extendedTimeOut": 100,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+
+
+return false;
+
+        }else{
+        	//alert(ed);
+         $(newaspirant).submit();
+        }
+      });
+    </script>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
 
   <div class="modal fade" id="newpostform" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
   aria-hidden="true">
@@ -379,7 +773,6 @@ toastr.options = {
 return false;
 
         }else{
-          alert(sd);
          $(newelection).submit();
         }
       });
@@ -406,7 +799,7 @@ return false;
 
 
           <?php 
-         // var_dump($epa);
+          // var_dump($easpa);
           ?>
 
           <h4 class="d-flex mb-2 mb-sm-0 pt-1">
@@ -474,10 +867,10 @@ return false;
      <div class="col-4 col-xl-2 col-md-3 col-lg-2 col-sm-4 px-0  mb-2 p-2">
           <div class="card card-image ">
           <div class="card-body text-center ac">
-            <i class="fas fa-fist-raised"></i> 10
+            <i class="fas fa-fist-raised"></i> <?php echo $easpirants; ?>
           </div>
           <div class="card-footer text-center af">
-          ASPIRANTS
+          ASPIRANT<?php if($easpirants>1){echo "S";}?>
           </div>
         </div>
       </div>
@@ -566,6 +959,55 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
     
     </div>
     </div>
+
+
+
+
+     <div class="card border border-success col-12 col-lg-6 col-xl-6" <?php if(isset($dchex)){ ?>
+style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !important;"
+
+<?php } ?>>
+    <div class=" card-header font-weight-bold text-left" style="font-size:18px;background-color: white !important;color:<?php echo $dchex; ?> !important;">
+      ASPIRANTS  <span class="text-right float-right" style="float:right"><i class="fas fa-fist-raised"></i></span>
+    </div>
+    <div class="card-body">
+    <div class=" text-left list-group list-group-flush ">
+
+
+      <?php
+
+       $easpa->data_seek(0); 
+      if ($easpa->num_rows > 0) {
+        while($row = $easpa->fetch_assoc()){
+          /*  $GLOBALS['dn'] = $row;
+          $depts = $row["COUNT(*)"];
+          $GLOBALS['departments'] = $row["COUNT(*)"];*/
+          ?>
+          <div class="row mx-1 list-group-item list-group-item-action font-weight-bold dl"><?php echo $row["firstname"]." ".$row["lastname"]." -  ";?>  
+          <span class="badge badge-primary badge-pill pull-right"><?php echo $row["name"]; ?></span>
+          <a style="color:red !important;right:0;" onclick="deleteasp(<?php echo $row["aspid"];?>,'<?php echo $row["firstname"]." ".$row["lastname"];?>')"><i class="fas fa-trash-alt float-right" style="color:red !important;"></i></a>
+          </div>
+          <?php
+          }
+        }else{?>
+
+            <div class="row mx-1 list-group-item list-group-item-action font-weight-bold dl" style="color:red;"> NO ASPIRANTS CREATED YET
+          </div>
+
+        <?php }
+        $epa->data_seek(0);
+
+       ?>
+
+
+     
+     
+    </div>
+     <button type="button" class="btn btn-sm btn-outline-success waves-effect my-0 z-depth-0 ab my-2" data-toggle="modal" data-target="#newaspirantform" style="float: right;width: 200px;"> CREATE NEW ASPIRANT </button> 
+    
+    </div>
+    </div>
+
 
 
 
@@ -804,6 +1246,14 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
     
     }
 
+      function deleteasp(id,name){
+      $(aspname).html(name);
+      $(delaspid).val(id);
+      $("#deleteaspform").modal();
+    
+    }
+
+
 
 $('.edp').pickadate({
 // An integer (positive/negative) sets it relative to today.
@@ -813,5 +1263,8 @@ min: +1
 })
 
 $("#deptid2").material_select();
-   
+$("#aspid").material_select();
+$("#asppost").material_select();   
   </script>
+
+  	

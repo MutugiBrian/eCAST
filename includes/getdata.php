@@ -97,9 +97,9 @@ if(isset($_SESSION['utype'])){
         $query = "SELECT * FROM elections where instid = ".$_SESSION['uid']." AND elections.deleted = 0 ";
         $deq = makequery($query);
        if($deq[0] == 'success'){
-          $GLOBALS['ena'] = $deq[1];
+          $GLOBALS['enac'] = $deq[1];
         }else{
-           $GLOBALS['ena'] = '';
+           $GLOBALS['enac'] = '';
        }
     }
     getongoingelectionsno();

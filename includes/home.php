@@ -691,7 +691,7 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
 
 
           <?php 
-          //var_dump($ena);
+          //var_dump($enac);
           ?>
 
           <h4 class="d-flex mb-2 mb-sm-0 pt-1">
@@ -971,14 +971,14 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
       <?php
 
 
-      if ($ena->num_rows > 0) {
-        while($row = $ena->fetch_assoc()){
+      if ($enac->num_rows > 0) {
+        while($row = $enac->fetch_assoc()){
           /*  $GLOBALS['dn'] = $row;
           $depts = $row["COUNT(*)"];
           $GLOBALS['departments'] = $row["COUNT(*)"];*/
           ?>
           <div class="row mx-1 list-group-item list-group-item-action font-weight-bold dl">
-            <a href="?page=election&elecid=<?php echo $row["id"];?>&elecname=<?php echo $row["name"]; ?>" style="color:black !important;"><?php echo $row["name"]; ?>
+            <a href="?page=election&elecid=<?php echo $row["id"];?>&elecname=<?php echo $row["name"]; ?>&elecdept=<?php echo $row["deptid"]; ?>" style="color:black !important;"><?php echo $row["name"]; ?>
             </a> 
           <span class="badge badge-primary badge-pill pull-right"><?php echo $row["voters"]; ?></span>
           <a style="color:red !important;right:0;" onclick="deleteelec(<?php echo $row["id"];?>,'<?php echo $row["name"];?>')"><i class="fas fa-trash-alt float-right" style="color:red !important;"></i></a>
