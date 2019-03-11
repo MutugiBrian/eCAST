@@ -6,8 +6,23 @@ if(isset($_POST['newelec'])){
 
    $elecname = $_POST['elecname'];
    $deptid = $_POST['deptid2'];
-  $elecstart = strtotime($_POST['elecstart']);
-  $elecend = strtotime($_POST['elecend']);
+
+
+   $elecstartT = $_POST['elecstarttime'];
+  $elecendT = $_POST['elecendtime'];
+    $elecstartD = $_POST['elecstart'];
+  $elecendD = $_POST['elecend'];
+
+
+$d = sprintf('%s %s', $elecstartD, $elecstartT);
+$dt = DateTime::createFromFormat('d-m-Y H:i',  $d);
+$elecstart = $dt->getTimestamp();
+
+$d = sprintf('%s %s', $elecendD, $elecendT);
+$dt = DateTime::createFromFormat('d-m-Y H:i',  $d);
+$elecend = $dt->getTimestamp();
+
+
   $elecannounce = strtotime($_POST['elecannounce']);
   $uid = $_SESSION['uid'];
   $now = time();
@@ -338,6 +353,9 @@ toastr.options = {
 }
 
 
+if($ut == 'institution'){
+
+
 
 
 
@@ -509,18 +527,38 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
           ?>
         
 
-
-         <div class="md-form mb-5">
+        <div class="row">
+         <div class="md-form mb-5 col">
           <i class="fas fa-hourglass-start prefix mi"></i>
           <input type="date" id="elecstart" name="elecstart" class="form-control datepicker edp" required>
           <label data-error="wrong" data-success="right" for="form3">START DATE</label>
         </div>
+         <div class="md-form mb-5 col">
+          <i class="far fa-clock prefix mi"></i>
+       <input type="text" id="elecstarttime" name="elecstarttime" class="form-control timepicker" >
+     <label data-error="wrong" data-success="right" for="form3">START TIME</label>
 
-         <div class="md-form mb-5">
+        </div>
+
+
+      </div>
+       
+       <div class="row">
+         <div class="md-form mb-5 col">
           <i class="fas fa-hourglass-end prefix mi"></i>
           <input type="date" id="elecend" name="elecend" class="form-control datepicker edp" required>
           <label data-error="wrong" data-success="right" for="form3">END DATE</label>
         </div>
+         <div class="md-form mb-5 col">
+          <i class="far fa-clock prefix mi"></i>
+       <input type="text" id="elecendtime" name="elecendtime" class="form-control timepicker">
+     <label data-error="wrong" data-success="right" for="form3">END TIME</label>
+
+        </div>
+      </div>
+
+
+
          <div class="md-form mb-5">
           <i class="fas fa-bullhorn prefix mi"></i>
           <input type="text" id="elecannounce" name="elecannounce" class="form-control datepicker edp" required>
@@ -568,7 +606,7 @@ toastr.options = {
 return false;
 
         }else{
-          alert(sd);
+          /*alert(sd);*/
          $(newelection).submit();
         }
       });
@@ -2431,5 +2469,389 @@ min: +1
 })
 
 $("#deptid2").material_select();
+$('#elecstarttime').pickatime({});
+$('#elecendtime').pickatime({
+});
    
   </script>
+
+  <?php }else{ 
+
+      $query = "SELECT * FROM elections where instid = ".$_SESSION['inst']." AND elections.deleted = 0 ";
+        $deq = makequery($query);
+       if($deq[0] == 'success'){
+          $GLOBALS['dna'] = $deq[1];
+        }else{
+           $GLOBALS['dna'] = '';
+       }
+
+
+
+
+
+
+    ?>
+
+
+
+
+
+
+ <style>
+
+    .map-container{
+overflow:hidden;
+padding-bottom:56.25%;
+position:relative;
+height:0;
+}
+.ab{
+ border-color:<?php echo $hex3; ?> !important;
+ color:<?php echo $hex3; ?> !important;
+}
+.mb{
+ border-color:<?php echo $dchex; ?> !important;
+ color:<?php echo $dchex; ?> !important;
+}
+.mbd{
+ border-color:red !important;
+ color:red !important;
+}
+.map-container iframe{
+left:0;
+top:0;
+height:100%;
+width:100%;
+position:absolute;
+}
+a.h{
+color: <?php echo $dchex; ?> !important; 
+}
+.mi{
+color: <?php echo $dchex; ?> !important;  
+}
+.cf .card-body .fas{
+  color : <?php echo $dchex; ?> !important;
+}
+.cf .card-body .far{
+  color : <?php echo $dchex; ?> !important;
+}
+@media(min-width: 801px){
+ .ac{
+  font-size:75px;
+} 
+.dl{
+  font-size:15px;
+}
+}
+@media(max-width: 801px){
+ .ac{
+  font-size:25px;
+} 
+}
+.af{
+  color:<?php echo $hex3; ?> !important;
+  font-weight:bold;
+;
+}
+  </style>
+
+
+
+    <div class="container-fluid mt-5">
+
+      <!-- Heading -->
+      <div class="card mb-4 wow fadeIn" style="margin-top:80px !important;">
+
+        <!--Card content-->
+        <div class="card-body d-sm-flex justify-content-between">
+
+          <h4 class="mb-2 mb-sm-0 pt-1">
+            <a href="?" class="h">HOME</a>
+         
+          </h4>
+
+
+          <?php 
+          //var_dump($enac);
+          ?>
+
+          <h4 class="d-flex mb-2 mb-sm-0 pt-1">
+            <!-- Default input -->
+            <?php 
+            echo 'Welcome, '.$_SESSION['firstname'];
+          ?>
+          </h4>
+
+        </div>
+
+      </div>
+    </div>
+
+
+
+
+
+
+
+<div class="container-fluid ">
+<div class="row mb-3 text-center cf  mx-1">
+ <div class="col-4 col-xl-2 col-md-3 col-lg-2 col-sm-4 px-0  mb-2 p-2">
+        <div class="card card-image ">
+          <div class="card-body text-center ac">
+            <i class="fas fa-university"></i> 5
+          </div>
+          <div class="card-footer text-center af">
+          INSTITUTIONS
+          </div>
+        </div>
+      </div>
+
+
+
+     <div class="col-4 col-xl-2 col-md-3 col-lg-2 col-sm-4 px-0  mb-2 p-2">
+          <div class="card card-image ">
+          <div class="card-body text-center ac">
+            <i class="fas fa-fist-raised"></i> 0
+          </div>
+          <div class="card-footer text-center af">
+          ASPIRATIONS
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col-4 col-xl-2 col-md-3 col-lg-2 col-sm-4 px-0  mb-2 p-2">
+          <div class="card card-image ">
+          <div class="card-body text-center ac">
+            <i class="fas fa-check-square"></i> 3
+          </div>
+          <div class="card-footer text-center af">
+          ONGOING ELECTIONS
+          </div>
+        </div>
+      </div>
+
+
+       <div class="col-4 col-xl-2 col-md-3 col-lg-2 col-sm-4 px-0  mb-2 p-2">
+        <div class="card card-image ">
+          <div class="card-body text-center ac">
+           <i class="far fa-calendar-check"></i> 1
+          </div>
+          <div class="card-footer text-center af">
+          COMING ELECTIONS
+          </div>
+        </div>
+      </div>
+
+
+       <div class="col-4 col-xl-2 col-md-3 col-lg-2 col-sm-4 px-0  mb-2 p-2">
+        <div class="card card-image">
+          <div class="card-body text-center ac">
+            <i class="fas fa-archive"></i> 2
+          </div>
+          <div class="card-footer text-center af">
+          ENDED ELECTIONS
+          </div>
+        </div>
+      </div>
+
+
+       <div class="col-4 col-xl-2 col-md-3 col-lg-2 col-sm-4 px-0  mb-2 p-2">
+        <div class="card card-image">
+          <div class="card-body text-center ac">
+            <i class="fas fa-bell"></i> 9
+          </div>
+          <div class="card-footer text-center af">
+          ANNOUNCEMENTS
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+   <div class="container-fluid  ">
+      <div class="row mb-3 text-center cf card-deck">
+
+  
+    <!--    <div class="card border border-success col-12 col-lg-6 col-xl-6" <?php if(isset($dchex)){ ?>
+style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !important;"
+
+<?php } ?>>
+    <div class=" card-header font-weight-bold text-left" style="font-size:18px;background-color: white !important;color:<?php echo $dchex; ?> !important;">
+      ACTIONS  <span class="text-right float-right" style="float:right"><i class="fas fa-cog"></i></span>
+    </div>
+    <div class="card-body">
+    <div class="row text-center d-flex align-items-center">
+    <center>
+    <button type="button" class="btn btn-sm btn-outline-success waves-effect my-0 z-depth-0 ab my-2" data-toggle="modal" data-target="#newelectionform"> CREATE NEW ELECTION </button>
+     <button type="button" class="btn btn-sm btn-outline-success waves-effect my-0 z-depth-0 ab my-2"> CREATE ELECTION POST </button>
+      <button type="button" class="btn btn-sm btn-outline-success waves-effect my-0 z-depth-0 ab my-2"> END ELECTION </button>
+       <button type="button" class="btn btn-sm btn-outline-success waves-effect my-0 z-depth-0 ab my-2"> MAKE ANNOUNCEMENT </button>
+
+
+    </center>
+    </div>
+    <hr />
+    </div>
+    </div> -->
+
+
+
+
+       <div class="card border border-success col-12 col-lg-6 col-xl-6" <?php if(isset($dchex)){ ?>
+style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !important;"
+
+<?php } ?>>
+    <div class=" card-header font-weight-bold text-left" style="font-size:18px;background-color: white !important;color:<?php echo $dchex; ?> !important;">
+      ELECTIONS  <span class="text-right float-right" style="float:right"><i class="fas fa-vote-yea"></i></span>
+    </div>
+    <div class="card-body">
+    <div class=" text-left list-group list-group-flush">
+
+
+      <?php
+
+       $dna->data_seek(0); 
+      if ($dna->num_rows > 0) {
+        while($row = $dna->fetch_assoc()){
+          /*  $GLOBALS['dn'] = $row;
+          $depts = $row["COUNT(*)"];
+          $GLOBALS['departments'] = $row["COUNT(*)"];*/
+          $now = time();
+          ?>
+          <div class="row mx-1 list-group-item list-group-item-action font-weight-bold dl">
+            <a href="?page=election&elecid=<?php echo $row["id"];?>&elecname=<?php echo $row["name"]; ?>&elecdept=<?php echo $row["deptid"]; ?>" style="color:black !important;">
+
+            <?php echo $row["name"]; ?> 
+          
+            <?php 
+          if($row['enddate'] < $now){
+            ?>
+
+          <span class="badge badge-danger badge-pill pull-right">ENDED</span>
+
+
+          <?php  
+        }elseif($row['startdate'] > $now){
+          ?>
+
+
+          <a style="color:red !important;right:0;" onclick="deleteelec(<?php echo $row["id"];?>,'<?php echo $row["name"];?>')"><span class="badge  badge-primary badge-pill pull-right">UPCOMING</span></a>
+
+
+          
+          <?php
+        }else{
+        ?>
+        <a style="color:red !important;right:0;" onclick="deleteelec(<?php echo $row["id"];?>,'<?php echo $row["name"];?>')"><span class="badge badge-success badge-pill pull-right">VOTE NOW !</span></a>
+
+
+
+
+
+      <?php } ?>
+         </a>
+         </div>
+
+
+        <?php
+          }
+        }else{?>
+
+            <div class="row mx-1 list-group-item list-group-item-action font-weight-bold dl" style="color:red;"> NO ELECTIONS YET
+          </div>
+
+        <?php }
+      $dna->data_seek(0); 
+
+       ?>
+
+
+     
+     
+    </div>
+    
+    </div>
+    </div>
+
+
+
+
+       <div class="card border border-success col-12 col-lg-6 col-xl-6" <?php if(isset($dchex)){ ?>
+style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !important;"
+
+<?php } ?>>
+    <div class=" card-header font-weight-bold text-left" style="font-size:18px;background-color: white !important;color:<?php echo $dchex; ?> !important;">
+      ANNOUNCEMENTS  <span class="text-right float-right" style="float:right"><i class="fas fa-bullhorn"></i></span>
+    </div>
+    <div class="card-body">
+    <div class=" text-left list-group list-group-flush">
+
+
+      <?php
+
+
+      if ($enac->num_rows > 0) {
+        while($row = $enac->fetch_assoc()){
+          /*  $GLOBALS['dn'] = $row;
+          $depts = $row["COUNT(*)"];
+          $GLOBALS['departments'] = $row["COUNT(*)"];*/
+
+          $now = time();
+
+          ?>
+          <div class="row mx-1 list-group-item list-group-item-action font-weight-bold dl">
+            <a href="?page=election&elecid=<?php echo $row["id"];?>&elecname=<?php echo $row["name"]; ?>&elecdept=<?php echo $row["deptid"]; ?>" style="color:black !important;"><?php echo $row["name"]; ?>
+            </a> 
+          <span class="badge badge-primary badge-pill pull-right"><?php echo $row["voters"]; ?></span>
+
+          <?php 
+          if($row['enddate'] > $now){
+            ?>
+
+          <a style="color:red !important;right:0;color:red !important;">ENDED</a>
+
+
+          <?php  }else{
+          ?>
+
+
+          <a style="color:red !important;right:0;" onclick="deleteelec(<?php echo $row["id"];?>,'<?php echo $row["name"];?>')"><i class="fas fa-trash-alt float-right" style="color:red !important;"></i></a>
+
+
+          </div>
+          <?php
+        }
+          }
+        }else{?>
+
+            <div class="row mx-1 list-group-item list-group-item-action font-weight-bold dl" style="color:red;"> NO ANNOUNCEMENTS YET
+          </div>
+
+        <?php }
+
+       ?>
+
+
+     
+     
+    </div>
+    </div>
+    </div>
+
+
+
+
+</div>
+</div>
+
+
+
+
+
+
+
+    <?php } ?>

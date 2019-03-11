@@ -6,6 +6,31 @@ $uid = $_SESSION['uid'];
 $dept = $_SESSION['elecdept'];
 
 
+$date = date('d-m-Y', $timestamp);
+$time = date('Gi.s', $timestamp);
+
+
+//from here 
+
+
+  $query = "SELECT * FROM elections WHERE id = ".$electionid." ";
+   $dq = makequery($query);
+       if($dq[0] == 'success'){
+          $GLOBALS['ewa'] = $dq[1];
+          $GLOBALS['ewa'] = $dq[1];
+          $GLOBALS['elecs']  = $dq[1]->num_rows;
+          }else{
+          $GLOBALS['elecs'] = 0;
+       }
+
+
+
+       
+
+
+//to here
+
+
   $query = "SELECT * FROM posts WHERE elecid = ".$electionid." AND posts.deleted = 0 ";
         $dq = makequery($query);
        if($dq[0] == 'success'){
@@ -27,6 +52,9 @@ $dept = $_SESSION['elecdept'];
         }else{
           $GLOBALS['easpirants'] = 0;
        }
+
+
+  if ($ut == 'institution'){
 
        if($dept == '' || $dept == 0){
 $query = "SELECT * FROM usermaster WHERE institution = ".$uid." AND usermaster.deleted = 0 AND  usermaster.banned = 0";
@@ -799,17 +827,107 @@ return false;
 
 
           <?php 
-          // var_dump($easpa);
+          //var_dump($ewa);
+
+
+        $ewa ->data_seek(0);
+       if($ewa->num_rows > 0){
+            while($row = $ewa->fetch_array()){
+
+              $startstamp = $row['startdate'];
+              $endstamp = $row['enddate'];
+
+              $startdate = date('D M j Y', $startstamp);
+               $starttime = date('H:i', $startstamp);
+
+                $enddate = date('D M j Y', $endstamp);
+               $endtime = date('H:i', $endstamp);
+              
+              $elecfrom = $startdate." ".$starttime;
+              $electo = $enddate." ".$endtime.":00 GMT+0300 (East Africa Time)";
+
+
+
+            }}
+            $ewa ->data_seek(0);
+
+
+
           ?>
 
-          <h4 class="d-flex mb-2 mb-sm-0 pt-1">
+          <h4 class="d-flex mb-2 mb-sm-0 pt-1" id="cdt">
             <!-- Default input -->
-            <?php if($ut == 'institution') { 
+            <?php
+        /*     if($ut == 'institution') { 
               echo $_SESSION['iname'];
           }else{
             echo 'Welcome, '.$_SESSION['firstname'];
-          }?>
+          }*/
+          ?>
+
+
+  <span class="mr-2"><span id="days" ></span><span id="ds"></span></span>
+   <span class="mx-1"><span id="hours"></span><span id="hs"></span></span>
+    <span class="mx-1"><span id="minutes"></span><span id="ms"></span></span>
+    <span class="mx-1"><span id="seconds"></span><span id="ss"></span></span>
+
+
+
+
+  <script type="text/javascript">
+    var timer;
+
+var compareDate = new Date();
+compareDate.setDate(compareDate.getDate() + 7); //just for this demo today + 7 days
+
+timer = setInterval(function() {
+  timeBetweenDates(compareDate);
+}, 1000);
+
+function timeBetweenDates(toDate) {
+
+  var dateEntered = new Date("<?php echo $electo ?>");
+  var now = new Date();
+  var difference = dateEntered.getTime() - now.getTime();
+
+  if (difference <= 0) {
+
+    // Timer done
+    $(cdt).text("ELECTION ENDED");
+    $(cdt).css("color", "red");
+
+  
+  } else {
+    
+    var seconds = Math.floor(difference / 1000);
+    var minutes = Math.floor(seconds / 60);
+    var hours = Math.floor(minutes / 60);
+    var days = Math.floor(hours / 24);
+
+    hours %= 24;
+    minutes %= 60;
+    seconds %= 60;
+
+    $("#days").text(days);
+    $("#hours").text(hours);
+    $("#minutes").text(minutes);
+    $("#seconds").text(seconds);
+    if(days !== 1){ $(ds).text("days")}else{$(ds).text("day")};
+    if(hours !== 1){ $(hs).text("hours")}else{$(hs).text("hour")};
+    if(minutes !== 1){ $(ms).text("minutes")}else{$(ms).text("minute")};
+    if(seconds !== 1){ $(ss).text("seconds")}else{$(ss).text("second")}; 
+
+    if(hours<6){
+      $(cdt).css("color", "red");
+    }
+
+    
+  }
+}
+  </script>
           </h4>
+
+
 
         </div>
 
@@ -1260,11 +1378,337 @@ $('.edp').pickadate({
 format: 'dd-mm-yyyy',
 min: +1
 // `true` sets it to today. `false` removes any limits.
-})
-
+});
+$('#elecstarttime').pickatime({});
+$('#elecendtime').pickatime({});
 $("#deptid2").material_select();
 $("#aspid").material_select();
 $("#asppost").material_select();   
   </script>
+
+<?php }else{ ?>
+
+   <style>
+
+    .map-container{
+overflow:hidden;
+padding-bottom:56.25%;
+position:relative;
+height:0;
+}
+.ab{
+ border-color:<?php echo $hex3; ?> !important;
+ color:<?php echo $hex3; ?> !important;
+}
+.mb{
+ border-color:<?php echo $dchex; ?> !important;
+ color:<?php echo $dchex; ?> !important;
+}
+.mbd{
+ border-color:red !important;
+ color:red !important;
+}
+.map-container iframe{
+left:0;
+top:0;
+height:100%;
+width:100%;
+position:absolute;
+}
+a.h{
+color: <?php echo $dchex; ?> !important; 
+}
+.mi{
+color: <?php echo $dchex; ?> !important;  
+}
+.cf .card-body .fas{
+  color : <?php echo $dchex; ?> !important;
+}
+.cf .card-body .far{
+  color : <?php echo $dchex; ?> !important;
+}
+@media(min-width: 801px){
+ .ac{
+  font-size:75px;
+} 
+.dl{
+  font-size:15px;
+}
+}
+@media(max-width: 801px){
+ .ac{
+  font-size:25px;
+} 
+}
+.af{
+  color:<?php echo $hex3; ?> !important;
+  font-weight:bold;
+;
+}
+  </style>
+
+
+   <div class="container-fluid mt-5">
+
+      <!-- Heading -->
+      <div class="card mb-4 wow fadeIn" style="margin-top:80px !important;">
+
+        <!--Card content-->
+        <div class="card-body d-sm-flex justify-content-between">
+
+          <h4 class="mb-2 mb-sm-0 pt-1">
+            <a href="?" class="h">HOME</a>
+            <span>/</span>
+            <span><?php echo $electionname; ?></span>
+          </h4>
+
+
+          <?php 
+          //var_dump($ewa);
+
+
+        $ewa ->data_seek(0);
+       if($ewa->num_rows > 0){
+            while($row = $ewa->fetch_array()){
+
+              $startstamp = $row['startdate'];
+              $endstamp = $row['enddate'];
+
+              $startdate = date('D M j Y', $startstamp);
+               $starttime = date('H:i', $startstamp);
+
+                $enddate = date('D M j Y', $endstamp);
+               $endtime = date('H:i', $endstamp);
+              
+              $elecfrom = $startdate." ".$starttime;
+              $electo = $enddate." ".$endtime.":00 GMT+0300 (East Africa Time)";
+
+
+
+            }}
+            $ewa ->data_seek(0);
+
+
+
+          ?>
+
+          <h4 class="d-flex mb-2 mb-sm-0 pt-1" id="cdt">
+            <!-- Default input -->
+            <?php
+        /*     if($ut == 'institution') { 
+              echo $_SESSION['iname'];
+          }else{
+            echo 'Welcome, '.$_SESSION['firstname'];
+          }*/
+          ?>
+
+
+  <span class="mr-2"><span id="days" ></span><span id="ds"></span></span>
+   <span class="mx-1"><span id="hours"></span><span id="hs"></span></span>
+    <span class="mx-1"><span id="minutes"></span><span id="ms"></span></span>
+    <span class="mx-1"><span id="seconds"></span><span id="ss"></span></span>
+
+
+
+
+  <script type="text/javascript">
+    var timer;
+
+var compareDate = new Date();
+compareDate.setDate(compareDate.getDate() + 7); //just for this demo today + 7 days
+
+timer = setInterval(function() {
+  timeBetweenDates(compareDate);
+}, 1000);
+
+function timeBetweenDates(toDate) {
+
+  var dateEntered = new Date("<?php echo $electo ?>");
+  var now = new Date();
+  var difference = dateEntered.getTime() - now.getTime();
+
+  if (difference <= 0) {
+
+    // Timer done
+    $(cdt).text("ELECTION ENDED");
+    $(cdt).css("color", "red");
+
+  
+  } else {
+    
+    var seconds = Math.floor(difference / 1000);
+    var minutes = Math.floor(seconds / 60);
+    var hours = Math.floor(minutes / 60);
+    var days = Math.floor(hours / 24);
+
+    hours %= 24;
+    minutes %= 60;
+    seconds %= 60;
+
+    $("#days").text(days);
+    $("#hours").text(hours);
+    $("#minutes").text(minutes);
+    $("#seconds").text(seconds);
+    if(days !== 1){ $(ds).text("days")}else{$(ds).text("day")};
+    if(hours !== 1){ $(hs).text("hours")}else{$(hs).text("hour")};
+    if(minutes !== 1){ $(ms).text("minutes")}else{$(ms).text("minute")};
+    if(seconds !== 1){ $(ss).text("seconds")}else{$(ss).text("second")}; 
+
+    if(day === 0 && hours<6){
+      $(cdt).css("color", "red");
+    }
+
+    
+  }
+}
+  </script>
+          </h4>
+
+
+
+        </div>
+
+      </div>
+      <!-- Heading -->
+  </div>
+
+
+
+
+
+
+
+
+      <?php
+
+       $epa->data_seek(0); 
+      if ($epa->num_rows > 0) { ?>
+
+
+         <div class="container-fluid" >
+          <center>
+      <div class="row pr-4 pl-4">
+
+        <?php while($row = $epa->fetch_assoc()){
+          /*  $GLOBALS['dn'] = $row;
+          $depts = $row["COUNT(*)"];
+          $GLOBALS['departments'] = $row["COUNT(*)"];*/
+          ?>
+           <div class="card border border-success col-12 mb-3" <?php if(isset($dchex)){ ?>
+style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !important;"
+
+<?php } ?>>
+    <div class=" card-header font-weight-bold text-left" style="font-size:18px;background-color: white !important;color:<?php echo $dchex; ?> !important;">
+      <?php echo $row["name"]; ?>   <span class="text-right float-right" style="float:right"><i class="fas fa-user-tie"></i></span>
+    </div>
+    <div class="card-body">
+    <div class=" row">
+
+  <?php 
+  $postid = $row["id"];
+  $query = "SELECT a.*, a.id as aspid, u.*,p.* FROM aspirants a,usermaster u,posts p WHERE p.id = ".$postid." AND a.deleted = 0 AND u.id = a.uid AND p.id = a.postid";
+        $dq = makequery($query);
+       if($dq[0] == 'success'){
+          $asps = $dq[1];
+          $aspno  = $dq[1]->num_rows;
+
+          if($asps->num_rows > 0){
+            while($r = $asps->fetch_array()){
+              ?>
+
+
+
+
+              <!-- Card -->
+<div class="col-12 col-lg-4 col-xl-4 z-depth-0" >
+<div class="card testimonial-card z-depth-0 " style="margin-top: 80px;height: 350px;position: relative;">
+
+  <!-- Background color -->
+  <!-- Avatar -->
+  <div class="avatar mx-auto white z-depth-1">
+    <img src="https://mdbootstrap.com/img/Photos/Avatars/img%20%2810%29.jpg" class="rounded-circle" alt="woman avatar" >
+  </div>
+
+  <!-- Content -->
+  <div class="card-body z-depth-0">
+    <!-- Name -->
+    <span class="card-title" style="font-size: 18px;font-weight:bold;"><?php echo $r['firstname']." ".$r['lastname']; ?><span>
+    <hr>
+    <!-- Quotation -->
+    <h6><i class="fas fa-quote-left"></i>  <?php echo $r['slogan']; ?></h6>
+    <hr>
+    <p style="font-size: 12px;font-weight:normal;">
+      <?php echo $r['manifesto']; ?>
+    </p>
+  </div>
+  <center>
+  <button class="btn btn-success" style="width:50%;"><i class="fas fa-check"></i> ELECT</button>
+  </center>
+
+</div>
+</div>
+<!-- Card -->
+
+
+
+          <?php  }
+          }else{?>
+
+             <div class="row mx-1 list-group-item list-group-item-action font-weight-bold dl" style="color:red;"> NO ASPIRANTS YET
+          </div>
+
+         <?php }
+
+        }else{
+          ?>
+           <div>NO ASPIRANTS</div>
+      <?php }
+
+
+  ?>
+
+
+
+
+
+
+
+          <!-- <div class="row mx-1 list-group-item list-group-item-action font-weight-bold dl">
+          <span class="badge badge-primary badge-pill pull-right"><?php echo $row["aspirants"]; ?></span>
+          <a style="color:red !important;right:0;" onclick="deletepost(<?php echo $row["id"];?>,'<?php echo $row["name"];?>')"><i class="fas fa-trash-alt float-right" style="color:red !important;"></i></a>
+          </div> -->
+    </div>
+  </div>
+</div>
+
+
+
+          <?php
+          }?>
+      </div>
+    </center>
+      </div>
+
+
+
+
+        <?php }else{?>
+
+            <div class="row list-group-item list-group-item-action font-weight-bold dl" style="color:red;margin-right: 20px !important;margin-left: 20px !important;"> NO POSTS CREATED YET
+          </div>
+
+        <?php }
+        $epa->data_seek(0);
+
+       ?>
+
+      
+
+
+
+
+
+
+<?php } ?>
 
   	

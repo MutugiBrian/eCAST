@@ -2,7 +2,7 @@
 include ('../includes/strings.php');
 
 $instid = $_GET['instid'];
-$query  = "SELECT * FROM departments WHERE instid = '$instid'";
+$query  = "SELECT * FROM departments WHERE instid = '$instid' AND departments.deleted = 0";
 
 $conn = mysqli_connect($server,$dbuser,$dbpass,$dbname);
 
