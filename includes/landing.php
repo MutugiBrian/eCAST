@@ -78,11 +78,10 @@ style="border-color:<?php echo $dchex; ?> !important"
       <h5 class="pink-text"
       ><i class="fas fa-vote-yea"></i> 
       VOTING </h5>
-      <h3 class="card-title pt-2"> <strong>Online Casting</strong></h3>
-      <p>
-     <?php echo $_SESSION['phone']; ?>
-      </p>
-      
+       <h3 class="card-title pt-2"><strong>Fast, Free and Fair</strong></h3>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellat fugiat, laboriosam, voluptatem,
+        optio vero odio nam sit officia accusamus minus error nisi architecto nulla ipsum dignissimos.
+        Odit sed qui, dolorum!.</p>
     </div>
   </div>
 

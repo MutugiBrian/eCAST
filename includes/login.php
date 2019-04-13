@@ -3,8 +3,9 @@
 if(isset($_POST['loginsub'])){
 
 
-  $email = $_POST['email'];
+  $reg = $_POST['reg'];
   $pass = $_POST['password'];
+  $pass = md5($pass);
 
 
 
@@ -15,7 +16,7 @@ if(isset($_POST['loginsub'])){
    if (mysqli_connect_errno($conn)){
       echo "Failed to connect to MySQL: " . mysqli_connect_error();
    }else{
-   $sql = "SELECT * FROM usermaster WHERE email = '$email' AND password = '$pass'";
+   $sql = "SELECT * FROM usermaster WHERE regno = '$reg' AND password = '$pass'";
    
    if ($result = mysqli_query($conn,$sql)){
       $rowcount = mysqli_num_rows($result);
@@ -264,20 +265,18 @@ color:white;
 <?php if(isset($hex3)){ ?>
 color:<?php echo $hex3; ?> !important;
 <?php }?>"><?php echo $sn; ?> LOGIN</p>
-
-     
     <div class="border  p-2 rounded mb-4 ig card " >
 
     <div class="form-group ">
-      <label for="phoneno" style="font-size:13px;">EMAIL</label>
+      <label for="phoneno" style="font-size:13px;">REGISTRATION No.</label>
       <div class="col-auto">
       <!-- Default input -->
-        <label class="sr-only" for="email">Email</label>
+        <label class="sr-only" for="email">Reg No.</label>
       <div class="input-group">
         <div class="input-group-prepend">
-          <div class="input-group-text"><i class="far fa-envelope" ></i></div>
+          <div class="input-group-text"><i class="far fa-user" ></i></div>
         </div>
-        <input type="email" class="form-control py-0 is" id="email" name="email"  placeholder="Enter Email" required>
+        <input type="text" class="form-control py-0 is" id="reg" name="reg"  placeholder="Enter Reg No." required>
         <div class="invalid-feedback">
           Please enter your email.
         </div>

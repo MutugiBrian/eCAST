@@ -469,12 +469,12 @@ color:<?php echo $hex3; ?> !important;
         <div class="input-group-prepend">
           <div class="input-group-text"><i class="fas fa-key"></i></div>
         </div>
-<input type="password" id="passc" class="form-control"  placeholder="Confirm Password" aria-describedby="passwordHelpBlock" required>
+<input type="password" id="passc" class="form-control"  placeholder="Confirm Password" aria-describedby="ch" required>
 <div id="passchelp"  class="invalid-feedback">
           Please confirm your password.
         </div>
-<small class="form-text text-muted">
-  Your password confirmation must match the set password.
+<small id="ch" class="form-text text-muted">
+  Please confirm your password.Your password confirmation must match the set password.
 </small>
 
       </div>

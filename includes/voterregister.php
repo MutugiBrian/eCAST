@@ -1,6 +1,88 @@
 
 <?php if(isset($_POST['voterregsubmit'])){
 
+
+
+
+//upload image
+
+    $target_dir = "images/uploads/profileimages/";
+    $now = time();
+$target_file = $target_dir.$now.basename($_FILES["image"]["name"]);
+$uploadOk = 1;
+$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+// Check if image file is a actual image or fake image
+if(isset($_POST["submit"])) {
+    $check = getimagesize($_FILES["image"]["tmp_name"]);
+    if($check !== false) {
+         $imageerr =  "File is an image - " . $check["mime"] . ".";
+        $uploadOk = 1;
+    } else {
+         $imageerr =  "File is not an image.";
+        $uploadOk = 0;
+
+    }
+}
+
+
+
+// Check if file already exists
+if (file_exists($target_file)) {
+     $imageerr =  "Sorry, file already exists.";
+    $uploadOk = 0;
+}
+
+// Check file size
+if ($_FILES["image"]["size"] > 500000) {
+     $imageerr =  "Sorry, your file is too large.";
+    $uploadOk = 0;
+}
+
+// Allow certain file formats
+if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+&& $imageFileType != "gif" ) {
+     $imageerr =  "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+    $uploadOk = 0;
+}
+
+
+// Check if $uploadOk is set to 0 by an error
+if ($uploadOk == 0) {
+    $imageerr =  "Sorry, your file was not uploaded.";
+// if everything is ok, try to upload file
+} else {
+    if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
+        $imageerr =  "The file ". basename( $_FILES["image"]["name"]). " has been uploaded.";
+        $uploadOk = 1;
+}else {
+         $imageerr =  "Sorry, there was an error uploading your file.";
+          $uploadOk = 0;
+    }
+}
+
+///end of uploading image
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if($uploadOk == 1){
+
   $voterfn = $_POST['firstname'];
   $voterln = $_POST['lastname'];
   $voteremail = $_POST['email'];
@@ -9,6 +91,7 @@
   $voterinst = $_POST['institution'];
   $voterregno = $_POST['regno'];
   $voterpass = $_POST['password'];
+  $voterpass = md5($voterpass);
   $department = $_POST['department'];
 
 
@@ -21,7 +104,7 @@
    if (mysqli_connect_errno($conn)){
       echo "Failed to connect to MySQL: " . mysqli_connect_error();
    }else{
-   $sql = "SELECT * FROM usermaster WHERE phoneno = '$voterphone' AND password = '$voterpass'";
+   $sql = "SELECT * FROM usermaster WHERE regno = '$voterregno' ";
    
    if ($result = mysqli_query($conn,$sql)){
       $rowcount = mysqli_num_rows($result);
@@ -60,7 +143,7 @@ toastr.options = {
 
 
   $t = time();
-  $sql= "INSERT INTO `usermaster` (`id`, `usertype`, `firstname`, `lastname`,`password`, `institution`,`department`, `regno`, `email`, `phoneno`,`createdat`) VALUES (NULL,'voter','$voterfn', '$voterln','$voterpass','$voterinst','$department', '$voterregno' , '$voteremail', '$voterphone', '$t')";
+  $sql= "INSERT INTO `usermaster` (`id`, `usertype`, `firstname`, `lastname`,`image`,`password`, `institution`,`department`, `regno`, `email`, `phoneno`,`createdat`) VALUES (NULL,'voter','$voterfn', '$voterln','$target_file','$voterpass','$voterinst','$department', '$voterregno' , '$voteremail', '$voterphone', '$t')";
    
    if ($result = mysqli_query($conn,$sql)){
 
@@ -68,19 +151,23 @@ toastr.options = {
       $_SESSION['utype'] = "voter";
   $_SESSION['fname'] = $firstname;
   $_SESSION['lname'] = $lastname;
+  $_SESSION['firstname'] = $firstname;
+  $_SESSION['lastname'] = $lastname;
   $_SESSION['inst'] = $voterinst;
   $_SESSION['regno'] = $voterregno;
   $_SESSION['inst'] = $voterinst;
   $_SESSION['email'] = $voteremail;
   $_SESSION['phone'] = $voterphone;
   $loggedin = 'TRUE';
+   $_SESSION['loggedin'] = "TRUE";
+
 
         ?>
 
 
 
  <script type="text/javascript">
-      window.location.href="index.php";
+      window.location.href="?page=home";
     </script>
 
    
@@ -128,6 +215,36 @@ toastr.options = {
    }
    mysqli_close($conn);
  }
+
+}else{ ?>
+
+
+ <script type="text/javascript">
+  $(document).ready(function(){
+  Command: toastr["error"]("failed to upload picture", "ERROR")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 2000,
+  "extendedTimeOut": 1000,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+});
+</script>
+
+
+<?php }
 
 // Check connection
 /*    if ($conn->connect_error) {
@@ -248,8 +365,11 @@ color:white;
 
 <div class="row p-0 m-0">
 <div class="mt-5 px-lg-4 p-0 p-lg-2 col-md-12 col-lg-8 col-xl-8">
+
+
+  <?php /*var_dump($_POST);*/ ?>
 <!-- Default form register -->
-<form class="text-center border border-light px-5 pt-5 rounded needs-validation" action="<?php $_SERVER['PHP_SELF']; ?>" method="post" id="voterreg" novalidate>
+<form class="text-center border border-light px-5 pt-5 rounded needs-validation" action="<?php $_SERVER['PHP_SELF']; ?>" method="post" id="voterreg" enctype="multipart/form-data" novalidate>
 
     <p class="h4 mb-4 font-weight-bold" style="
 <?php if(isset($hex3)){ ?>
@@ -257,6 +377,8 @@ color:<?php echo $hex3; ?> !important;
 <?php }?>"><?php echo $sn; ?> voter registrations</p>
 
     <div class="border border-slight p-3 rounded mb-4 ig" >
+
+      <?php /*echo $imageFileType;*/ ?>
 
     <div class="form-row">
         <div class="col-lg-6 col-sm-12 col-xl-6 col-md-6 m-0">
@@ -308,6 +430,26 @@ color:<?php echo $hex3; ?> !important;
         </div>
       </div>
     </div>
+
+
+<div class="md-form">
+  <div class="file-field">
+    <div class="btn btn-primary btn-sm float-left" style="background-color: <?php echo $dchex; ?> !important;">
+      <span>Set Picture</span>
+      <input type="file" id="image" name="image"  accept='image/*' >
+    </div>
+    <div class="file-path-wrapper">
+      <input class="file-path " type="text" placeholder="Upload your profile picture" readonly required>
+       <div class="invalid-feedback">
+          Please upload your profile picture.
+        </div>
+    </div>
+  </div>
+</div>
+
+
+
+
 
   </div>
 
@@ -463,11 +605,12 @@ color:<?php echo $hex3; ?> !important;
         <div class="input-group-prepend">
           <div class="input-group-text"><i class="fas fa-key"></i></div>
         </div>
-<input type="password" id="passc" class="form-control"  placeholder="Confirm Password" aria-describedby="passwordHelpBlock" required>
+<input type="password" id="passc" class="form-control"  placeholder="Confirm Password" aria-describedby="ch" min-length="9" max-length="9"  required>
 <div id="passchelp"  class="invalid-feedback">
           Please confirm your password.
         </div>
-<small class="form-text text-muted">
+<small id="ch"class="form-text text-muted">
+   Please confirm your password.
   Your password confirmation must match the set password.
 </small>
 
@@ -554,6 +697,21 @@ CAMPAIGN / ADs SECTION
         }
         form.classList.add('was-validated');
 
+           var pc = $("#image").val();
+        if(!pc.match(/(?:gif|jpg|png|bmp)$/)){
+          $("#image").removeClass("is-valid"); 
+           $("#image").removeClass("valid"); 
+          $("#image").addClass("invalid");
+           event.preventDefault();
+        event.stopPropagation();
+        }else{
+
+          $("#image").addClass("is-valid"); 
+           $("#image").addClass("valid"); 
+          $("#image").removeClass("invalid");
+
+        }
+
         var pn = $("#phoneno").val().length;
         if (pn !== 9){
         $("#voterreg").removeClass("was-validated"); 
@@ -567,6 +725,8 @@ CAMPAIGN / ADs SECTION
         $("#phoneno").addClass("is-valid");
 
         }
+
+
 
 
 
@@ -602,6 +762,8 @@ CAMPAIGN / ADs SECTION
 
         }
 
+       
+
         }
     
 
@@ -620,7 +782,14 @@ CAMPAIGN / ADs SECTION
 
 <script type="text/javascript">
 function test(){
-
+       /*var pc = $("#pic").val();
+        if(!pc.match(/(?:gif|jpg|png|bmp)$/)){
+          $("#pic").removeClass("is-valid"); 
+          $("#pic").addClass("is-invalid");
+           event.preventDefault();
+        event.stopPropagation();
+        }
+        alert(pc);*/
    var pn = $("#phoneno").val().length;
         if (pn !== 9){
         $("#phoneno").removeClass("is-valid"); 

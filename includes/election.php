@@ -863,6 +863,7 @@ return false;
           }else{
             echo 'Welcome, '.$_SESSION['firstname'];
           }*/
+
           ?>
 
 
@@ -1621,12 +1622,21 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
 
               <!-- Card -->
 <div class="col-12 col-lg-4 col-xl-4 z-depth-0" >
-<div class="card testimonial-card z-depth-0 " style="margin-top: 80px;height: 350px;position: relative;">
+<div class="card testimonial-card z-depth-1 " style="margin-top: 80px;height: 350px;position: relative;">
 
   <!-- Background color -->
   <!-- Avatar -->
   <div class="avatar mx-auto white z-depth-1">
-    <img src="https://mdbootstrap.com/img/Photos/Avatars/img%20%2810%29.jpg" class="rounded-circle" alt="woman avatar" >
+    <img src="<?php
+
+    if(isset($r['image'])){
+     echo $r['image']; 
+     }else{
+
+      echo 'images/logo/'.$slogo;
+     }
+
+     ?>" class="rounded-circle" alt="apirant avatar" height="120px" width="70px">
   </div>
 
   <!-- Content -->

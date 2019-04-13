@@ -56,12 +56,12 @@ a {
 </head>
 
 
-<body class="fixed-sn " style="background-color:  <?php echo $mainbg; ?> !important;">
+<body class="hidden-sn " style="background-color:  <?php echo $mainbg; ?> !important;">
 
   <!--Double navigation-->
   <header>
     <!-- Sidebar navigation -->
-    <div id="slide-out" class="side-nav fixed <?php echo $dc; ?>">
+    <div id="slide-out" class="side-nav <?php echo $dc; ?>">
       <ul class="custom-scrollbar">
         <!-- Logo -->
         <li>
@@ -137,8 +137,8 @@ a {
                   </li>
                   <li><a href="?page=instregister" class="waves-effect"><?php echo $asinstitution; ?></a>
                   </li>
-                  <li><a href="#" class="waves-effect"><?php echo $asobserver; ?></a>
-                  </li>
+                  <!-- <li><a href="#" class="waves-effect"><?php echo $asobserver; ?></a>
+                  </li> -->
                 </ul>
               </div>
             </li>
