@@ -1,4 +1,6 @@
 <?php 
+
+
 $ut = $_SESSION['utype'];
 $electionid = $_GET['elecid'];
 $electionname = $_GET['elecname'];
@@ -31,7 +33,7 @@ $time = date('Gi.s', $timestamp);
 //to here
 
 
-  $query = "SELECT * FROM posts WHERE elecid = ".$electionid." AND posts.deleted = 0 ";
+  $query = "SELECT p.*, COUNT(a.id) as aspirants FROM posts p, aspirants a WHERE p.elecid = ".$electionid." AND p.deleted = 0  AND a.postid = p.id";
         $dq = makequery($query);
        if($dq[0] == 'success'){
           $GLOBALS['epa'] = $dq[1];
@@ -42,7 +44,8 @@ $time = date('Gi.s', $timestamp);
           $GLOBALS['eposts'] = 0;
        }
 
- $query = "SELECT a.*, a.id as aspid, u.*,p.* FROM aspirants a,usermaster u,posts p WHERE a.elecid = ".$electionid." AND a.deleted = 0 AND u.id = a.uid AND p.id = a.postid";
+ $query = "SELECT a.*, a.id as aspid, u.*,p.*,p.id as pid FROM aspirants a,usermaster u,posts p WHERE a.elecid = ".$electionid." AND a.deleted = 0 AND u.id = a.uid AND p.id = a.postid ";
+
         $dq = makequery($query);
        if($dq[0] == 'success'){
           $GLOBALS['easpa'] = $dq[1];
@@ -52,6 +55,90 @@ $time = date('Gi.s', $timestamp);
         }else{
           $GLOBALS['easpirants'] = 0;
        }
+
+
+
+if(isset($_POST['cv'])){
+   $instid = $_SESSION['inst'];
+   $vreg = $_POST['vreg'];
+   $pid = $_POST['pid'];
+   $aid = $_POST['aid'];
+   $eid = $_POST['eid'];
+
+
+
+   
+     $query = "INSERT INTO `votes` (`instid`, `vreg`, `pid`, `aid`, `eid`, `createdat`, `updatedat`) VALUES (".$instid.", '".$vreg."', ".$pid.", ".$aid.", ".$eid.", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+  $qa = makequery($query);
+
+  if($qa[0] == 'success'){
+    ?>
+  
+    <script type="text/javascript">
+  $(document).ready(function(){
+
+ window.location.href = "?page=election&elecid=<?php echo $electionid; ?>&elecname=<?php echo $electionname; ?>";
+  Command: toastr["success"]("", "VOTED SUCCESSFULLY")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 2000,
+  "extendedTimeOut": 1000,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+});
+</script>
+
+
+
+  <?php 
+   endpost();
+}else{
+  ?>
+
+    <script type="text/javascript">
+  $(document).ready(function(){
+
+    window.location.href = "?page=election&elecid=<?php echo $electionid; ?>&elecname=<?php echo $electionname; ?>";
+  Command: toastr["error"]("", "ERROR, VOTE NOT CASTED ")
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "md-toast-top-center",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": 300,
+  "hideDuration": 1000,
+  "timeOut": 2000,
+  "extendedTimeOut": 1000,
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+});
+</script>
+
+
+  <?php
+   endpost();
+}
+
+}
 
 
   if ($ut == 'institution'){
@@ -73,6 +160,19 @@ $query = "SELECT * FROM usermaster WHERE institution = ".$uid." AND department =
         }else{
           $GLOBALS['elecvoters'] = 0;
        }
+       
+       $cvt = "SELECT * FROM votes WHERE eid = ".$electionid;
+       $dq = makequery($cvt);
+       if($dq[0] == 'success'){
+          $GLOBALS['eva'] = $dq[1];
+          $GLOBALS['eva'] = $dq[1];
+          $GLOBALS['cvotes']  = $dq[1]->num_rows;
+
+        }else{
+          $GLOBALS['cvotes'] = 0;
+       }
+
+
 
 
 if(isset($_POST['delasp'])){
@@ -486,6 +586,7 @@ color: <?php echo $dchex; ?> !important;
 ;
 }
   </style>
+
 
 
 
@@ -998,10 +1099,10 @@ function timeBetweenDates(toDate) {
       <div class="col-4 col-xl-2 col-md-3 col-lg-2 col-sm-4 px-0  mb-2 p-2">
         <div class="card card-image ">
           <div class="card-body text-center ac">
-          <i class="fas fa-check-square"></i> 8
+          <i class="fas fa-check-square"></i> <?php echo $cvotes; ?>
           </div>
           <div class="card-footer text-center af">
-          CASTED VOTES
+          CASTED VOTE<?php if($cvotes>1){echo "S";}?>
           </div>
         </div>
       </div>
@@ -1055,7 +1156,18 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
           $GLOBALS['departments'] = $row["COUNT(*)"];*/
           ?>
           <div class="row mx-1 list-group-item list-group-item-action font-weight-bold dl"><?php echo $row["name"]; ?> 
-          <span class="badge badge-primary badge-pill pull-right"><?php echo $row["aspirants"]; ?></span>
+          <span class="badge badge-primary badge-pill pull-right"><?php 
+          $asp = $row["aspirants"];
+
+          if($asp >0){
+            if($asp === 1){
+             echo $asp." - ASPIRANT";
+            }else{
+             echo $asp." - ASPIRANTS";
+            }
+
+          }
+           ?></span>
           <a style="color:red !important;right:0;" onclick="deletepost(<?php echo $row["id"];?>,'<?php echo $row["name"];?>')"><i class="fas fa-trash-alt float-right" style="color:red !important;"></i></a>
           </div>
           <?php
@@ -1104,6 +1216,37 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
           ?>
           <div class="row mx-1 list-group-item list-group-item-action font-weight-bold dl"><?php echo $row["firstname"]." ".$row["lastname"]." -  ";?>  
           <span class="badge badge-primary badge-pill pull-right"><?php echo $row["name"]; ?></span>
+          <span class="badge badge-success badge-pill pull-right">
+            
+            <?php 
+             $pid = $row["pid"];
+             $aspid = $row["aspid"];
+  $vqq = "SELECT COUNT(*) as t FROM votes WHERE eid = ".$electionid." AND pid = ".$pid ." AND aid = ".$aspid;
+        $dqvv = makequery($vqq);
+       if($dqvv[0] == 'success'){
+          $aspsvv = $dqvv[1];
+          $aspnovv  = $dqvv[1]->num_rows;
+
+          if($aspsvv->num_rows > 0){
+            while($rvv = $aspsvv->fetch_array()){
+              $vs= $rvv['t'];
+              if($vs == 1){
+           echo $vs." - VOTE";
+          }else{
+           echo $vs." - VOTES";
+          }
+
+
+              }}else{
+           
+
+            echo "0 - VOTES";
+              }
+
+
+            }
+         
+           ?></span>
           <a style="color:red !important;right:0;" onclick="deleteasp(<?php echo $row["aspid"];?>,'<?php echo $row["firstname"]." ".$row["lastname"];?>')"><i class="fas fa-trash-alt float-right" style="color:red !important;"></i></a>
           </div>
           <?php
@@ -1462,7 +1605,7 @@ color: <?php echo $dchex; ?> !important;
             <span>/</span>
             <span><?php echo $electionname; ?></span>
           </h4>
-
+         
 
           <?php 
           //var_dump($ewa);
@@ -1600,7 +1743,9 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
 
 <?php } ?>>
     <div class=" card-header font-weight-bold text-left" style="font-size:18px;background-color: white !important;color:<?php echo $dchex; ?> !important;">
-      <?php echo $row["name"]; ?>   <span class="text-right float-right" style="float:right"><i class="fas fa-user-tie"></i></span>
+      <?php
+       $pn = $row["name"];
+       echo $pn; ?>   <span class="text-right float-right" style="float:right"><i class="fas fa-user-tie"></i></span>
     </div>
     <div class="card-body">
     <div class=" row">
@@ -1615,6 +1760,7 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
 
           if($asps->num_rows > 0){
             while($r = $asps->fetch_array()){
+              $aid = $r['aspid'];
               ?>
 
 
@@ -1630,19 +1776,22 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
     <img src="<?php
 
     if(isset($r['image'])){
+      $aim = $r['image']; 
      echo $r['image']; 
      }else{
-
-      echo 'images/logo/'.$slogo;
+      $aim = 'images/logo/bu.png';
+      echo 'images/logo/bu.png';
      }
 
-     ?>" class="rounded-circle" alt="apirant avatar" height="120px" width="70px">
+     ?>" class="rounded-circle" alt="apirant avatar" height="120px" width="90px">
   </div>
 
   <!-- Content -->
   <div class="card-body z-depth-0">
     <!-- Name -->
-    <span class="card-title" style="font-size: 18px;font-weight:bold;"><?php echo $r['firstname']." ".$r['lastname']; ?><span>
+    <span class="card-title" style="font-size: 18px;font-weight:bold;"><?php
+      $an = $r['firstname']." ".$r['lastname'];
+     echo $an; ?><span>
     <hr>
     <!-- Quotation -->
     <h6><i class="fas fa-quote-left"></i>  <?php echo $r['slogan']; ?></h6>
@@ -1650,10 +1799,34 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
     <p style="font-size: 12px;font-weight:normal;">
       <?php echo $r['manifesto']; ?>
     </p>
-  </div>
+      </div>
   <center>
-  <button class="btn btn-success" style="width:50%;"><i class="fas fa-check"></i> ELECT</button>
+
+
+
+    <?php 
+
+    $vq = "SELECT * FROM votes WHERE pid = ".$postid." AND eid = ".$electionid." AND vreg = '".$_SESSION['regno']."'";
+        $dqv = makequery($vq);
+       if($dqv[0] == 'success'){
+          $vov = $dqv[1];
+          $vno  = $dqv[1]->num_rows;
+
+          if($vov->num_rows > 0){
+        ?>
+         <div class="font-weight-bold mt-0" style="color:<?php echo $dchex; ?>!important;margin-top: 0px !important;"> <i class="fas fa-check"></i> VOTED </div>
+         <?php  }else{
+            ?>
+          
+  <button class="btn btn-success " style="width:50%;" onclick="cast('<?php echo $_SESSION['regno']; ?>','<?php echo $electionid; ?>','<?php echo $postid; ?>','<?php echo $aid; ?>','<?php echo $an; ?>','<?php echo $aim; ?>','<?php echo $pn; ?>')"><i class="fas fa-check"></i> ELECT</button>
   </center>
+
+<?php } }?>
+
+
+
+
+
 
 </div>
 </div>
@@ -1720,5 +1893,62 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
 
 
 <?php } ?>
+
+
+  <script type="text/javascript">
+
+    function cast(vreg,eid,pid,aid,an,aphoto,pn){
+
+       $("#cvreg").val(vreg);
+      $("#cpid").val(pid);
+      $("#caid").val(aid);
+      $("#ceid").val(eid);
+
+      $("#aspirantname").html(an);
+      $("#aspirantpost").html(pn);
+      $("#aphoto").attr('src', aphoto);
+      $("#castmodal").modal();
+
+
+     
+     
+
+    }
+  </script>
+
+  <div class="modal fade " id="castmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true" style="margin-top:100px !important;">
+  <div class="modal-dialog cascading-modal modal-avatar modal-sm" role="document">
+    <!--Content-->
+    <div class="modal-content">
+
+      <!--Header-->
+      <div class="modal-header">
+        <img src="./uploads/sidelogo.png" height="150px" width="60px"alt="avatar" id="aphoto" class="rounded-circle img-responsive p-1" style="height:100px !important;width:100px !important;background-color:white !important;">
+      </div>
+      <!--Body-->
+      <div class="modal-body text-center mb-1">
+         
+        <h5 class=" mb-1" id="mn">VOTE <span class="font-weight-bold" id="aspirantname"></span> FOR  <span class="font-weight-bold" id="aspirantpost"></span> ??</h5>
+        <h6 id="rs"> </h6>
+
+
+        <form  id="vcastt" action="" method="post">
+
+            <input type="hidden" name="vreg" id="cvreg" />
+              <input type="hidden" name="pid"  id="cpid" />
+                <input type="hidden" name="aid" id="caid"/>
+                <input type="hidden" name="eid" id="ceid"/>
+
+
+                <button class="btn btn-outline-danger waves-effect my-0 z-depth-0 mbd" data-dismiss="modal">NO <i class="fas fa-paper-plane-o ml-1"></i></button>
+        <button class="btn  btn-outline-success  waves-effect my-0 z-depth-0 mb" type="submit" name="cv" id="cv">YES <i class="fas fa-paper-plane-o ml-1"></i></button>
+        </form>
+
+
+      </div>
+    </div>
+  </div>
+</div>
 
   	
