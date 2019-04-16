@@ -10,7 +10,6 @@
   $iregno = $_POST['iregno'];
   $itype = $_POST['itype'];
   $ipass = $_POST['password'];
-  $ipass = md5($ipass);
 
 
 
@@ -81,132 +80,21 @@ toastr.options = {
   $loggedin = 'TRUE';
 
 
-     $to = "+254".$iphone;
-   $m  = $iname.", Welcome to eCAST online voting system.You've been successfully registered as an institution .We are free,fair and fast.";
+     $to = "254".$iphone;
+   $m  = $iname.", Welcome to eCAST online voting system.You've been successfully registered as an institution.".$iincharge." is the officer in charge.We are free,fair and fast.";
    sendmessage($to,$m);
 
-       
-   $sql = "SELECT * FROM usermaster WHERE regno = '$iregno' AND password = '$ipass'";
-   
-   if ($result = mysqli_query($conn,$sql)){
-      $rowcount = mysqli_num_rows($result);
-      if($rowcount >= 1){ 
-
-          $log = "INSERT INTO `logs` (`id`, `user_reg`, `event`, `time`) VALUES (NULL, '".$reg."', 'LOGGED IN TO THE SYSTEM', CURRENT_TIMESTAMP)";
-          $logresult = makequery($log);
-        while($row = $result->fetch_assoc()) {
-
-          
-
-   $_SESSION['utype'] = $row["usertype"];
-   $_SESSION['uid'] = $row["id"];
-
-
-   if($_SESSION['utype'] == 'voter' || $_SESSION['utype'] == ''){
-
-  $_SESSION['firstname'] = $row["firstname"];
-  $_SESSION['lastname'] = $row["lastname"];
-
-   }else{
-
-  $_SESSION['iname'] =  $row["iname"];
-  $_SESSION['iincharge'] =  $row["iincharge"];
-  $_SESSION['initials'] = $row["initials"];
-
-   }
- 
-  $_SESSION['regno'] = $row["regno"];
-  $_SESSION['inst'] = $row["institution"];
-  $_SESSION['email'] = $row["email"];
-  $_SESSION['phone'] = $row["phoneno"];
-  $_SESSION['loggedin'] = "TRUE";
-  $loggedin = 'TRUE';
+        ?>
 
 
 
-        }
-        //if user exists?>
-     <script type="text/javascript">
+ <script type="text/javascript">
       window.location.href="?page=home";
     </script>
 
+   
+
       <?php
-      }else{
-        //if no user fetched
-        ?>
-
-     <script type="text/javascript">
-  $(document).ready(function(){
-  Command: toastr["error"]("wrong username or password", "ERROR")
-
-toastr.options = {
-  "closeButton": true,
-  "debug": false,
-  "newestOnTop": false,
-  "progressBar": false,
-  "positionClass": "md-toast-top-center",
-  "preventDuplicates": false,
-  "onclick": null,
-  "showDuration": 300,
-  "hideDuration": 1000,
-  "timeOut": 2000,
-  "extendedTimeOut": 1000,
-  "showEasing": "swing",
-  "hideEasing": "linear",
-  "showMethod": "fadeIn",
-  "hideMethod": "fadeOut"
-}
-});
-
-    $("#login").removeClass("was-validated");
-
-   $(".is").addClass("is-invalid");
-</script>
-
-
-
-  
-     <?php  }
-   }else{
-    //no results
-    ?>
-
-
-
-
-<script type="text/javascript">
-  $(document).ready(function(){
-  Command: toastr["error"]("check details and try again", "ERROR")
-
-toastr.options = {
-  "closeButton": true,
-  "debug": false,
-  "newestOnTop": false,
-  "progressBar": false,
-  "positionClass": "md-toast-top-center",
-  "preventDuplicates": false,
-  "onclick": null,
-  "showDuration": 300,
-  "hideDuration": 1000,
-  "timeOut": 2000,
-  "extendedTimeOut": 1000,
-  "showEasing": "swing",
-  "hideEasing": "linear",
-  "showMethod": "fadeIn",
-  "hideMethod": "fadeOut"
-}
-});
-
-   $(".is").addClass("is-invalid");
-</script>
-
-
-
-
-
-    <?php
-   }
-   mysqli_close($conn);
 
     }
   
