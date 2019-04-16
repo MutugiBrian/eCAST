@@ -41,7 +41,7 @@ $time = date('Gi.s', $timestamp);
           $GLOBALS['eposts'] = 0;
        }
 
-  $query = "SELECT p.* FROM posts p WHERE p.elecid = 12 AND p.deleted = 0";
+  $query = "SELECT p.* FROM posts p WHERE p.elecid = ".$electionid." AND p.deleted = 0";
  
         $dq = makequery($query);
        if($dq[0] == 'success'){
