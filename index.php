@@ -104,18 +104,6 @@ a {
 
 
 
-            <li><a class="collapsible-header waves-effect arrow-r"><i class="fas fa-chevron-right"></i> ELECTIONS<i class="fas fa-angle-down rotate-icon"></i></a>
-              <div class="collapsible-body">
-                <ul>
-                  <li><a href="?page=voterregister" class="waves-effect">election 1 </a>
-                  </li>
-                  <li><a href="#" class="waves-effect">election 2</a>
-                  </li>
-                  <li><a href="#" class="waves-effect">election 3</a>
-                  </li>
-                </ul>
-              </div>
-            </li>
 
 
             <li><a class="collapsible-header waves-effect arrow-r" href="?page=logout"><i class="fas fa-power-off" style="color: red !important;"></i> LOG OUT</a>
@@ -143,21 +131,8 @@ a {
               </div>
             </li>
             <?php } ?>
-            <li><a class="collapsible-header waves-effect arrow-r"><i class="fas fa-chevron-right"></i> <?php echo $contact; ?><i
-                  class="fas fa-angle-down rotate-icon"></i></a>
-              <div class="collapsible-body">
-                <ul>
-                  <li><a href="#" class="waves-effect"><?php echo $contactinfo; ?></a>
-                  </li>
-                  <li><a href="#" class="waves-effect"><?php echo $writetous; ?></a>
-                  </li>
-                  <li><a href="#" class="waves-effect"><?php echo $faq; ?></a>
-                  </li>
-                </ul>
-              </div>
-            </li>
-            <li><a class="waves-effect"><i class="fas fa-chevron-right"></i> <?php echo $about; ?></a>
-            </li>
+        
+           
           </ul>
         </li>
         <!--/. Side navigation links -->

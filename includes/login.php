@@ -278,7 +278,7 @@ color:<?php echo $hex3; ?> !important;
         </div>
         <input type="text" class="form-control py-0 is" id="reg" name="reg"  placeholder="Enter Reg No." required>
         <div class="invalid-feedback">
-          Please enter your email.
+          Please enter your Reg No.
         </div>
       </div>
     </div>
@@ -336,7 +336,7 @@ LOG IN</button>
     
 
     <!-- Terms of service -->
-    <p>Enter <em>EMAIL</em> and <em>PASSWORD</em> to log in</p>
+    <p>Enter <em>REGISTRATION</em> and <em>PASSWORD</em> to log in</p>
 
 </form>
 <!-- Default form register -->

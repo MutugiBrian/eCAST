@@ -31,9 +31,18 @@ $time = date('Gi.s', $timestamp);
 
 
 //to here
+  $dq = makequery($query);
+       if($dq[0] == 'success'){
+          $GLOBALS['epa'] = $dq[1];
+          $GLOBALS['epa'] = $dq[1];
+          $GLOBALS['eposts']  = $dq[1]->num_rows;
 
+        }else{
+          $GLOBALS['eposts'] = 0;
+       }
 
-  $query = "SELECT p.*, COUNT(a.id) as aspirants FROM posts p, aspirants a WHERE p.elecid = ".$electionid." AND p.deleted = 0  AND a.postid = p.id";
+  $query = "SELECT p.* FROM posts p WHERE p.elecid = 12 AND p.deleted = 0";
+ 
         $dq = makequery($query);
        if($dq[0] == 'success'){
           $GLOBALS['epa'] = $dq[1];
@@ -149,12 +158,11 @@ $query = "SELECT * FROM usermaster WHERE institution = ".$uid." AND usermaster.d
 $query = "SELECT * FROM usermaster WHERE institution = ".$uid." AND department = ".$dept." AND usermaster.deleted = 0 AND  usermaster.banned = 0";
        }
 
-
   
         $dq = makequery($query);
        if($dq[0] == 'success'){
-          $GLOBALS['eva'] = $dq[1];
-          $GLOBALS['eva'] = $dq[1];
+          $GLOBALS['evas'] = $dq[1];
+          $GLOBALS['evas'] = $dq[1];
           $GLOBALS['elecvoters']  = $dq[1]->num_rows;
 
         }else{
@@ -666,15 +674,15 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
 
 
  <?php
-        $eva->data_seek(0); 
-           if ($eva->num_rows > 0) {
+        $evas->data_seek(0); 
+           if ($evas->num_rows > 0) {
             ?>
             <div class="md-form mb-5">
           <i class="fas fa-fist-raised prefix mi"></i>
             <select class="mdb-select md-form ml-5" id="aspid" name="aspid" searchable="Search name or registration..">
           <option value="" selected disabled>SELECT ASPIRANT NAME</option>
           <?php 
-          while($row = $eva->fetch_array()){
+          while($row = $evas->fetch_array()){
           /*  $GLOBALS['dn'] = $row;
           $depts = $row["COUNT(*)"];
           $GLOBALS['departments'] = $row["COUNT(*)"];*/
@@ -1159,14 +1167,7 @@ style="border-color:<?php echo $dchex; ?> !important;border-width: 3px !importan
           <span class="badge badge-primary badge-pill pull-right"><?php 
           $asp = $row["aspirants"];
 
-          if($asp >0){
-            if($asp === 1){
-             echo $asp." - ASPIRANT";
-            }else{
-             echo $asp." - ASPIRANTS";
-            }
-
-          }
+          
            ?></span>
           <a style="color:red !important;right:0;" onclick="deletepost(<?php echo $row["id"];?>,'<?php echo $row["name"];?>')"><i class="fas fa-trash-alt float-right" style="color:red !important;"></i></a>
           </div>
