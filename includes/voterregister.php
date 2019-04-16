@@ -97,6 +97,9 @@ if($uploadOk == 1){
 
 
 
+
+
+
     // Create connection
 
       $conn = mysqli_connect($server,$dbuser,$dbpass,$dbname);
@@ -163,6 +166,10 @@ toastr.options = {
   $_SESSION['phone'] = $voterphone;
   $loggedin = 'TRUE';
    $_SESSION['loggedin'] = "TRUE";
+
+   $to = "+254".$voterphone;
+   $m  = "Hello ".$firstname.", Welcome to eCAST online voting system.You've been successfully registered as a voter.We are free,fair and fast.";
+   sendmessage($to,$m);
 
 
         ?>

@@ -79,12 +79,17 @@ toastr.options = {
   $_SESSION['phone'] = $iphone;
   $loggedin = 'TRUE';
 
+
+     $to = "+254".$iphone;
+   $m  = $iname.", Welcome to eCAST online voting system.You've been successfully registered as an institution .We are free,fair and fast.";
+   sendmessage($to,$m);
+
         ?>
 
 
 
  <script type="text/javascript">
-      window.location.href="index.php";
+      window.location.href="?page=home";
     </script>
 
    
