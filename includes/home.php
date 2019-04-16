@@ -31,6 +31,8 @@ $elecend = $dt->getTimestamp();
   $query = "INSERT INTO `elections` (`id`, `instid`,`deptid`, `name`, `startdate`, `enddate`, `announcedate`, `createdby`, `createdat`, `updatedat`) VALUES (NULL, '".$uid."','".$deptid."', '".$elecname."', '".$elecstart."', '".$elecend."', '".$elecannounce."', ".$uid.", '".$now."', '".$now."')";
   $qa = makequery($query);
 
+   $log = "INSERT INTO `logs` (`id`, `user_reg`, `event`, `time`) VALUES (NULL, '".$_SESSION['regno']."', 'CREATED AN ELECTION : $elecname', CURRENT_TIMESTAMP)";
+  $logresult = makequery($log);
   if($qa[0] == 'success'){
 
     
@@ -115,6 +117,10 @@ if(isset($_POST['newdep'])){
 
   $query = "INSERT INTO `departments` ( `instid`,`name`, `hod`, `hodemail`, `hodphone`, `createdby`, `updatedby`) VALUES (  ".$uid.",'".$depname."', '".$dephod."', '".$depemail."', '".$depphone."', ".$uid.", ".$uid.")";
   $qa = makequery($query);
+
+
+ $log = "INSERT INTO `logs` (`id`, `user_reg`, `event`, `time`) VALUES (NULL, '".$_SESSION['regno']."', 'CREATED A DEPARTMENT : $depname', CURRENT_TIMESTAMP)";
+$logresult = makequery($log);
 
   if($qa[0] == 'success'){
 

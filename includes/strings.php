@@ -52,6 +52,7 @@ $dbname = "ecast";
 $dbuser = "root";
 //DATABASE PASSWORD
 $dbpass = NULL;
+$conn = new mysqli($server, $dbname, "",$dbname);
 
 
 

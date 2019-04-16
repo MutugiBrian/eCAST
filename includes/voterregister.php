@@ -143,6 +143,9 @@ toastr.options = {
 
 
   $t = time();
+  $log = "INSERT INTO `logs` (`id`, `user_reg`, `event`, `time`) VALUES (NULL, '".$voterregno."', 'CREATED AN ACCOUNT IN THE SYSTEM AS A VOTER', CURRENT_TIMESTAMP)";
+  $logresult = makequery($log);
+   
   $sql= "INSERT INTO `usermaster` (`id`, `usertype`, `firstname`, `lastname`,`image`,`password`, `institution`,`department`, `regno`, `email`, `phoneno`,`createdat`) VALUES (NULL,'voter','$voterfn', '$voterln','$target_file','$voterpass','$voterinst','$department', '$voterregno' , '$voteremail', '$voterphone', '$t')";
    
    if ($result = mysqli_query($conn,$sql)){

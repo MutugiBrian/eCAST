@@ -17,6 +17,7 @@ function makequery($query){
     }else{
       return $a  = array('error', $query, mysqli_error($conn)); 
   }
+
   mysqli_close($conn);
 }
 }

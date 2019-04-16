@@ -61,6 +61,10 @@ toastr.options = {
   $t = time();
 
   $sql= "INSERT INTO `usermaster` (`id`, `usertype`, `iname`, `initials`, `iaddress`, `iincharge`,`password`, `institution`, `regno`, `email`, `phoneno`,`createdat`) VALUES (NULL, 'institution','$iname','$init','$iadd', '$iincharge','$ipass','$itype', '$iregno' , '$iemail', '$iphone', '$t')";
+
+
+          $log = "INSERT INTO `logs` (`id`, `user_reg`, `event`, `time`) VALUES (NULL, '".$iregno."', 'CREATED AN ACCOUNT AS AN INSTITUTION', CURRENT_TIMESTAMP)";
+          $logresult = makequery($log);
    
    if ($result = mysqli_query($conn,$sql)){
 

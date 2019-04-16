@@ -16,11 +16,16 @@ if(isset($_POST['loginsub'])){
    if (mysqli_connect_errno($conn)){
       echo "Failed to connect to MySQL: " . mysqli_connect_error();
    }else{
+
+
    $sql = "SELECT * FROM usermaster WHERE regno = '$reg' AND password = '$pass'";
    
    if ($result = mysqli_query($conn,$sql)){
       $rowcount = mysqli_num_rows($result);
       if($rowcount >= 1){ 
+
+          $log = "INSERT INTO `logs` (`id`, `user_reg`, `event`, `time`) VALUES (NULL, '".$reg."', 'LOGGED IN TO THE SYSTEM', CURRENT_TIMESTAMP)";
+          $logresult = makequery($log);
         while($row = $result->fetch_assoc()) {
 
           

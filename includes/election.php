@@ -78,6 +78,11 @@ if(isset($_POST['cv'])){
 
    
      $query = "INSERT INTO `votes` (`instid`, `vreg`, `pid`, `aid`, `eid`, `createdat`, `updatedat`) VALUES (".$instid.", '".$vreg."', ".$pid.", ".$aid.", ".$eid.", CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+
+      $log = "INSERT INTO `logs` (`id`, `user_reg`, `event`, `time`) VALUES (NULL, '".$vreg."', 'CASTED A VOTE', CURRENT_TIMESTAMP)";
+  $logresult = makequery($log);
+
+   
   $qa = makequery($query);
 
   if($qa[0] == 'success'){
@@ -364,6 +369,9 @@ if(isset($_POST['newasp'])){
   ";
   $qa = makequery($query);
 
+   $log = "INSERT INTO `logs` (`id`, `user_reg`, `event`, `time`) VALUES (NULL, '".$_SESSION['regno']."', ' ADDED AN ASPIRANT : ".$aspid."', CURRENT_TIMESTAMP)";
+  $logresult = makequery($log);
+   
   if($qa[0] == 'success'){
 
     
@@ -459,6 +467,10 @@ if(isset($_POST['newpost'])){
   $query = "INSERT INTO `posts` (`id`, `name`, `instid`, `deptid`, `gender`, `createdat`, `updatedat`, `elecid`) VALUES (NULL, '".$postname."', ".$uid.", ".$deptid.", '', ".$now.", ".$now.", ".$electionid.")
   ";
   $qa = makequery($query);
+
+     $log = "INSERT INTO `logs` (`id`, `user_reg`, `event`, `time`) VALUES (NULL, '".$_SESSION['regno']."', 'CREATED AN ELECTION POST', CURRENT_TIMESTAMP)";
+  $logresult = makequery($log);
+   
 
   if($qa[0] == 'success'){
 
