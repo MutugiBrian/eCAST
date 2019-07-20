@@ -102,6 +102,18 @@ if(isset($_SESSION['utype'])){
            $GLOBALS['enac'] = '';
        }
     }
+
+    function getlogs(){
+        $query = "SELECT * FROM `logs`";
+        $dql = makequery($query);
+       if($dql[0] == 'success'){
+          $GLOBALS['logs'] = $dql[1];
+        }else{
+          $GLOBALS['logs'] = array();
+       }
+    }
+
+
     getongoingelectionsno();
      getendedelectionsno();
      
@@ -110,6 +122,7 @@ if(isset($_SESSION['utype'])){
      getdepartmentnames();
      getelectionnames();
      getvotersno();
+     getlogs();
     }
 
 }else{
@@ -125,7 +138,10 @@ if(isset($_SESSION['utype'])){
        }
     }
 
+    
+
     getinstitutions();
+     
 
 
 

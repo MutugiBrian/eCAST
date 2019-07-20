@@ -1,6 +1,6 @@
 /*
  * MDBootstrap Range Slider
- * Learn more:  https://mdbootstrap.com/plugins/jquery/plugins/range,
+ * Learn more:  https://mdbootstrap.com/plugins/jquery/plugins/multi-range,
  *
  * About MDBootstrap: https://mdbootstrap.com/
  * Support: https://mdbootstrap.com/support/

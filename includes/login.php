@@ -26,6 +26,15 @@ if(isset($_POST['loginsub'])){
 
           $log = "INSERT INTO `logs` (`id`, `user_reg`, `event`, `time`) VALUES (NULL, '".$reg."', 'LOGGED IN TO THE SYSTEM', CURRENT_TIMESTAMP)";
           $logresult = makequery($log);
+
+
+          ?>
+
+          <!-- <script type="text/javascript">
+            alert("<?php echo $log ?>");
+          </script> -->
+
+          <?php
         while($row = $result->fetch_assoc()) {
 
           

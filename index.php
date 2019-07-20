@@ -22,6 +22,7 @@ include 'includes/getdata.php';
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="css/mdb.css">
 <link rel="stylesheet" type="text/css" href="css/mdb.min.css">
+<link href="css/addons/datatables.min.css" rel="stylesheet">
 
 
   <!-- Font Awesome --><link rel="stylesheet" type="text/css" href="css/style.css">
@@ -38,7 +39,7 @@ include 'includes/getdata.php';
 }
 a {
 
-	color: white !important;
+	color: white;
 }
 .sn {
 
@@ -103,11 +104,20 @@ a {
 
 
 
+            <?php 
+            if($_SESSION['utype'] == 'institution'){ 
+            ?>
+            <li><a class="collapsible-header waves-effect arrow-r" href="?page=logs"><i class="fas fa-cogs"></i> <?php echo $slogs; ?>
+            </a>
+            </li>
+            <?php }?>
 
 
 
             <li><a class="collapsible-header waves-effect arrow-r" href="?page=logout"><i class="fas fa-power-off" style="color: red !important;"></i> LOG OUT</a>
+            </li>
 
+            
 
 
 
@@ -213,6 +223,8 @@ a {
   <script type="text/javascript" src="js/bootstrap.min.js"></script>
   <!-- MDB core JavaScript -->
   <script type="text/javascript" src="js/mdb.min.js"></script>
+  <!-- MDBootstrap Datatables  -->
+<script type="text/javascript" src="js/addons/datatables.min.js"></script>
 
   <!-- END OF JS IMPORTS -->
 

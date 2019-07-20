@@ -13,20 +13,54 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     function MaterialSelect($nativeSelect, options) {
       _classCallCheck(this, MaterialSelect);
 
-      this.options = options;
       this.$nativeSelect = $nativeSelect;
+      this.defaults = {
+        destroy: false,
+        nativeID: null,
+        BSsearchIn: false,
+        BSinputText: false,
+        fasClasses: '',
+        farClasses: '',
+        fabClasses: '',
+        copyClassesOption: false,
+        language: {
+          active: false,
+          pl: {
+            selectAll: 'Wybierz wszystko',
+            optionsSelected: 'wybranych opcji'
+          },
+          in: {
+            selectAll: 'Pilih semuanya',
+            optionsSelected: 'opsi yang dipilih'
+          },
+          fr: {
+            selectAll: 'Tout choisir',
+            optionsSelected: 'options sélectionnées'
+          },
+          ge: {
+            selectAll: 'Wähle alles aus',
+            optionsSelected: 'ausgewählte Optionen'
+          },
+          ar: {
+            selectAll: 'اختر كل شيء',
+            optionsSelected: 'الخيارات المحددة'
+          }
+        }
+      };
+      this.options = this.assignOptions(options);
       this.isMultiple = Boolean(this.$nativeSelect.attr('multiple'));
       this.isSearchable = Boolean(this.$nativeSelect.attr('searchable'));
       this.isRequired = Boolean(this.$nativeSelect.attr('required'));
-      this.uuid = this._randomUUID();
+      this.uuid = this.options.nativeID !== null && this.options.nativeID !== '' && this.options.nativeID !== undefined && typeof this.options.nativeID === 'string' ? this.options.nativeID : this._randomUUID();
       this.$selectWrapper = $('<div class="select-wrapper"></div>');
       this.$materialOptionsList = $("<ul id=\"select-options-".concat(this.uuid, "\" class=\"dropdown-content select-dropdown w-100 ").concat(this.isMultiple ? 'multiple-select-dropdown' : '', "\"></ul>"));
-      this.$materialSelectInitialOption = $nativeSelect.find('option:selected').html() || $nativeSelect.find('option:first').html() || '';
+      this.$materialSelectInitialOption = $nativeSelect.find('option:selected').text() || $nativeSelect.find('option:first').text() || '';
       this.$nativeSelectChildren = this.$nativeSelect.children('option, optgroup');
-      this.$materialSelect = $("<input type=\"text\" class=\"select-dropdown\" readonly=\"true\" ".concat(this.$nativeSelect.is(':disabled') ? 'disabled' : '', " data-activates=\"select-options-").concat(this.uuid, "\" value=\"\"/>"));
-      this.$dropdownIcon = $('<span class="caret">&#9660;</span>');
+      this.$materialSelect = $("<input type=\"text\" class=\"".concat(this.options.BSinputText ? 'browser-default custom-select multi-bs-select select-dropdown' : 'select-dropdown', "\" readonly=\"true\" ").concat(this.$nativeSelect.is(':disabled') ? 'disabled' : '', " data-activates=\"select-options-").concat(this.uuid, "\" value=\"\"/>"));
+      this.$dropdownIcon = this.options.BSinputText ? '' : $('<span class="caret">&#9660;</span>');
       this.$searchInput = null;
-      this.$toggleAll = $('<li class="select-toggle-all"><span><input type="checkbox" class="form-check-input"><label>Select all</label></span></li>');
+      this.$toggleAll = $("<li class=\"select-toggle-all\"><span><input type=\"checkbox\" class=\"form-check-input\"><label>Select all</label></span></li>");
+      this.mainLabel = this.$nativeSelect.next('.mdb-main-label');
       this.valuesSelected = [];
       this.keyCodes = {
         tab: 9,
@@ -39,6 +73,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     }
 
     _createClass(MaterialSelect, [{
+      key: "assignOptions",
+      value: function assignOptions(newOptions) {
+        return $.extend({}, this.defaults, newOptions);
+      }
+    }, {
       key: "init",
       value: function init() {
         var alreadyInitialized = Boolean(this.$nativeSelect.data('select-id'));
@@ -47,40 +86,66 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           this._removeMaterialWrapper();
         }
 
-        if (this.options === 'destroy') {
+        if (this.options.destroy) {
           this.$nativeSelect.data('select-id', null).removeClass('initialized');
           return;
         }
 
+        if (this.options.BSsearchIn || this.options.BSinputText) {
+          this.$selectWrapper.addClass(this.$nativeSelect.attr('class').split(' ').filter(function (el) {
+            return el !== 'md-form';
+          }).join(' ')).css({
+            marginTop: '1.5rem',
+            marginBottom: '1.5rem'
+          });
+        } else {
+          this.$selectWrapper.addClass(this.$nativeSelect.attr('class'));
+        }
+
         this.$nativeSelect.data('select-id', this.uuid);
-        this.$selectWrapper.addClass(this.$nativeSelect.attr('class'));
-        var sanitizedLabelHtml = this.$materialSelectInitialOption.replace(/"/g, '&quot;');
-        this.$materialSelect.val(sanitizedLabelHtml);
+        var sanitizedLabelHtml = this.$materialSelectInitialOption.replace(/"/g, '&quot;').replace(/  +/g, ' ').trim();
+        this.mainLabel.length === 0 ? this.$materialSelect.val(sanitizedLabelHtml) : this.mainLabel.text();
         this.renderMaterialSelect();
         this.bindEvents();
 
         if (this.isRequired) {
           this.enableValidation();
         }
-      }
-    }, {
-      key: "debounce",
-      value: function debounce(func, wait, immediate) {
-        var timeout;
-        return function () {
-          var context = this,
-              args = arguments;
 
-          var later = function later() {
-            timeout = null;
-            if (!immediate) func.apply(context, args);
-          };
+        if (this.options.language.active && this.$toggleAll) {
+          if (this.options.language.pl) {
+            this.$toggleAll.find('label').text(this.options.language.pl.selectAll ? this.options.language.pl.selectAll : this.defaults.language.pl.selectAll);
+          }
 
-          var callNow = immediate && !timeout;
-          clearTimeout(timeout);
-          timeout = setTimeout(later, wait);
-          if (callNow) func.apply(context, args);
-        };
+          if (this.options.language.fr) {
+            this.$toggleAll.find('label').text(this.options.language.fr.selectAll ? this.options.language.fr.selectAll : this.defaults.language.fr.selectAll);
+          }
+
+          if (this.options.language.ge) {
+            this.$toggleAll.find('label').text(this.options.language.ge.selectAll ? this.options.language.ge.selectAll : this.defaults.language.ge.selectAll);
+          }
+
+          if (this.options.language.ar) {
+            this.$toggleAll.find('label').text(this.options.language.ar.selectAll ? this.options.language.ar.selectAll : this.defaults.language.ar.selectAll);
+          }
+
+          if (this.options.language.in) {
+            this.$toggleAll.find('label').text(this.options.language.in.selectAll ? this.options.language.in.selectAll : this.defaults.language.in.selectAll);
+          }
+        }
+
+        if (this.$materialSelect.hasClass('custom-select') && this.$materialSelect.hasClass('select-dropdown')) {
+          this.$materialSelect.css({
+            'display': 'inline-block',
+            'width': '100%',
+            'height': 'calc(1.5em + .75rem + 2px)',
+            'padding': '.375rem 1.75rem .375rem .75rem',
+            'font-size': '1rem',
+            'line-height': '1.5',
+            'background-color': '#fff',
+            'border': '1px solid #ced4da'
+          });
+        }
       }
     }, {
       key: "_removeMaterialWrapper",
@@ -116,7 +181,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
         if (this.isMultiple) {
           this.$nativeSelect.find('option:selected:not(:disabled)').each(function (i, element) {
-            var index = $(element).index();
+            var index = element.index;
 
             _this._toggleSelectedValue(index);
 
@@ -128,6 +193,10 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         }
 
         this.$nativeSelect.addClass('initialized');
+
+        if (this.options.BSinputText) {
+          this.mainLabel.css('top', '-7px');
+        }
       }
     }, {
       key: "appendDropdownIcon",
@@ -167,7 +236,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       key: "appendSearchInputOption",
       value: function appendSearchInputOption() {
         var placeholder = this.$nativeSelect.attr('searchable');
-        this.$searchInput = $("<span class=\"search-wrap ml-2\"><div class=\"md-form mt-0\"><input type=\"text\" class=\"search form-control w-100 d-block\" placeholder=\"".concat(placeholder, "\"></div></span>"));
+
+        if (this.options.BSsearchIn) {
+          this.$searchInput = $("<span class=\"search-wrap ml-2\"><div class=\"mt-0\"><input type=\"text\" class=\"search form-control mb-2 w-100 d-block select-default\" placeholder=\"".concat(placeholder, "\"></div></span>"));
+        } else {
+          this.$searchInput = $("<span class=\"search-wrap ml-2\"><div class=\"md-form mt-0\"><input type=\"text\" class=\"search form-control w-100 d-block\" placeholder=\"".concat(placeholder, "\"></div></span>"));
+        }
+
         this.$materialOptionsList.append(this.$searchInput);
         this.$searchInput.on("click", function (e) {
           e.stopPropagation();
@@ -211,11 +286,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         var disabled = $nativeSelectChild.is(':disabled') ? 'disabled' : '';
         var optgroupClass = type === 'optgroup-option' ? 'optgroup-option' : '';
         var iconUrl = $nativeSelectChild.data('icon');
-        var fa = $nativeSelectChild.data('fas') ? "<i class=\"fas fa-".concat($nativeSelectChild.data('fas'), "\"></i> ") : '';
+        var fas = $nativeSelectChild.data('fas') ? "<i class=\"fa-pull-right m-2 fas fa-".concat($nativeSelectChild.data('fas'), " ").concat([...this.options.fasClasses].join(''), "\"></i> ") : '';
+        var far = $nativeSelectChild.data('far') ? "<i class=\"fa-pull-right m-2 far fa-".concat($nativeSelectChild.data('far'), " ").concat([...this.options.farClasses].join(''), "\"></i> ") : '';
+        var fab = $nativeSelectChild.data('fab') ? "<i class=\"fa-pull-right m-2 fab fa-".concat($nativeSelectChild.data('fab'), " ").concat([...this.options.fabClasses].join(''), "\"></i> ") : '';
         var classes = $nativeSelectChild.attr('class');
         var iconHtml = iconUrl ? "<img alt=\"\" src=\"".concat(iconUrl, "\" class=\"").concat(classes, "\">") : '';
         var checkboxHtml = this.isMultiple ? "<input type=\"checkbox\" class=\"form-check-input\" ".concat(disabled, "/><label></label>") : '';
-        this.$materialOptionsList.append($("<li class=\"".concat(disabled, " ").concat(optgroupClass, "\">").concat(iconHtml, "<span class=\"filtrable\">").concat(checkboxHtml).concat(fa).concat($nativeSelectChild.html(), "</span></li>")));
+        this.$materialOptionsList.append($("<li class=\"".concat(disabled, " ").concat(optgroupClass, " ").concat(this.options.copyClassesOption ? classes : '', " \">").concat(iconHtml, "<span class=\"filtrable\">").concat(checkboxHtml, " ").concat($nativeSelectChild.html(), " ").concat(fas, " ").concat(far, " ").concat(fab, "</span></li>")));
       }
     }, {
       key: "enableValidation",
@@ -256,8 +333,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         MaterialSelect.clearMutationObservers();
         MaterialSelect.mutationObservers.push(observer);
         var $saveSelectBtn = this.$nativeSelect.parent().find('button.btn-save');
-        $saveSelectBtn.on('click', this._onSaveSelectBtnClick);
-        this.$materialSelect.on('focus', this.debounce(this._onMaterialSelectFocus.bind(this), 300));
+        $saveSelectBtn.on('click', this._onSaveSelectBtnClick.bind(this));
+        this.$materialSelect.on('focus', this._onMaterialSelectFocus.bind(this));
         this.$materialSelect.on('click', this._onMaterialSelectClick.bind(this));
         this.$materialSelect.on('blur', this._onMaterialSelectBlur.bind(this));
         this.$materialSelect.on('keydown', this._onMaterialSelectKeydown.bind(this));
@@ -285,15 +362,19 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           if ($select.data('stop-refresh') !== true && (mutation.type === 'childList' || mutation.type === 'attributes' && $(mutation.target).is('option'))) {
             MaterialSelect.clearMutationObservers();
-            $select.materialSelect('destroy');
+            $select.materialSelect({
+              'destroy': true
+            });
             $select.materialSelect();
           }
         });
       }
     }, {
       key: "_onSaveSelectBtnClick",
-      value: function _onSaveSelectBtnClick() {
-        $('input.select-dropdown').trigger('close');
+      value: function _onSaveSelectBtnClick(e) {
+        $('input.multi-bs-select').trigger('close');
+        this.$materialOptionsList.hide();
+        this.$materialSelect.removeClass('active');
       }
     }, {
       key: "_onEachMaterialOptionClick",
@@ -332,7 +413,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         } else {
           this.$materialOptionsList.find('li').removeClass('active');
           $this.toggleClass('active');
-          this.$materialSelect.val($this.text());
+          this.$materialSelect.val($this.text().replace(/  +/g, ' ').trim());
           this.$materialSelect.trigger('close');
         }
 
@@ -344,8 +425,18 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
         this._triggerChangeOnNativeSelect();
 
+        if (this.mainLabel.prev().find('input').hasClass('select-dropdown')) {
+          if (this.mainLabel.prev().find('input.select-dropdown').val().length > 0) {
+            this.mainLabel.addClass('active');
+          }
+        }
+
         if (typeof this.options === 'function') {
           this.options();
+        }
+
+        if ($this.hasClass('li-added')) {
+          this.$materialOptionsList.append(this.buildSingleOption($this, ''));
         }
       }
     }, {
@@ -363,7 +454,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         var $this = $(e.target);
 
         if ($('ul.select-dropdown').not(this.$materialOptionsList.get(0)).is(':visible')) {
-          $('input.select-dropdown').trigger('close');
+          $("input.select-dropdown").trigger('close');
         }
 
         if (!this.$materialOptionsList.is(':visible')) {
@@ -375,10 +466,15 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           this._selectSingleOption($selectedOption);
         }
+
+        if (!this.isMultiple) {
+          this.mainLabel.addClass('active active-check');
+        }
       }
     }, {
       key: "_onMaterialSelectClick",
       value: function _onMaterialSelectClick(e) {
+        this.mainLabel.addClass('active-check');
         e.stopPropagation();
       }
     }, {
@@ -391,6 +487,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         }
 
         this.$materialOptionsList.find('li.selected').removeClass('selected');
+        this.mainLabel.removeClass('active-check');
+
+        if (this.mainLabel.prev().find('input').hasClass('select-dropdown')) {
+          if (this.mainLabel.prev().find('input.select-dropdown').val() === '') {
+            this.mainLabel.removeClass('active');
+          }
+        }
       }
     }, {
       key: "_onSingleMaterialOptionClick",
@@ -407,12 +510,19 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             e.preventDefault();
           }
         }
+
+        this.mainLabel.removeClass('active-check');
       }
     }, {
       key: "_onHTMLClick",
       value: function _onHTMLClick(e) {
-        if (!$(e.target).closest("#select-options-".concat(this.uuid)).length) {
+        if (!$(e.target).closest("#select-options-".concat(this.uuid)).length && !$(e.target).hasClass('mdb-select') && $("#select-options-".concat(this.uuid)).hasClass('active')) {
           this.$materialSelect.trigger('close');
+          this.mainLabel.removeClass('active-check');
+        }
+
+        if (this.isSearchable && this.$searchInput !== null && this.$materialOptionsList.hasClass('active')) {
+          this.$materialOptionsList.find('.search-wrap input.search').focus();
         }
       }
     }, {
@@ -501,47 +611,59 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     }, {
       key: "_handleEnterKey",
       value: function _handleEnterKey(materialSelect) {
-        var $materialSelect = $(materialSelect);
         var $activeOption = this.$materialOptionsList.find('li.selected:not(.disabled)');
-        $activeOption.trigger('click');
+        $activeOption.trigger('click').addClass('active');
 
         if (!this.isMultiple) {
-          $materialSelect.trigger('close');
+          $(materialSelect).trigger('close');
         }
       }
     }, {
       key: "_handleArrowDownKey",
       value: function _handleArrowDownKey() {
-        var $firstOption = this.$materialOptionsList.find('li').not('.disabled').not('.select-toggle-all').first();
-        var $lastOption = this.$materialOptionsList.find('li').not('.disabled').not('.select-toggle-all').last();
+        var $firstOption = this.$materialOptionsList.find('li').not('.disabled').first();
+        var $lastOption = this.$materialOptionsList.find('li').not('.disabled').last();
         var anySelected = this.$materialOptionsList.find('li.selected').length > 0;
         var $currentOption = anySelected ? this.$materialOptionsList.find('li.selected') : $firstOption;
         var $matchedMaterialOption = $currentOption.is($lastOption) || !anySelected ? $currentOption : $currentOption.next('li:not(.disabled)');
 
         this._selectSingleOption($matchedMaterialOption);
 
-        this.$materialOptionsList.find('li').removeClass('active');
-        $matchedMaterialOption.toggleClass('active');
+        if (!$matchedMaterialOption.find('input').is(':checked')) {
+          $matchedMaterialOption.removeClass('active');
+        }
+
+        if (!$matchedMaterialOption.prev().hasClass('selected') && !$matchedMaterialOption.prev().find('input').is(':checked')) {
+          $matchedMaterialOption.prev().removeClass('active');
+        }
+
+        $matchedMaterialOption.addClass('active');
       }
     }, {
       key: "_handleArrowUpKey",
       value: function _handleArrowUpKey() {
-        var $firstOption = this.$materialOptionsList.find('li').not('.disabled').not('.select-toggle-all').first();
-        var $lastOption = this.$materialOptionsList.find('li').not('.disabled').not('.select-toggle-all').last();
+        var $firstOption = this.$materialOptionsList.find('li').not('.disabled').first();
+        var $lastOption = this.$materialOptionsList.find('li').not('.disabled').last();
         var anySelected = this.$materialOptionsList.find('li.selected').length > 0;
         var $currentOption = anySelected ? this.$materialOptionsList.find('li.selected') : $lastOption;
         var $matchedMaterialOption = $currentOption.is($firstOption) || !anySelected ? $currentOption : $currentOption.prev('li:not(.disabled)');
 
         this._selectSingleOption($matchedMaterialOption);
 
-        this.$materialOptionsList.find('li').removeClass('active');
-        $matchedMaterialOption.toggleClass('active');
+        if (!$matchedMaterialOption.find('input').is(':checked')) {
+          $matchedMaterialOption.removeClass('active');
+        }
+
+        if (!$matchedMaterialOption.next().hasClass('selected') && !$matchedMaterialOption.next().find('input').is(':checked')) {
+          $matchedMaterialOption.next().removeClass('active');
+        }
+
+        $matchedMaterialOption.addClass('active');
       }
     }, {
       key: "_handleEscKey",
       value: function _handleEscKey(materialSelect) {
-        var $materialSelect = $(materialSelect);
-        $materialSelect.trigger('close');
+        $(materialSelect).trigger('close');
       }
     }, {
       key: "_handleLetterKey",
@@ -557,8 +679,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
         if (isLetterSearchable) {
           filterQueryString += letter;
-          var $matchedMaterialOption = this.$materialOptionsList.find('li').filter(function () {
-            return $(this).text().toLowerCase().indexOf(filterQueryString) !== -1;
+          var $matchedMaterialOption = this.$materialOptionsList.find('li').filter(function (index, element) {
+            return $(element).text().toLowerCase().includes(filterQueryString);
           }).first();
 
           if (!this.isMultiple) {
@@ -644,25 +766,34 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     }, {
       key: "_setValueToMaterialSelect",
       value: function _setValueToMaterialSelect() {
+        var _this6 = this;
+
         var value = '';
+        var optionsSelected = 'options selected';
         var itemsCount = this.valuesSelected.length;
 
-        for (var i = 0; i < itemsCount; i++) {
-          var text = this.$nativeSelect.find('option').eq(this.valuesSelected[i]).text();
-          value += ", ".concat(text);
+        if (this.options.language.active && this.$toggleAll) {
+          if (this.options.language.pl) {
+            optionsSelected = this.options.language.pl.optionsSelected ? this.options.language.pl.optionsSelected : this.defaults.language.pl.optionsSelected;
+          } else if (this.options.language.fr) {
+            optionsSelected = this.options.language.fr.optionsSelected ? this.options.language.fr.optionsSelected : this.defaults.language.fr.optionsSelected;
+          } else if (this.options.language.ge) {
+            optionsSelected = this.options.language.ge.optionsSelected ? this.options.language.ge.optionsSelected : this.defaults.language.ge.optionsSelected;
+          } else if (this.options.language.ar) {
+            optionsSelected = this.options.language.ar.optionsSelected ? this.options.language.ar.optionsSelected : this.defaults.language.ar.optionsSelected;
+          } else if (this.options.language.in) {
+            optionsSelected = this.options.language.in.optionsSelected ? this.options.language.in.optionsSelected : this.defaults.language.in.optionsSelected;
+          }
         }
 
-        if (itemsCount >= 5) {
-          value = "".concat(itemsCount, " options selected");
-        } else {
-          value = value.substring(2);
-        }
-
-        if (value.length === 0) {
-          value = this.$nativeSelect.find('option:disabled').eq(0).text();
-        }
-
-        this.$nativeSelect.siblings('input.select-dropdown').val(value);
+        this.valuesSelected.map(function (el) {
+          return value += ", ".concat(_this6.$nativeSelect.find('option').eq(el).text().replace(/  +/g, ' ').trim());
+        });
+        itemsCount >= 5 ? value = "".concat(itemsCount, " ").concat(optionsSelected) : value = value.substring(2);
+        value.length === 0 && this.mainLabel.length === 0 ? value = this.$nativeSelect.find('option:disabled').eq(0).text() : null;
+        value.length > 0 && !this.options.BSinputText ? this.mainLabel.addClass('active active-check') : this.mainLabel.removeClass('active');
+        this.options.BSinputText ? this.mainLabel.css('top', '-7px') : null;
+        this.$nativeSelect.siblings("".concat(this.options.BSinputText ? "input.multi-bs-select" : "input.select-dropdown")).val(value);
       }
     }, {
       key: "_randomUUID",
@@ -702,9 +833,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         return originalVal.call(this);
       }
 
-      if (this.data('stop-refresh') !== true && this.hasClass('mdb-select') && this.hasClass('initialized') && !this.hasClass('browser-default') && !this.hasClass('custom-select')) {
+      if (this.data('stop-refresh') !== true && this.hasClass('mdb-select') && this.hasClass('initialized')) {
         MaterialSelect.clearMutationObservers();
-        this.materialSelect('destroy');
+        this.materialSelect({
+          'destroy': true
+        });
         var ret = originalVal.call(this, value);
         this.materialSelect();
         return ret;
@@ -715,7 +848,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
   })($.fn.val);
 })(jQuery);
 
-jQuery('select').siblings('input.select-dropdown').on('mousedown', function (e) {
+jQuery('select').siblings('input.select-dropdown', 'input.multi-bs-select').on('mousedown', function (e) {
   if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
     if (e.clientX >= e.target.clientWidth || e.clientY >= e.target.clientHeight) {
       e.preventDefault();

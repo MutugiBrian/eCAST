@@ -40,6 +40,10 @@ $faq = "FAQ";
 $writetous = "WRITE TO US";
 //CONTACT INFORMATION
 $contactinfo = "CONTACT INFORMATION";
+//SHOW LOGS
+$slogs = "SYSTEM LOGS";
+//LOGS NAME
+$logn ="LOGS";
 
 
 

@@ -76,6 +76,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         this.openOnClick();
         this.bindTouchEvents();
         this.showCloseButton();
+        this.inputOnClick();
       }
     }, {
       key: "bindTouchEvents",
@@ -471,6 +472,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             this.$menu.css('transform', 'translateX(0)');
           }
 
+          this.$menu.find('input[type=text]').on('touchstart', function (e) {
+            _this5.$menu.addClass('transform-fix-input');
+          });
           $(window).resize(function () {
             if (window.innerWidth > _this5.options.breakpoint) {
               if (_this5.$sidenavOverlay.length) {
@@ -497,6 +501,15 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         }
       }
     }, {
+      key: "inputOnClick",
+      value: function inputOnClick() {
+        var _this6 = this;
+
+        this.$menu.find('input[type=text]').on('touchstart', function (e) {
+          _this6.$menu.css('transform', 'translateX(0)');
+        });
+      }
+    }, {
       key: "assignOptions",
       value: function assignOptions(newOptions) {
         return $.extend({}, this.defaults, newOptions);
@@ -504,7 +517,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     }, {
       key: "removeMenu",
       value: function removeMenu(restoreMenu) {
-        var _this6 = this;
+        var _this7 = this;
 
         this.$body.css({
           overflow: '',
@@ -518,12 +531,17 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           easing: this.options.easingClose,
           complete: function complete() {
             if (restoreMenu === true) {
-              _this6.$menu.removeAttr('style');
+              _this7.$menu.removeAttr('style');
 
-              _this6.$menu.css('width', _this6.options.MENU_WIDTH);
+              _this7.$menu.css('width', _this7.options.MENU_WIDTH);
             }
           }
         });
+
+        if (this.$menu.hasClass('transform-fix-input')) {
+          this.$menu.removeClass('transform-fix-input');
+        }
+
         this.hideSidenavOverlay();
       }
     }, {

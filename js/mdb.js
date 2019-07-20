@@ -1,6 +1,6 @@
 /*!
  * Material Design for Bootstrap 4
- * Version: MDB Pro 4.7.6
+ * Version: MDB Pro 4.8.0
  *
  *
  * Copyright: Material Design for Bootstrap
@@ -16801,6 +16801,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         this.openOnClick();
         this.bindTouchEvents();
         this.showCloseButton();
+        this.inputOnClick();
       }
     }, {
       key: "bindTouchEvents",
@@ -17196,6 +17197,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             this.$menu.css('transform', 'translateX(0)');
           }
 
+          this.$menu.find('input[type=text]').on('touchstart', function (e) {
+            _this5.$menu.addClass('transform-fix-input');
+          });
           $(window).resize(function () {
             if (window.innerWidth > _this5.options.breakpoint) {
               if (_this5.$sidenavOverlay.length) {
@@ -17222,6 +17226,15 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         }
       }
     }, {
+      key: "inputOnClick",
+      value: function inputOnClick() {
+        var _this6 = this;
+
+        this.$menu.find('input[type=text]').on('touchstart', function (e) {
+          _this6.$menu.css('transform', 'translateX(0)');
+        });
+      }
+    }, {
       key: "assignOptions",
       value: function assignOptions(newOptions) {
         return $.extend({}, this.defaults, newOptions);
@@ -17229,7 +17242,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     }, {
       key: "removeMenu",
       value: function removeMenu(restoreMenu) {
-        var _this6 = this;
+        var _this7 = this;
 
         this.$body.css({
           overflow: '',
@@ -17243,12 +17256,17 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           easing: this.options.easingClose,
           complete: function complete() {
             if (restoreMenu === true) {
-              _this6.$menu.removeAttr('style');
+              _this7.$menu.removeAttr('style');
 
-              _this6.$menu.css('width', _this6.options.MENU_WIDTH);
+              _this7.$menu.css('width', _this7.options.MENU_WIDTH);
             }
           }
         });
+
+        if (this.$menu.hasClass('transform-fix-input')) {
+          this.$menu.removeClass('transform-fix-input');
+        }
+
         this.hideSidenavOverlay();
       }
     }, {
@@ -17944,20 +17962,54 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     function MaterialSelect($nativeSelect, options) {
       _classCallCheck(this, MaterialSelect);
 
-      this.options = options;
       this.$nativeSelect = $nativeSelect;
+      this.defaults = {
+        destroy: false,
+        nativeID: null,
+        BSsearchIn: false,
+        BSinputText: false,
+        fasClasses: '',
+        farClasses: '',
+        fabClasses: '',
+        copyClassesOption: false,
+        language: {
+          active: false,
+          pl: {
+            selectAll: 'Wybierz wszystko',
+            optionsSelected: 'wybranych opcji'
+          },
+          in: {
+            selectAll: 'Pilih semuanya',
+            optionsSelected: 'opsi yang dipilih'
+          },
+          fr: {
+            selectAll: 'Tout choisir',
+            optionsSelected: 'options sélectionnées'
+          },
+          ge: {
+            selectAll: 'Wähle alles aus',
+            optionsSelected: 'ausgewählte Optionen'
+          },
+          ar: {
+            selectAll: 'اختر كل شيء',
+            optionsSelected: 'الخيارات المحددة'
+          }
+        }
+      };
+      this.options = this.assignOptions(options);
       this.isMultiple = Boolean(this.$nativeSelect.attr('multiple'));
       this.isSearchable = Boolean(this.$nativeSelect.attr('searchable'));
       this.isRequired = Boolean(this.$nativeSelect.attr('required'));
-      this.uuid = this._randomUUID();
+      this.uuid = this.options.nativeID !== null && this.options.nativeID !== '' && this.options.nativeID !== undefined && typeof this.options.nativeID === 'string' ? this.options.nativeID : this._randomUUID();
       this.$selectWrapper = $('<div class="select-wrapper"></div>');
       this.$materialOptionsList = $("<ul id=\"select-options-".concat(this.uuid, "\" class=\"dropdown-content select-dropdown w-100 ").concat(this.isMultiple ? 'multiple-select-dropdown' : '', "\"></ul>"));
-      this.$materialSelectInitialOption = $nativeSelect.find('option:selected').html() || $nativeSelect.find('option:first').html() || '';
+      this.$materialSelectInitialOption = $nativeSelect.find('option:selected').text() || $nativeSelect.find('option:first').text() || '';
       this.$nativeSelectChildren = this.$nativeSelect.children('option, optgroup');
-      this.$materialSelect = $("<input type=\"text\" class=\"select-dropdown\" readonly=\"true\" ".concat(this.$nativeSelect.is(':disabled') ? 'disabled' : '', " data-activates=\"select-options-").concat(this.uuid, "\" value=\"\"/>"));
-      this.$dropdownIcon = $('<span class="caret">&#9660;</span>');
+      this.$materialSelect = $("<input type=\"text\" class=\"".concat(this.options.BSinputText ? 'browser-default custom-select multi-bs-select select-dropdown' : 'select-dropdown', "\" readonly=\"true\" ").concat(this.$nativeSelect.is(':disabled') ? 'disabled' : '', " data-activates=\"select-options-").concat(this.uuid, "\" value=\"\"/>"));
+      this.$dropdownIcon = this.options.BSinputText ? '' : $('<span class="caret">&#9660;</span>');
       this.$searchInput = null;
-      this.$toggleAll = $('<li class="select-toggle-all"><span><input type="checkbox" class="form-check-input"><label>Select all</label></span></li>');
+      this.$toggleAll = $("<li class=\"select-toggle-all\"><span><input type=\"checkbox\" class=\"form-check-input\"><label>Select all</label></span></li>");
+      this.mainLabel = this.$nativeSelect.next('.mdb-main-label');
       this.valuesSelected = [];
       this.keyCodes = {
         tab: 9,
@@ -17970,6 +18022,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     }
 
     _createClass(MaterialSelect, [{
+      key: "assignOptions",
+      value: function assignOptions(newOptions) {
+        return $.extend({}, this.defaults, newOptions);
+      }
+    }, {
       key: "init",
       value: function init() {
         var alreadyInitialized = Boolean(this.$nativeSelect.data('select-id'));
@@ -17978,40 +18035,66 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           this._removeMaterialWrapper();
         }
 
-        if (this.options === 'destroy') {
+        if (this.options.destroy) {
           this.$nativeSelect.data('select-id', null).removeClass('initialized');
           return;
         }
 
+        if (this.options.BSsearchIn || this.options.BSinputText) {
+          this.$selectWrapper.addClass(this.$nativeSelect.attr('class').split(' ').filter(function (el) {
+            return el !== 'md-form';
+          }).join(' ')).css({
+            marginTop: '1.5rem',
+            marginBottom: '1.5rem'
+          });
+        } else {
+          this.$selectWrapper.addClass(this.$nativeSelect.attr('class'));
+        }
+
         this.$nativeSelect.data('select-id', this.uuid);
-        this.$selectWrapper.addClass(this.$nativeSelect.attr('class'));
-        var sanitizedLabelHtml = this.$materialSelectInitialOption.replace(/"/g, '&quot;');
-        this.$materialSelect.val(sanitizedLabelHtml);
+        var sanitizedLabelHtml = this.$materialSelectInitialOption.replace(/"/g, '&quot;').replace(/  +/g, ' ').trim();
+        this.mainLabel.length === 0 ? this.$materialSelect.val(sanitizedLabelHtml) : this.mainLabel.text();
         this.renderMaterialSelect();
         this.bindEvents();
 
         if (this.isRequired) {
           this.enableValidation();
         }
-      }
-    }, {
-      key: "debounce",
-      value: function debounce(func, wait, immediate) {
-        var timeout;
-        return function () {
-          var context = this,
-              args = arguments;
 
-          var later = function later() {
-            timeout = null;
-            if (!immediate) func.apply(context, args);
-          };
+        if (this.options.language.active && this.$toggleAll) {
+          if (this.options.language.pl) {
+            this.$toggleAll.find('label').text(this.options.language.pl.selectAll ? this.options.language.pl.selectAll : this.defaults.language.pl.selectAll);
+          }
 
-          var callNow = immediate && !timeout;
-          clearTimeout(timeout);
-          timeout = setTimeout(later, wait);
-          if (callNow) func.apply(context, args);
-        };
+          if (this.options.language.fr) {
+            this.$toggleAll.find('label').text(this.options.language.fr.selectAll ? this.options.language.fr.selectAll : this.defaults.language.fr.selectAll);
+          }
+
+          if (this.options.language.ge) {
+            this.$toggleAll.find('label').text(this.options.language.ge.selectAll ? this.options.language.ge.selectAll : this.defaults.language.ge.selectAll);
+          }
+
+          if (this.options.language.ar) {
+            this.$toggleAll.find('label').text(this.options.language.ar.selectAll ? this.options.language.ar.selectAll : this.defaults.language.ar.selectAll);
+          }
+
+          if (this.options.language.in) {
+            this.$toggleAll.find('label').text(this.options.language.in.selectAll ? this.options.language.in.selectAll : this.defaults.language.in.selectAll);
+          }
+        }
+
+        if (this.$materialSelect.hasClass('custom-select') && this.$materialSelect.hasClass('select-dropdown')) {
+          this.$materialSelect.css({
+            'display': 'inline-block',
+            'width': '100%',
+            'height': 'calc(1.5em + .75rem + 2px)',
+            'padding': '.375rem 1.75rem .375rem .75rem',
+            'font-size': '1rem',
+            'line-height': '1.5',
+            'background-color': '#fff',
+            'border': '1px solid #ced4da'
+          });
+        }
       }
     }, {
       key: "_removeMaterialWrapper",
@@ -18047,7 +18130,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
         if (this.isMultiple) {
           this.$nativeSelect.find('option:selected:not(:disabled)').each(function (i, element) {
-            var index = $(element).index();
+            var index = element.index;
 
             _this._toggleSelectedValue(index);
 
@@ -18059,6 +18142,10 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         }
 
         this.$nativeSelect.addClass('initialized');
+
+        if (this.options.BSinputText) {
+          this.mainLabel.css('top', '-7px');
+        }
       }
     }, {
       key: "appendDropdownIcon",
@@ -18098,7 +18185,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       key: "appendSearchInputOption",
       value: function appendSearchInputOption() {
         var placeholder = this.$nativeSelect.attr('searchable');
-        this.$searchInput = $("<span class=\"search-wrap ml-2\"><div class=\"md-form mt-0\"><input type=\"text\" class=\"search form-control w-100 d-block\" placeholder=\"".concat(placeholder, "\"></div></span>"));
+
+        if (this.options.BSsearchIn) {
+          this.$searchInput = $("<span class=\"search-wrap ml-2\"><div class=\"mt-0\"><input type=\"text\" class=\"search form-control mb-2 w-100 d-block select-default\" placeholder=\"".concat(placeholder, "\"></div></span>"));
+        } else {
+          this.$searchInput = $("<span class=\"search-wrap ml-2\"><div class=\"md-form mt-0\"><input type=\"text\" class=\"search form-control w-100 d-block\" placeholder=\"".concat(placeholder, "\"></div></span>"));
+        }
+
         this.$materialOptionsList.append(this.$searchInput);
         this.$searchInput.on("click", function (e) {
           e.stopPropagation();
@@ -18142,11 +18235,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         var disabled = $nativeSelectChild.is(':disabled') ? 'disabled' : '';
         var optgroupClass = type === 'optgroup-option' ? 'optgroup-option' : '';
         var iconUrl = $nativeSelectChild.data('icon');
-        var fa = $nativeSelectChild.data('fas') ? "<i class=\"fas fa-".concat($nativeSelectChild.data('fas'), "\"></i> ") : '';
+        var fas = $nativeSelectChild.data('fas') ? "<i class=\"fa-pull-right m-2 fas fa-".concat($nativeSelectChild.data('fas'), " ").concat([...this.options.fasClasses].join(''), "\"></i> ") : '';
+        var far = $nativeSelectChild.data('far') ? "<i class=\"fa-pull-right m-2 far fa-".concat($nativeSelectChild.data('far'), " ").concat([...this.options.farClasses].join(''), "\"></i> ") : '';
+        var fab = $nativeSelectChild.data('fab') ? "<i class=\"fa-pull-right m-2 fab fa-".concat($nativeSelectChild.data('fab'), " ").concat([...this.options.fabClasses].join(''), "\"></i> ") : '';
         var classes = $nativeSelectChild.attr('class');
         var iconHtml = iconUrl ? "<img alt=\"\" src=\"".concat(iconUrl, "\" class=\"").concat(classes, "\">") : '';
         var checkboxHtml = this.isMultiple ? "<input type=\"checkbox\" class=\"form-check-input\" ".concat(disabled, "/><label></label>") : '';
-        this.$materialOptionsList.append($("<li class=\"".concat(disabled, " ").concat(optgroupClass, "\">").concat(iconHtml, "<span class=\"filtrable\">").concat(checkboxHtml).concat(fa).concat($nativeSelectChild.html(), "</span></li>")));
+        this.$materialOptionsList.append($("<li class=\"".concat(disabled, " ").concat(optgroupClass, " ").concat(this.options.copyClassesOption ? classes : '', " \">").concat(iconHtml, "<span class=\"filtrable\">").concat(checkboxHtml, " ").concat($nativeSelectChild.html(), " ").concat(fas, " ").concat(far, " ").concat(fab, "</span></li>")));
       }
     }, {
       key: "enableValidation",
@@ -18187,8 +18282,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         MaterialSelect.clearMutationObservers();
         MaterialSelect.mutationObservers.push(observer);
         var $saveSelectBtn = this.$nativeSelect.parent().find('button.btn-save');
-        $saveSelectBtn.on('click', this._onSaveSelectBtnClick);
-        this.$materialSelect.on('focus', this.debounce(this._onMaterialSelectFocus.bind(this), 300));
+        $saveSelectBtn.on('click', this._onSaveSelectBtnClick.bind(this));
+        this.$materialSelect.on('focus', this._onMaterialSelectFocus.bind(this));
         this.$materialSelect.on('click', this._onMaterialSelectClick.bind(this));
         this.$materialSelect.on('blur', this._onMaterialSelectBlur.bind(this));
         this.$materialSelect.on('keydown', this._onMaterialSelectKeydown.bind(this));
@@ -18216,15 +18311,19 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           if ($select.data('stop-refresh') !== true && (mutation.type === 'childList' || mutation.type === 'attributes' && $(mutation.target).is('option'))) {
             MaterialSelect.clearMutationObservers();
-            $select.materialSelect('destroy');
+            $select.materialSelect({
+              'destroy': true
+            });
             $select.materialSelect();
           }
         });
       }
     }, {
       key: "_onSaveSelectBtnClick",
-      value: function _onSaveSelectBtnClick() {
-        $('input.select-dropdown').trigger('close');
+      value: function _onSaveSelectBtnClick(e) {
+        $('input.multi-bs-select').trigger('close');
+        this.$materialOptionsList.hide();
+        this.$materialSelect.removeClass('active');
       }
     }, {
       key: "_onEachMaterialOptionClick",
@@ -18263,7 +18362,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         } else {
           this.$materialOptionsList.find('li').removeClass('active');
           $this.toggleClass('active');
-          this.$materialSelect.val($this.text());
+          this.$materialSelect.val($this.text().replace(/  +/g, ' ').trim());
           this.$materialSelect.trigger('close');
         }
 
@@ -18275,8 +18374,18 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
         this._triggerChangeOnNativeSelect();
 
+        if (this.mainLabel.prev().find('input').hasClass('select-dropdown')) {
+          if (this.mainLabel.prev().find('input.select-dropdown').val().length > 0) {
+            this.mainLabel.addClass('active');
+          }
+        }
+
         if (typeof this.options === 'function') {
           this.options();
+        }
+
+        if ($this.hasClass('li-added')) {
+          this.$materialOptionsList.append(this.buildSingleOption($this, ''));
         }
       }
     }, {
@@ -18294,7 +18403,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         var $this = $(e.target);
 
         if ($('ul.select-dropdown').not(this.$materialOptionsList.get(0)).is(':visible')) {
-          $('input.select-dropdown').trigger('close');
+          $("input.select-dropdown").trigger('close');
         }
 
         if (!this.$materialOptionsList.is(':visible')) {
@@ -18306,10 +18415,15 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           this._selectSingleOption($selectedOption);
         }
+
+        if (!this.isMultiple) {
+          this.mainLabel.addClass('active active-check');
+        }
       }
     }, {
       key: "_onMaterialSelectClick",
       value: function _onMaterialSelectClick(e) {
+        this.mainLabel.addClass('active-check');
         e.stopPropagation();
       }
     }, {
@@ -18322,6 +18436,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         }
 
         this.$materialOptionsList.find('li.selected').removeClass('selected');
+        this.mainLabel.removeClass('active-check');
+
+        if (this.mainLabel.prev().find('input').hasClass('select-dropdown')) {
+          if (this.mainLabel.prev().find('input.select-dropdown').val() === '') {
+            this.mainLabel.removeClass('active');
+          }
+        }
       }
     }, {
       key: "_onSingleMaterialOptionClick",
@@ -18338,12 +18459,19 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             e.preventDefault();
           }
         }
+
+        this.mainLabel.removeClass('active-check');
       }
     }, {
       key: "_onHTMLClick",
       value: function _onHTMLClick(e) {
-        if (!$(e.target).closest("#select-options-".concat(this.uuid)).length) {
+        if (!$(e.target).closest("#select-options-".concat(this.uuid)).length && !$(e.target).hasClass('mdb-select') && $("#select-options-".concat(this.uuid)).hasClass('active')) {
           this.$materialSelect.trigger('close');
+          this.mainLabel.removeClass('active-check');
+        }
+
+        if (this.isSearchable && this.$searchInput !== null && this.$materialOptionsList.hasClass('active')) {
+          this.$materialOptionsList.find('.search-wrap input.search').focus();
         }
       }
     }, {
@@ -18432,47 +18560,59 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     }, {
       key: "_handleEnterKey",
       value: function _handleEnterKey(materialSelect) {
-        var $materialSelect = $(materialSelect);
         var $activeOption = this.$materialOptionsList.find('li.selected:not(.disabled)');
-        $activeOption.trigger('click');
+        $activeOption.trigger('click').addClass('active');
 
         if (!this.isMultiple) {
-          $materialSelect.trigger('close');
+          $(materialSelect).trigger('close');
         }
       }
     }, {
       key: "_handleArrowDownKey",
       value: function _handleArrowDownKey() {
-        var $firstOption = this.$materialOptionsList.find('li').not('.disabled').not('.select-toggle-all').first();
-        var $lastOption = this.$materialOptionsList.find('li').not('.disabled').not('.select-toggle-all').last();
+        var $firstOption = this.$materialOptionsList.find('li').not('.disabled').first();
+        var $lastOption = this.$materialOptionsList.find('li').not('.disabled').last();
         var anySelected = this.$materialOptionsList.find('li.selected').length > 0;
         var $currentOption = anySelected ? this.$materialOptionsList.find('li.selected') : $firstOption;
         var $matchedMaterialOption = $currentOption.is($lastOption) || !anySelected ? $currentOption : $currentOption.next('li:not(.disabled)');
 
         this._selectSingleOption($matchedMaterialOption);
 
-        this.$materialOptionsList.find('li').removeClass('active');
-        $matchedMaterialOption.toggleClass('active');
+        if (!$matchedMaterialOption.find('input').is(':checked')) {
+          $matchedMaterialOption.removeClass('active');
+        }
+
+        if (!$matchedMaterialOption.prev().hasClass('selected') && !$matchedMaterialOption.prev().find('input').is(':checked')) {
+          $matchedMaterialOption.prev().removeClass('active');
+        }
+
+        $matchedMaterialOption.addClass('active');
       }
     }, {
       key: "_handleArrowUpKey",
       value: function _handleArrowUpKey() {
-        var $firstOption = this.$materialOptionsList.find('li').not('.disabled').not('.select-toggle-all').first();
-        var $lastOption = this.$materialOptionsList.find('li').not('.disabled').not('.select-toggle-all').last();
+        var $firstOption = this.$materialOptionsList.find('li').not('.disabled').first();
+        var $lastOption = this.$materialOptionsList.find('li').not('.disabled').last();
         var anySelected = this.$materialOptionsList.find('li.selected').length > 0;
         var $currentOption = anySelected ? this.$materialOptionsList.find('li.selected') : $lastOption;
         var $matchedMaterialOption = $currentOption.is($firstOption) || !anySelected ? $currentOption : $currentOption.prev('li:not(.disabled)');
 
         this._selectSingleOption($matchedMaterialOption);
 
-        this.$materialOptionsList.find('li').removeClass('active');
-        $matchedMaterialOption.toggleClass('active');
+        if (!$matchedMaterialOption.find('input').is(':checked')) {
+          $matchedMaterialOption.removeClass('active');
+        }
+
+        if (!$matchedMaterialOption.next().hasClass('selected') && !$matchedMaterialOption.next().find('input').is(':checked')) {
+          $matchedMaterialOption.next().removeClass('active');
+        }
+
+        $matchedMaterialOption.addClass('active');
       }
     }, {
       key: "_handleEscKey",
       value: function _handleEscKey(materialSelect) {
-        var $materialSelect = $(materialSelect);
-        $materialSelect.trigger('close');
+        $(materialSelect).trigger('close');
       }
     }, {
       key: "_handleLetterKey",
@@ -18488,8 +18628,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
         if (isLetterSearchable) {
           filterQueryString += letter;
-          var $matchedMaterialOption = this.$materialOptionsList.find('li').filter(function () {
-            return $(this).text().toLowerCase().indexOf(filterQueryString) !== -1;
+          var $matchedMaterialOption = this.$materialOptionsList.find('li').filter(function (index, element) {
+            return $(element).text().toLowerCase().includes(filterQueryString);
           }).first();
 
           if (!this.isMultiple) {
@@ -18575,25 +18715,34 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     }, {
       key: "_setValueToMaterialSelect",
       value: function _setValueToMaterialSelect() {
+        var _this6 = this;
+
         var value = '';
+        var optionsSelected = 'options selected';
         var itemsCount = this.valuesSelected.length;
 
-        for (var i = 0; i < itemsCount; i++) {
-          var text = this.$nativeSelect.find('option').eq(this.valuesSelected[i]).text();
-          value += ", ".concat(text);
+        if (this.options.language.active && this.$toggleAll) {
+          if (this.options.language.pl) {
+            optionsSelected = this.options.language.pl.optionsSelected ? this.options.language.pl.optionsSelected : this.defaults.language.pl.optionsSelected;
+          } else if (this.options.language.fr) {
+            optionsSelected = this.options.language.fr.optionsSelected ? this.options.language.fr.optionsSelected : this.defaults.language.fr.optionsSelected;
+          } else if (this.options.language.ge) {
+            optionsSelected = this.options.language.ge.optionsSelected ? this.options.language.ge.optionsSelected : this.defaults.language.ge.optionsSelected;
+          } else if (this.options.language.ar) {
+            optionsSelected = this.options.language.ar.optionsSelected ? this.options.language.ar.optionsSelected : this.defaults.language.ar.optionsSelected;
+          } else if (this.options.language.in) {
+            optionsSelected = this.options.language.in.optionsSelected ? this.options.language.in.optionsSelected : this.defaults.language.in.optionsSelected;
+          }
         }
 
-        if (itemsCount >= 5) {
-          value = "".concat(itemsCount, " options selected");
-        } else {
-          value = value.substring(2);
-        }
-
-        if (value.length === 0) {
-          value = this.$nativeSelect.find('option:disabled').eq(0).text();
-        }
-
-        this.$nativeSelect.siblings('input.select-dropdown').val(value);
+        this.valuesSelected.map(function (el) {
+          return value += ", ".concat(_this6.$nativeSelect.find('option').eq(el).text().replace(/  +/g, ' ').trim());
+        });
+        itemsCount >= 5 ? value = "".concat(itemsCount, " ").concat(optionsSelected) : value = value.substring(2);
+        value.length === 0 && this.mainLabel.length === 0 ? value = this.$nativeSelect.find('option:disabled').eq(0).text() : null;
+        value.length > 0 && !this.options.BSinputText ? this.mainLabel.addClass('active active-check') : this.mainLabel.removeClass('active');
+        this.options.BSinputText ? this.mainLabel.css('top', '-7px') : null;
+        this.$nativeSelect.siblings("".concat(this.options.BSinputText ? "input.multi-bs-select" : "input.select-dropdown")).val(value);
       }
     }, {
       key: "_randomUUID",
@@ -18633,9 +18782,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         return originalVal.call(this);
       }
 
-      if (this.data('stop-refresh') !== true && this.hasClass('mdb-select') && this.hasClass('initialized') && !this.hasClass('browser-default') && !this.hasClass('custom-select')) {
+      if (this.data('stop-refresh') !== true && this.hasClass('mdb-select') && this.hasClass('initialized')) {
         MaterialSelect.clearMutationObservers();
-        this.materialSelect('destroy');
+        this.materialSelect({
+          'destroy': true
+        });
         var ret = originalVal.call(this, value);
         this.materialSelect();
         return ret;
@@ -18646,7 +18797,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
   })($.fn.val);
 })(jQuery);
 
-jQuery('select').siblings('input.select-dropdown').on('mousedown', function (e) {
+jQuery('select').siblings('input.select-dropdown', 'input.multi-bs-select').on('mousedown', function (e) {
   if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
     if (e.clientX >= e.target.clientWidth || e.clientY >= e.target.clientHeight) {
       e.preventDefault();
@@ -18654,7 +18805,7 @@ jQuery('select').siblings('input.select-dropdown').on('mousedown', function (e) 
   }
 });
 /*!
- * pickadate.js v3.5.6, 2015/04/20
+ * pickadate.js v3.6.3, 2019/04/03
  * By Amsul, http://amsul.ca
  * Hosted on http://amsul.github.io/pickadate.js
  * Licensed under MIT
@@ -18662,16 +18813,16 @@ jQuery('select').siblings('input.select-dropdown').on('mousedown', function (e) 
 
 (function ( factory ) {
 
-    // AMD.
-    if ( typeof define == 'function' && define.amd )
-        define( 'picker', ['jquery'], factory )
+  // AMD.
+  if ( typeof define == 'function' && define.amd )
+      define( 'picker', ['jquery'], factory )
 
-    // Node.js/browserify.
-    else if ( typeof exports == 'object' )
-        module.exports = factory( require('jquery') )
+  // Node.js/browserify.
+  else if ( typeof exports == 'object' )
+      module.exports = factory( require('jquery') )
 
-    // Browser globals.
-    else this.Picker = factory( jQuery )
+  // Browser globals.
+  else this.Picker = factory( jQuery )
 
 }(function( $ ) {
 
@@ -18682,1142 +18833,1203 @@ var supportsTransitions = document.documentElement.style.transition != null
 
 
 /**
- * The picker constructor that creates a blank picker.
- */
+* The picker constructor that creates a blank picker.
+*/
 function PickerConstructor( ELEMENT, NAME, COMPONENT, OPTIONS ) {
 
-    // If there’s no element, return the picker constructor.
-    if ( !ELEMENT ) return PickerConstructor
+  // If there’s no element, return the picker constructor.
+  if ( !ELEMENT ) return PickerConstructor
 
 
-    var
-        IS_DEFAULT_THEME = false,
+  var
+      IS_DEFAULT_THEME = false,
 
 
-        // The state of the picker.
-        STATE = {
-            id: ELEMENT.id || 'P' + Math.abs( ~~(Math.random() * new Date()) )
-        },
+      // The state of the picker.
+      STATE = {
+          id: ELEMENT.id || 'P' + Math.abs( ~~(Math.random() * new Date()) ),
+          handlingOpen: false,
+      },
 
 
-        // Merge the defaults and options passed.
-        SETTINGS = COMPONENT ? $.extend( true, {}, COMPONENT.defaults, OPTIONS ) : OPTIONS || {},
+      // Merge the defaults and options passed.
+      SETTINGS = COMPONENT ? $.extend( true, {}, COMPONENT.defaults, OPTIONS ) : OPTIONS || {},
 
 
-        // Merge the default classes with the settings classes.
-        CLASSES = $.extend( {}, PickerConstructor.klasses(), SETTINGS.klass ),
+      // Merge the default classes with the settings classes.
+      CLASSES = $.extend( {}, PickerConstructor.klasses(), SETTINGS.klass ),
 
 
-        // The element node wrapper into a jQuery object.
-        $ELEMENT = $( ELEMENT ),
+      // The element node wrapper into a jQuery object.
+      $ELEMENT = $( ELEMENT ),
 
 
-        // Pseudo picker constructor.
-        PickerInstance = function() {
-            return this.start()
-        },
+      // Pseudo picker constructor.
+      PickerInstance = function() {
+          return this.start()
+      },
 
 
-        // The picker prototype.
-        P = PickerInstance.prototype = {
+      // The picker prototype.
+      P = PickerInstance.prototype = {
 
-            constructor: PickerInstance,
+          constructor: PickerInstance,
 
-            $node: $ELEMENT,
+          $node: $ELEMENT,
 
 
-            /**
-             * Initialize everything
-             */
-            start: function() {
+          /**
+           * Initialize everything
+           */
+          start: function() {
 
-                // If it’s already started, do nothing.
-                if ( STATE && STATE.start ) return P
+              // If it’s already started, do nothing.
+              if ( STATE && STATE.start ) return P
 
 
-                // Update the picker states.
-                STATE.methods = {}
-                STATE.start = true
-                STATE.open = false
-                STATE.type = ELEMENT.type
+              // Update the picker states.
+              STATE.methods = {}
+              STATE.start = true
+              STATE.open = false
+              STATE.type = ELEMENT.type
 
 
-                // Confirm focus state, convert into text input to remove UA stylings,
-                // and set as readonly to prevent keyboard popup.
-                ELEMENT.autofocus = ELEMENT == getActiveElement()
-                ELEMENT.readOnly = !SETTINGS.editable
-                ELEMENT.id = ELEMENT.id || STATE.id
-                if ( ELEMENT.type != 'text' ) {
-                    ELEMENT.type = 'text'
-                }
+              // Confirm focus state, convert into text input to remove UA stylings,
+              // and set as readonly to prevent keyboard popup.
+              ELEMENT.autofocus = ELEMENT == getActiveElement()
+              ELEMENT.readOnly = !SETTINGS.editable
+              ELEMENT.id = ELEMENT.id || STATE.id
+              if ( ELEMENT.type != 'text' ) {
+                  ELEMENT.type = 'text'
+              }
 
 
-                // Create a new picker component with the settings.
-                P.component = new COMPONENT(P, SETTINGS)
+              // Create a new picker component with the settings.
+              P.component = new COMPONENT(P, SETTINGS)
 
 
-                // Create the picker root and then prepare it.
-                P.$root = $( '<div class="' + CLASSES.picker + '" id="' + ELEMENT.id + '_root" />' )
-                prepareElementRoot()
+              // Create the picker root and then prepare it.
+              P.$root = $( '<div class="' + CLASSES.picker + '" id="' + ELEMENT.id + '_root" />' )
+              prepareElementRoot()
 
 
-                // Create the picker holder and then prepare it.
-                P.$holder = $( createWrappedComponent() ).appendTo( P.$root )
-                prepareElementHolder()
+              // Create the picker holder and then prepare it.
+              P.$holder = $( createWrappedComponent() ).appendTo( P.$root )
+              prepareElementHolder()
 
 
-                // If there’s a format for the hidden input element, create the element.
-                if ( SETTINGS.formatSubmit ) {
-                    prepareElementHidden()
-                }
+              // If there’s a format for the hidden input element, create the element.
+              if ( SETTINGS.formatSubmit ) {
+                  prepareElementHidden()
+              }
 
 
-                // Prepare the input element.
-                prepareElement()
+              // Prepare the input element.
+              prepareElement()
 
 
-                // Insert the hidden input as specified in the settings.
-                if ( SETTINGS.containerHidden ) $( SETTINGS.containerHidden ).append( P._hidden )
-                else $ELEMENT.after( P._hidden )
+              // Insert the hidden input as specified in the settings.
+              if ( SETTINGS.containerHidden ) $( SETTINGS.containerHidden ).append( P._hidden )
+              else $ELEMENT.after( P._hidden )
 
 
-                // Insert the root as specified in the settings.
-                if ( SETTINGS.container ) $( SETTINGS.container ).append( P.$root )
-                else $ELEMENT.after( P.$root )
+              // Insert the root as specified in the settings.
+              if ( SETTINGS.container ) $( SETTINGS.container ).append( P.$root )
+              else $ELEMENT.after( P.$root )
 
 
-                // Bind the default component and settings events.
-                P.on({
-                    start: P.component.onStart,
-                    render: P.component.onRender,
-                    stop: P.component.onStop,
-                    open: P.component.onOpen,
-                    close: P.component.onClose,
-                    set: P.component.onSet
-                }).on({
-                    start: SETTINGS.onStart,
-                    render: SETTINGS.onRender,
-                    stop: SETTINGS.onStop,
-                    open: SETTINGS.onOpen,
-                    close: SETTINGS.onClose,
-                    set: SETTINGS.onSet
-                })
+              // Bind the default component and settings events.
+              P.on({
+                  start: P.component.onStart,
+                  render: P.component.onRender,
+                  stop: P.component.onStop,
+                  open: P.component.onOpen,
+                  close: P.component.onClose,
+                  set: P.component.onSet
+              }).on({
+                  start: SETTINGS.onStart,
+                  render: SETTINGS.onRender,
+                  stop: SETTINGS.onStop,
+                  open: SETTINGS.onOpen,
+                  close: SETTINGS.onClose,
+                  set: SETTINGS.onSet
+              })
 
-
-                // Once we’re all set, check the theme in use.
-                IS_DEFAULT_THEME = isUsingDefaultTheme( P.$holder[0] )
 
+              // Once we’re all set, check the theme in use.
+              IS_DEFAULT_THEME = isUsingDefaultTheme( P.$holder[0] )
 
-                // If the element has autofocus, open the picker.
-                if ( ELEMENT.autofocus ) {
-                    P.open()
-                }
-
-
-                // Trigger queued the “start” and “render” events.
-                return P.trigger( 'start' ).trigger( 'render' )
-            }, //start
 
+              // If the element has autofocus, open the picker.
+              if ( ELEMENT.autofocus ) {
+                  P.open()
+              }
 
-            /**
-             * Render a new picker
-             */
-            render: function( entireComponent ) {
 
-                // Insert a new component holder in the root or box.
-                if ( entireComponent ) {
-                    P.$holder = $( createWrappedComponent() )
-                    prepareElementHolder()
-                    P.$root.html( P.$holder )
-                }
-                else P.$root.find( '.' + CLASSES.box ).html( P.component.nodes( STATE.open ) )
-
-                // Trigger the queued “render” events.
-                return P.trigger( 'render' )
-            }, //render
-
-
-            /**
-             * Destroy everything
-             */
-            stop: function() {
-
-                // If it’s already stopped, do nothing.
-                if ( !STATE.start ) return P
-
-                // Then close the picker.
-                P.close()
-
-                // Remove the hidden field.
-                if ( P._hidden ) {
-                    P._hidden.parentNode.removeChild( P._hidden )
-                }
+              // Trigger queued the “start” and “render” events.
+              return P.trigger( 'start' ).trigger( 'render' )
+          }, //start
 
-                // Remove the root.
-                P.$root.remove()
 
-                // Remove the input class, remove the stored data, and unbind
-                // the events (after a tick for IE - see `P.close`).
-                $ELEMENT.removeClass( CLASSES.input ).removeData( NAME )
-                setTimeout( function() {
-                    $ELEMENT.off( '.' + STATE.id )
-                }, 0)
-
-                // Restore the element state
-                ELEMENT.type = STATE.type
-                ELEMENT.readOnly = false
-
-                // Trigger the queued “stop” events.
-                P.trigger( 'stop' )
-
-                // Reset the picker states.
-                STATE.methods = {}
-                STATE.start = false
-
-                return P
-            }, //stop
-
-
-            /**
-             * Open up the picker
-             */
-            open: function( dontGiveFocus ) {
-
-                // If it’s already open, do nothing.
-                if ( STATE.open ) return P
-
-                // Add the “active” class.
-                $ELEMENT.addClass( CLASSES.active )
-                aria( ELEMENT, 'expanded', true )
-
-                // * A Firefox bug, when `html` has `overflow:hidden`, results in
-                //   killing transitions :(. So add the “opened” state on the next tick.
-                //   Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=625289
-                setTimeout( function() {
-
-                    // Add the “opened” class to the picker root.
-                    P.$root.addClass( CLASSES.opened )
-                    aria( P.$root[0], 'hidden', false )
-
-                }, 0 )
-
-                // If we have to give focus, bind the element and doc events.
-                if ( dontGiveFocus !== false ) {
-
-                    // Set it as open.
-                    STATE.open = true
-
-                    // Prevent the page from scrolling.
-                    if ( IS_DEFAULT_THEME ) {
-                        $html.
-                            css( 'overflow', 'hidden' ).
-                            css( 'padding-right', '+=' + getScrollbarWidth() )
-                    }
-
-                    // Pass focus to the root element’s jQuery object.
-                    focusPickerOnceOpened()
-
-                    // Bind the document events.
-                    $document.on( 'click.' + STATE.id + ' focusin.' + STATE.id, function( event ) {
-
-                        var target = event.target
-
-                        // If the target of the event is not the element, close the picker picker.
-                        // * Don’t worry about clicks or focusins on the root because those don’t bubble up.
-                        //   Also, for Firefox, a click on an `option` element bubbles up directly
-                        //   to the doc. So make sure the target wasn't the doc.
-                        // * In Firefox stopPropagation() doesn’t prevent right-click events from bubbling,
-                        //   which causes the picker to unexpectedly close when right-clicking it. So make
-                        //   sure the event wasn’t a right-click.
-                        if ( target != ELEMENT && target != document && event.which != 3 ) {
-
-                            // If the target was the holder that covers the screen,
-                            // keep the element focused to maintain tabindex.
-                            P.close( target === P.$holder[0] )
-                        }
-
-                    }).on( 'keydown.' + STATE.id, function( event ) {
-
-                        var
-                            // Get the keycode.
-                            keycode = event.keyCode,
-
-                            // Translate that to a selection change.
-                            keycodeToMove = P.component.key[ keycode ],
-
-                            // Grab the target.
-                            target = event.target
-
-
-                        // On escape, close the picker and give focus.
-                        if ( keycode == 27 ) {
-                            P.close( true )
-                        }
-
-
-                        // Check if there is a key movement or “enter” keypress on the element.
-                        else if ( target == P.$holder[0] && ( keycodeToMove || keycode == 13 ) ) {
-
-                            // Prevent the default action to stop page movement.
-                            event.preventDefault()
-
-                            // Trigger the key movement action.
-                            if ( keycodeToMove ) {
-                                PickerConstructor._.trigger( P.component.key.go, P, [ PickerConstructor._.trigger( keycodeToMove ) ] )
-                            }
-
-                            // On “enter”, if the highlighted item isn’t disabled, set the value and close.
-                            else if ( !P.$root.find( '.' + CLASSES.highlighted ).hasClass( CLASSES.disabled ) ) {
-                                P.set( 'select', P.component.item.highlight )
-                                if ( SETTINGS.closeOnSelect ) {
-                                    P.close( true )
-                                }
-                            }
-                        }
-
-
-                        // If the target is within the root and “enter” is pressed,
-                        // prevent the default action and trigger a click on the target instead.
-                        else if ( $.contains( P.$root[0], target ) && keycode == 13 ) {
-                            event.preventDefault()
-                            target.click()
-                        }
-                    })
-                }
-
-                // Trigger the queued “open” events.
-                return P.trigger( 'open' )
-            }, //open
-
-
-            /**
-             * Close the picker
-             */
-            close: function( giveFocus ) {
-
-                // If we need to give focus, do it before changing states.
-                if ( giveFocus ) {
-                    if ( SETTINGS.editable ) {
-                        ELEMENT.focus()
-                    }
-                    else {
-                        // ....ah yes! It would’ve been incomplete without a crazy workaround for IE :|
-                        // The focus is triggered *after* the close has completed - causing it
-                        // to open again. So unbind and rebind the event at the next tick.
-                        P.$holder.off( 'focus.toOpen' ).focus()
-                        setTimeout( function() {
-                            P.$holder.on( 'focus.toOpen', handleFocusToOpenEvent )
-                        }, 0 )
-                    }
-                }
-
-                // Remove the “active” class.
-                $ELEMENT.removeClass( CLASSES.active )
-                aria( ELEMENT, 'expanded', false )
-
-                // * A Firefox bug, when `html` has `overflow:hidden`, results in
-                //   killing transitions :(. So remove the “opened” state on the next tick.
-                //   Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=625289
-                setTimeout( function() {
-
-                    // Remove the “opened” and “focused” class from the picker root.
-                    P.$root.removeClass( CLASSES.opened + ' ' + CLASSES.focused )
-                    aria( P.$root[0], 'hidden', true )
-
-                }, 0 )
-
-                // If it’s already closed, do nothing more.
-                if ( !STATE.open ) return P
-
-                // Set it as closed.
-                STATE.open = false
-
-                // Allow the page to scroll.
-                if ( IS_DEFAULT_THEME ) {
-                    $html.
-                        css( 'overflow', '' ).
-                        css( 'padding-right', '-=' + getScrollbarWidth() )
-                }
-
-                // Unbind the document events.
-                $document.off( '.' + STATE.id )
-
-                // Trigger the queued “close” events.
-                return P.trigger( 'close' )
-            }, //close
-
-
-            /**
-             * Clear the values
-             */
-            clear: function( options ) {
-                return P.set( 'clear', null, options )
-            }, //clear
-
-
-            /**
-             * Set something
-             */
-            set: function( thing, value, options ) {
-
-                var thingItem, thingValue,
-                    thingIsObject = $.isPlainObject( thing ),
-                    thingObject = thingIsObject ? thing : {}
-
-                // Make sure we have usable options.
-                options = thingIsObject && $.isPlainObject( value ) ? value : options || {}
-
-                if ( thing ) {
-
-                    // If the thing isn’t an object, make it one.
-                    if ( !thingIsObject ) {
-                        thingObject[ thing ] = value
-                    }
-
-                    // Go through the things of items to set.
-                    for ( thingItem in thingObject ) {
-
-                        // Grab the value of the thing.
-                        thingValue = thingObject[ thingItem ]
-
-                        // First, if the item exists and there’s a value, set it.
-                        if ( thingItem in P.component.item ) {
-                            if ( thingValue === undefined ) thingValue = null
-                            P.component.set( thingItem, thingValue, options )
-                        }
-
-                        // Then, check to update the element value and broadcast a change.
-                        if ( thingItem == 'select' || thingItem == 'clear' ) {
-                            $ELEMENT.
-                                val( thingItem == 'clear' ? '' : P.get( thingItem, SETTINGS.format ) ).
-                                trigger( 'change' )
-                        }
-                    }
-
-                    // Render a new picker.
-                    P.render()
-                }
-
-                // When the method isn’t muted, trigger queued “set” events and pass the `thingObject`.
-                return options.muted ? P : P.trigger( 'set', thingObject )
-            }, //set
-
-
-            /**
-             * Get something
-             */
-            get: function( thing, format ) {
-
-                // Make sure there’s something to get.
-                thing = thing || 'value'
-
-                // If a picker state exists, return that.
-                if ( STATE[ thing ] != null ) {
-                    return STATE[ thing ]
-                }
-
-                // Return the submission value, if that.
-                if ( thing == 'valueSubmit' ) {
-                    if ( P._hidden ) {
-                        return P._hidden.value
-                    }
-                    thing = 'value'
-                }
-
-                // Return the value, if that.
-                if ( thing == 'value' ) {
-                    return ELEMENT.value
-                }
-
-                // Check if a component item exists, return that.
-                if ( thing in P.component.item ) {
-                    if ( typeof format == 'string' ) {
-                        var thingValue = P.component.get( thing )
-                        return thingValue ?
-                            PickerConstructor._.trigger(
-                                P.component.formats.toString,
-                                P.component,
-                                [ format, thingValue ]
-                            ) : ''
-                    }
-                    return P.component.get( thing )
-                }
-            }, //get
-
-
-
-            /**
-             * Bind events on the things.
-             */
-            on: function( thing, method, internal ) {
-
-                var thingName, thingMethod,
-                    thingIsObject = $.isPlainObject( thing ),
-                    thingObject = thingIsObject ? thing : {}
-
-                if ( thing ) {
-
-                    // If the thing isn’t an object, make it one.
-                    if ( !thingIsObject ) {
-                        thingObject[ thing ] = method
-                    }
-
-                    // Go through the things to bind to.
-                    for ( thingName in thingObject ) {
-
-                        // Grab the method of the thing.
-                        thingMethod = thingObject[ thingName ]
-
-                        // If it was an internal binding, prefix it.
-                        if ( internal ) {
-                            thingName = '_' + thingName
-                        }
-
-                        // Make sure the thing methods collection exists.
-                        STATE.methods[ thingName ] = STATE.methods[ thingName ] || []
-
-                        // Add the method to the relative method collection.
-                        STATE.methods[ thingName ].push( thingMethod )
-                    }
-                }
-
-                return P
-            }, //on
-
-
-
-            /**
-             * Unbind events on the things.
-             */
-            off: function() {
-                var i, thingName,
-                    names = arguments;
-                for ( i = 0, namesCount = names.length; i < namesCount; i += 1 ) {
-                    thingName = names[i]
-                    if ( thingName in STATE.methods ) {
-                        delete STATE.methods[thingName]
-                    }
-                }
-                return P
-            },
-
-
-            /**
-             * Fire off method events.
-             */
-            trigger: function( name, data ) {
-                var _trigger = function( name ) {
-                    var methodList = STATE.methods[ name ]
-                    if ( methodList ) {
-                        methodList.map( function( method ) {
-                            PickerConstructor._.trigger( method, P, [ data ] )
-                        })
-                    }
-                }
-                _trigger( '_' + name )
-                _trigger( name )
-                return P
-            } //trigger
-        } //PickerInstance.prototype
-
-
-    /**
-     * Wrap the picker holder components together.
-     */
-    function createWrappedComponent() {
-
-        // Create a picker wrapper holder
-        return PickerConstructor._.node( 'div',
-
-            // Create a picker wrapper node
-            PickerConstructor._.node( 'div',
-
-                // Create a picker frame
-                PickerConstructor._.node( 'div',
-
-                    // Create a picker box node
-                    PickerConstructor._.node( 'div',
-
-                        // Create the components nodes.
-                        P.component.nodes( STATE.open ),
-
-                        // The picker box class
-                        CLASSES.box
-                    ),
-
-                    // Picker wrap class
-                    CLASSES.wrap
-                ),
-
-                // Picker frame class
-                CLASSES.frame
-            ),
-
-            // Picker holder class
-            CLASSES.holder,
-
-            'tabindex="-1"'
-        ) //endreturn
-    } //createWrappedComponent
-
-    // tkane from https://davidwalsh.name/javascript-debounce-function
-    function debounce(func, wait, immediate) {
-      var timeout;
-      return function() {
-          var context = this, args = arguments;
-          var later = function() {
-              timeout = null;
-              if (!immediate) func.apply(context, args);
-          };
-          var callNow = immediate && !timeout;
-          clearTimeout(timeout);
-          timeout = setTimeout(later, wait);
-          if (callNow) func.apply(context, args);
-      };
+          /**
+           * Render a new picker
+           */
+          render: function( entireComponent ) {
+
+              // Insert a new component holder in the root or box.
+              if ( entireComponent ) {
+                  P.$holder = $( createWrappedComponent() )
+                  prepareElementHolder()
+                  P.$root.html( P.$holder )
+              }
+              else P.$root.find( '.' + CLASSES.box ).html( P.component.nodes( STATE.open ) )
+
+              // Trigger the queued “render” events.
+              return P.trigger( 'render' )
+          }, //render
+
+
+          /**
+           * Destroy everything
+           */
+          stop: function() {
+
+              // If it’s already stopped, do nothing.
+              if ( !STATE.start ) return P
+
+              // Then close the picker.
+              P.close()
+
+              // Remove the hidden field.
+              if ( P._hidden ) {
+                  P._hidden.parentNode.removeChild( P._hidden )
+              }
+
+              // Remove the root.
+              P.$root.remove()
+
+              // Remove the input class, remove the stored data, and unbind
+              // the events (after a tick for IE - see `P.close`).
+              $ELEMENT.removeClass( CLASSES.input ).removeData( NAME )
+              setTimeout( function() {
+                  $ELEMENT.off( '.' + STATE.id )
+              }, 0)
+
+              // Restore the element state
+              ELEMENT.type = STATE.type
+              ELEMENT.readOnly = false
+
+              // Trigger the queued “stop” events.
+              P.trigger( 'stop' )
+
+              // Reset the picker states.
+              STATE.methods = {}
+              STATE.start = false
+
+              return P
+          }, //stop
+
+
+          /**
+           * Open up the picker
+           */
+          open: function( dontGiveFocus ) {
+
+              // If it’s already open, do nothing.
+              if ( STATE.open ) return P
+
+              // Add the “active” class.
+              $ELEMENT.addClass( CLASSES.active )
+              aria( ELEMENT, 'expanded', true )
+
+              // * A Firefox bug, when `html` has `overflow:hidden`, results in
+              //   killing transitions :(. So add the “opened” state on the next tick.
+              //   Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=625289
+              setTimeout( function() {
+
+                  // Add the “opened” class to the picker root.
+                  P.$root.addClass( CLASSES.opened )
+                  aria( P.$root[0], 'hidden', false )
+
+              }, 0 )
+
+              // If we have to give focus, bind the element and doc events.
+              if ( dontGiveFocus !== false ) {
+
+                  // Set it as open.
+                  STATE.open = true
+
+                  // Prevent the page from scrolling.
+                  if ( IS_DEFAULT_THEME ) {
+                      $('body').
+                          css( 'overflow', 'hidden' ).
+                          css( 'padding-right', '+=' + getScrollbarWidth() )
+                  }
+
+                  // Pass focus to the root element’s jQuery object.
+                  focusPickerOnceOpened()
+
+                  // Bind the document events.
+                  $document.on( 'click.' + STATE.id + ' focusin.' + STATE.id, function( event ) {
+                      // If the picker is currently midway through processing
+                      // the opening sequence of events then don't handle clicks
+                      // on any part of the DOM. This is caused by a bug in Chrome 73
+                      // where a click event is being generated with the incorrect
+                      // path in it.
+                      // In short, if someone does a click that finishes after the
+                      // new element is created then the path contains only the
+                      // parent element and not the input element itself.
+                      if (STATE.handlingOpen) {
+                        return;
+                      }
+
+                      var target = getRealEventTarget( event, ELEMENT )
+
+                      // If the target of the event is not the element, close the picker picker.
+                      // * Don’t worry about clicks or focusins on the root because those don’t bubble up.
+                      //   Also, for Firefox, a click on an `option` element bubbles up directly
+                      //   to the doc. So make sure the target wasn't the doc.
+                      // * In Firefox stopPropagation() doesn’t prevent right-click events from bubbling,
+                      //   which causes the picker to unexpectedly close when right-clicking it. So make
+                      //   sure the event wasn’t a right-click.
+                      // * In Chrome 62 and up, password autofill causes a simulated focusin event which
+                      //   closes the picker.
+                      if ( ! event.isSimulated && target != ELEMENT && target != document && event.which != 3 ) {
+
+                          // If the target was the holder that covers the screen,
+                          // keep the element focused to maintain tabindex.
+                          P.close( target === P.$holder[0] )
+                      }
+
+                  }).on( 'keydown.' + STATE.id, function( event ) {
+
+                      var
+                          // Get the keycode.
+                          keycode = event.keyCode,
+
+                          // Translate that to a selection change.
+                          keycodeToMove = P.component.key[ keycode ],
+
+                          // Grab the target.
+                          target = getRealEventTarget( event, ELEMENT )
+
+
+                      // On escape, close the picker and give focus.
+                      if ( keycode == 27 ) {
+                          P.close( true )
+                      }
+
+
+                      // Check if there is a key movement or “enter” keypress on the element.
+                      else if ( target == P.$holder[0] && ( keycodeToMove || keycode == 13 ) ) {
+
+                          // Prevent the default action to stop page movement.
+                          event.preventDefault()
+
+                          // Trigger the key movement action.
+                          if ( keycodeToMove ) {
+                              PickerConstructor._.trigger( P.component.key.go, P, [ PickerConstructor._.trigger( keycodeToMove ) ] )
+                          }
+
+                          // On “enter”, if the highlighted item isn’t disabled, set the value and close.
+                          else if ( !P.$root.find( '.' + CLASSES.highlighted ).hasClass( CLASSES.disabled ) ) {
+                              P.set( 'select', P.component.item.highlight )
+                              if ( SETTINGS.closeOnSelect ) {
+                                  P.close( true )
+                              }
+                          }
+                      }
+
+
+                      // If the target is within the root and “enter” is pressed,
+                      // prevent the default action and trigger a click on the target instead.
+                      else if ( $.contains( P.$root[0], target ) && keycode == 13 ) {
+                          event.preventDefault()
+                          target.click()
+                      }
+                  })
+              }
+
+              // Trigger the queued “open” events.
+              return P.trigger( 'open' )
+          }, //open
+
+
+          /**
+           * Close the picker
+           */
+          close: function( giveFocus ) {
+
+              // If we need to give focus, do it before changing states.
+              if ( giveFocus ) {
+                  if ( SETTINGS.editable ) {
+                      ELEMENT.focus()
+                  }
+                  else {
+                      // ....ah yes! It would’ve been incomplete without a crazy workaround for IE :|
+                      // The focus is triggered *after* the close has completed - causing it
+                      // to open again. So unbind and rebind the event at the next tick.
+                      P.$holder.off( 'focus.toOpen' ).focus()
+                      setTimeout( function() {
+                          P.$holder.on( 'focus.toOpen', handleFocusToOpenEvent )
+                      }, 0 )
+                  }
+              }
+
+              // Remove the “active” class.
+              $ELEMENT.removeClass( CLASSES.active )
+              aria( ELEMENT, 'expanded', false )
+
+              // * A Firefox bug, when `html` has `overflow:hidden`, results in
+              //   killing transitions :(. So remove the “opened” state on the next tick.
+              //   Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=625289
+              setTimeout( function() {
+
+                  // Remove the “opened” and “focused” class from the picker root.
+                  P.$root.removeClass( CLASSES.opened + ' ' + CLASSES.focused )
+                  aria( P.$root[0], 'hidden', true )
+
+              }, 0 )
+
+              // If it’s already closed, do nothing more.
+              if ( !STATE.open ) return P
+
+              // Set it as closed.
+              STATE.open = false
+
+              // Allow the page to scroll.
+              if ( IS_DEFAULT_THEME ) {
+                  $('body').
+                      css( 'overflow', '' ).
+                      css( 'padding-right', '-=' + getScrollbarWidth() )
+              }
+
+              // Unbind the document events.
+              $document.off( '.' + STATE.id )
+
+              // Trigger the queued “close” events.
+              return P.trigger( 'close' )
+          }, //close
+
+
+          /**
+           * Clear the values
+           */
+          clear: function( options ) {
+              return P.set( 'clear', null, options )
+          }, //clear
+
+
+          /**
+           * Set something
+           */
+          set: function( thing, value, options ) {
+
+              var thingItem, thingValue,
+                  thingIsObject = $.isPlainObject( thing ),
+                  thingObject = thingIsObject ? thing : {}
+
+              // Make sure we have usable options.
+              options = thingIsObject && $.isPlainObject( value ) ? value : options || {}
+
+              if ( thing ) {
+
+                  // If the thing isn’t an object, make it one.
+                  if ( !thingIsObject ) {
+                      thingObject[ thing ] = value
+                  }
+
+                  // Go through the things of items to set.
+                  for ( thingItem in thingObject ) {
+
+                      // Grab the value of the thing.
+                      thingValue = thingObject[ thingItem ]
+
+                      // First, if the item exists and there’s a value, set it.
+                      if ( thingItem in P.component.item ) {
+                          if ( thingValue === undefined ) thingValue = null
+                          P.component.set( thingItem, thingValue, options )
+                      }
+
+                      // Then, check to update the element value and broadcast a change.
+                      if ( ( thingItem == 'select' || thingItem == 'clear' ) && SETTINGS.updateInput ) {
+                          $ELEMENT.
+                              val( thingItem == 'clear' ? '' : P.get( thingItem, SETTINGS.format ) ).
+                              trigger( 'change' )
+                      }
+                  }
+
+                  // Render a new picker.
+                  P.render()
+              }
+
+              // When the method isn’t muted, trigger queued “set” events and pass the `thingObject`.
+              return options.muted ? P : P.trigger( 'set', thingObject )
+          }, //set
+
+
+          /**
+           * Get something
+           */
+          get: function( thing, format ) {
+
+              // Make sure there’s something to get.
+              thing = thing || 'value'
+
+              // If a picker state exists, return that.
+              if ( STATE[ thing ] != null ) {
+                  return STATE[ thing ]
+              }
+
+              // Return the submission value, if that.
+              if ( thing == 'valueSubmit' ) {
+                  if ( P._hidden ) {
+                      return P._hidden.value
+                  }
+                  thing = 'value'
+              }
+
+              // Return the value, if that.
+              if ( thing == 'value' ) {
+                  return ELEMENT.value
+              }
+
+              // Check if a component item exists, return that.
+              if ( thing in P.component.item ) {
+                  if ( typeof format == 'string' ) {
+                      var thingValue = P.component.get( thing )
+                      return thingValue ?
+                          PickerConstructor._.trigger(
+                              P.component.formats.toString,
+                              P.component,
+                              [ format, thingValue ]
+                          ) : ''
+                  }
+                  return P.component.get( thing )
+              }
+          }, //get
+
+
+
+          /**
+           * Bind events on the things.
+           */
+          on: function( thing, method, internal ) {
+
+              var thingName, thingMethod,
+                  thingIsObject = $.isPlainObject( thing ),
+                  thingObject = thingIsObject ? thing : {}
+
+              if ( thing ) {
+
+                  // If the thing isn’t an object, make it one.
+                  if ( !thingIsObject ) {
+                      thingObject[ thing ] = method
+                  }
+
+                  // Go through the things to bind to.
+                  for ( thingName in thingObject ) {
+
+                      // Grab the method of the thing.
+                      thingMethod = thingObject[ thingName ]
+
+                      // If it was an internal binding, prefix it.
+                      if ( internal ) {
+                          thingName = '_' + thingName
+                      }
+
+                      // Make sure the thing methods collection exists.
+                      STATE.methods[ thingName ] = STATE.methods[ thingName ] || []
+
+                      // Add the method to the relative method collection.
+                      STATE.methods[ thingName ].push( thingMethod )
+                  }
+              }
+
+              return P
+          }, //on
+
+
+
+          /**
+           * Unbind events on the things.
+           */
+          off: function() {
+              var i, thingName,
+                  names = arguments;
+              for ( i = 0, namesCount = names.length; i < namesCount; i += 1 ) {
+                  thingName = names[i]
+                  if ( thingName in STATE.methods ) {
+                      delete STATE.methods[thingName]
+                  }
+              }
+              return P
+          },
+
+
+          /**
+           * Fire off method events.
+           */
+          trigger: function( name, data ) {
+              var _trigger = function( name ) {
+                  var methodList = STATE.methods[ name ]
+                  if ( methodList ) {
+                      methodList.map( function( method ) {
+                          PickerConstructor._.trigger( method, P, [ data ] )
+                      })
+                  }
+              }
+              _trigger( '_' + name )
+              _trigger( name )
+              return P
+          } //trigger
+      } //PickerInstance.prototype
+
+
+  /**
+   * Wrap the picker holder components together.
+   */
+  function createWrappedComponent() {
+
+      // Create a picker wrapper holder
+      return PickerConstructor._.node( 'div',
+
+          // Create a picker wrapper node
+          PickerConstructor._.node( 'div',
+
+              // Create a picker frame
+              PickerConstructor._.node( 'div',
+
+                  // Create a picker box node
+                  PickerConstructor._.node( 'div',
+
+                      // Create the components nodes.
+                      P.component.nodes( STATE.open ),
+
+                      // The picker box class
+                      CLASSES.box
+                  ),
+
+                  // Picker wrap class
+                  CLASSES.wrap
+              ),
+
+              // Picker frame class
+              CLASSES.frame
+          ),
+
+          // Picker holder class
+          CLASSES.holder,
+
+          'tabindex="-1"'
+      ) //endreturn
+  } //createWrappedComponent
+
+  /**
+   * Prepare the input element with all bindings.
+   */
+  function prepareElement() {
+
+      $ELEMENT.
+
+          // Store the picker data by component name.
+          data(NAME, P).
+
+          // Add the “input” class name.
+          addClass(CLASSES.input).
+
+          // If there’s a `data-value`, update the value of the element.
+          val( $ELEMENT.data('value') ?
+              P.get('select', SETTINGS.format) :
+              ELEMENT.value
+          ).
+
+          // On focus/click, open the picker.
+          on( 'focus.' + STATE.id + ' click.' + STATE.id,
+          debounce(function(event) {
+              event.preventDefault()
+              P.open()
+          }, 100))
+
+          // Mousedown handler to capture when the user starts interacting
+          // with the picker. This is used in working around a bug in Chrome 73.
+          .on('mousedown', function() {
+            STATE.handlingOpen = true;
+            var handler = function() {
+              // By default mouseup events are fired before a click event.
+              // By using a timeout we can force the mouseup to be handled
+              // after the corresponding click event is handled.
+              setTimeout(function() {
+                $(document).off('mouseup', handler);
+                STATE.handlingOpen = false;
+              }, 0);
+            };
+            $(document).on('mouseup', handler);
+          });
+
+
+      // Only bind keydown events if the element isn’t editable.
+      if ( !SETTINGS.editable ) {
+
+          $ELEMENT.
+
+              // Handle keyboard event based on the picker being opened or not.
+              on( 'keydown.' + STATE.id, handleKeydownEvent )
+      }
+
+
+      // Update the aria attributes.
+      aria(ELEMENT, {
+          haspopup: true,
+          expanded: false,
+          readonly: false,
+          owns: ELEMENT.id + '_root'
+      })
   }
 
-    /**
-     * Prepare the input element with all bindings.
-     */
-    function prepareElement() {
 
-        $ELEMENT.
+  /**
+   * Prepare the root picker element with all bindings.
+   */
+  function prepareElementRoot() {
+      aria( P.$root[0], 'hidden', true )
+  }
 
-            // Store the picker data by component name.
-            data(NAME, P).
 
-            // Add the “input” class name.
-            addClass(CLASSES.input).
+   /**
+    * Prepare the holder picker element with all bindings.
+    */
+  function prepareElementHolder() {
 
-            // If there’s a `data-value`, update the value of the element.
-            val( $ELEMENT.data('value') ?
-                P.get('select', SETTINGS.format) :
-                ELEMENT.value
-            )
+      P.$holder.
 
+          on({
 
-        // Only bind keydown events if the element isn’t editable.
-        if ( !SETTINGS.editable ) {
+              // For iOS8.
+              keydown: handleKeydownEvent,
 
-            $ELEMENT.
+              'focus.toOpen': handleFocusToOpenEvent,
 
-                // On focus/click, open the picker.
-                on( 'focus.' + STATE.id + ' click.' + STATE.id, debounce(function(event) {
-                    event.preventDefault()
-                    P.open()
-                  }, 300)).
+              blur: function() {
+                  // Remove the “target” class.
+                  $ELEMENT.removeClass( CLASSES.target )
+              },
+
+              // When something within the holder is focused, stop from bubbling
+              // to the doc and remove the “focused” state from the root.
+              focusin: function( event ) {
+                  P.$root.removeClass( CLASSES.focused )
+                  event.stopPropagation()
+              },
+
+              // When something within the holder is clicked, stop it
+              // from bubbling to the doc.
+              'mousedown click': function( event ) {
+
+                  var target = getRealEventTarget( event, ELEMENT )
+
+                  // Make sure the target isn’t the root holder so it can bubble up.
+                  if ( target != P.$holder[0] ) {
+
+                      event.stopPropagation()
+
+                      // * For mousedown events, cancel the default action in order to
+                      //   prevent cases where focus is shifted onto external elements
+                      //   when using things like jQuery mobile or MagnificPopup (ref: #249 & #120).
+                      //   Also, for Firefox, don’t prevent action on the `option` element.
+                      if ( event.type == 'mousedown' && !$( target ).is( 'input, select, textarea, button, option' )) {
+
+                          event.preventDefault()
+
+                          // Re-focus onto the holder so that users can click away
+                          // from elements focused within the picker.
+                          P.$holder.eq(0).focus()
+                      }
+                  }
+              }
+
+          }).
+
+          // If there’s a click on an actionable element, carry out the actions.
+          on( 'click', '[data-pick], [data-nav], [data-clear], [data-close]', function() {
+
+              var $target = $( this ),
+                  targetData = $target.data(),
+                  targetDisabled = $target.hasClass( CLASSES.navDisabled ) || $target.hasClass( CLASSES.disabled ),
+
+                  // * For IE, non-focusable elements can be active elements as well
+                  //   (http://stackoverflow.com/a/2684561).
+                  activeElement = getActiveElement()
+                  activeElement = activeElement && ( (activeElement.type || activeElement.href ) ? activeElement : null);
+
+              // If it’s disabled or nothing inside is actively focused, re-focus the element.
+              if ( targetDisabled || activeElement && !$.contains( P.$root[0], activeElement ) ) {
+                  P.$holder.eq(0).focus()
+              }
+
+              // If something is superficially changed, update the `highlight` based on the `nav`.
+              if ( !targetDisabled && targetData.nav ) {
+                  P.set( 'highlight', P.component.item.highlight, { nav: targetData.nav } )
+              }
+
+              // If something is picked, set `select` then close with focus.
+              else if ( !targetDisabled && 'pick' in targetData ) {
+                  P.set( 'select', targetData.pick )
+                  if ( SETTINGS.closeOnSelect ) {
+                      P.close( true )
+                  }
+              }
 
-                // Handle keyboard event based on the picker being opened or not.
-                on( 'keydown.' + STATE.id, handleKeydownEvent )
-        }
+              // If a “clear” button is pressed, empty the values and close with focus.
+              else if ( targetData.clear ) {
+                  P.clear()
+                  if ( SETTINGS.closeOnClear ) {
+                      P.close( true )
+                  }
+              }
 
+              else if ( targetData.close ) {
+                  P.close( true )
+              }
 
-        // Update the aria attributes.
-        aria(ELEMENT, {
-            haspopup: true,
-            expanded: false,
-            readonly: false,
-            owns: ELEMENT.id + '_root'
-        })
-    }
+          }) //P.$holder
 
-
-    /**
-     * Prepare the root picker element with all bindings.
-     */
-    function prepareElementRoot() {
-        aria( P.$root[0], 'hidden', true )
-    }
+  }
 
 
-     /**
-      * Prepare the holder picker element with all bindings.
-      */
-    function prepareElementHolder() {
+   /**
+    * Prepare the hidden input element along with all bindings.
+    */
+  function prepareElementHidden() {
 
-        P.$holder.
+      var name
 
-            on({
+      if ( SETTINGS.hiddenName === true ) {
+          name = ELEMENT.name
+          ELEMENT.name = ''
+      }
+      else {
+          name = [
+              typeof SETTINGS.hiddenPrefix == 'string' ? SETTINGS.hiddenPrefix : '',
+              typeof SETTINGS.hiddenSuffix == 'string' ? SETTINGS.hiddenSuffix : '_submit'
+          ]
+          name = name[0] + ELEMENT.name + name[1]
+      }
 
-                // For iOS8.
-                keydown: handleKeydownEvent,
+      P._hidden = $(
+          '<input ' +
+          'type=hidden ' +
 
-                'focus.toOpen': handleFocusToOpenEvent,
+          // Create the name using the original input’s with a prefix and suffix.
+          'name="' + name + '"' +
 
-                blur: function() {
-                    // Remove the “target” class.
-                    $ELEMENT.removeClass( CLASSES.target )
-                },
+          // If the element has a value, set the hidden value as well.
+          (
+              $ELEMENT.data('value') || ELEMENT.value ?
+                  ' value="' + P.get('select', SETTINGS.formatSubmit) + '"' :
+                  ''
+          ) +
+          '>'
+      )[0]
 
-                // When something within the holder is focused, stop from bubbling
-                // to the doc and remove the “focused” state from the root.
-                focusin: function( event ) {
-                    P.$root.removeClass( CLASSES.focused )
-                    event.stopPropagation()
-                },
+      $ELEMENT.
 
-                // When something within the holder is clicked, stop it
-                // from bubbling to the doc.
-                'mousedown click': function( event ) {
+          // If the value changes, update the hidden input with the correct format.
+          on('change.' + STATE.id, function() {
+              P._hidden.value = ELEMENT.value ?
+                  P.get('select', SETTINGS.formatSubmit) :
+                  ''
+          })
+  }
 
-                    var target = event.target
-
-                    // Make sure the target isn’t the root holder so it can bubble up.
-                    if ( target != P.$holder[0] ) {
-
-                        event.stopPropagation()
-
-                        // * For mousedown events, cancel the default action in order to
-                        //   prevent cases where focus is shifted onto external elements
-                        //   when using things like jQuery mobile or MagnificPopup (ref: #249 & #120).
-                        //   Also, for Firefox, don’t prevent action on the `option` element.
-                        if ( event.type == 'mousedown' && !$( target ).is( 'input, select, textarea, button, option' )) {
-
-                            event.preventDefault()
-
-                            // Re-focus onto the holder so that users can click away
-                            // from elements focused within the picker.
-                            P.$holder[0].focus()
-                        }
-                    }
-                }
-
-            }).
-
-            // If there’s a click on an actionable element, carry out the actions.
-            on( 'click', '[data-pick], [data-nav], [data-clear], [data-close]', function() {
-
-                var $target = $( this ),
-                    targetData = $target.data(),
-                    targetDisabled = $target.hasClass( CLASSES.navDisabled ) || $target.hasClass( CLASSES.disabled ),
-
-                    // * For IE, non-focusable elements can be active elements as well
-                    //   (http://stackoverflow.com/a/2684561).
-                    activeElement = getActiveElement()
-                    activeElement = activeElement && ( activeElement.type || activeElement.href )
-
-                // If it’s disabled or nothing inside is actively focused, re-focus the element.
-                if ( targetDisabled || activeElement && !$.contains( P.$root[0], activeElement ) ) {
-                    P.$holder[0].focus()
-                }
-
-                // If something is superficially changed, update the `highlight` based on the `nav`.
-                if ( !targetDisabled && targetData.nav ) {
-                    P.set( 'highlight', P.component.item.highlight, { nav: targetData.nav } )
-                }
-
-                // If something is picked, set `select` then close with focus.
-                else if ( !targetDisabled && 'pick' in targetData ) {
-                    P.set( 'select', targetData.pick )
-                    if ( SETTINGS.closeOnSelect ) {
-                        P.close( true )
-                    }
-                }
-
-                // If a “clear” button is pressed, empty the values and close with focus.
-                else if ( targetData.clear ) {
-                    P.clear()
-                    if ( SETTINGS.closeOnClear ) {
-                        P.close( true )
-                    }
-                }
-
-                else if ( targetData.close ) {
-                    P.close( true )
-                }
-
-            }) //P.$holder
-
-    }
-
-
-     /**
-      * Prepare the hidden input element along with all bindings.
-      */
-    function prepareElementHidden() {
-
-        var name
-
-        if ( SETTINGS.hiddenName === true ) {
-            name = ELEMENT.name
-            ELEMENT.name = ''
-        }
-        else {
-            name = [
-                typeof SETTINGS.hiddenPrefix == 'string' ? SETTINGS.hiddenPrefix : '',
-                typeof SETTINGS.hiddenSuffix == 'string' ? SETTINGS.hiddenSuffix : '_submit'
-            ]
-            name = name[0] + ELEMENT.name + name[1]
-        }
-
-        P._hidden = $(
-            '<input ' +
-            'type=hidden ' +
-
-            // Create the name using the original input’s with a prefix and suffix.
-            'name="' + name + '"' +
-
-            // If the element has a value, set the hidden value as well.
-            (
-                $ELEMENT.data('value') || ELEMENT.value ?
-                    ' value="' + P.get('select', SETTINGS.formatSubmit) + '"' :
-                    ''
-            ) +
-            '>'
-        )[0]
-
-        $ELEMENT.
-
-            // If the value changes, update the hidden input with the correct format.
-            on('change.' + STATE.id, function() {
-                P._hidden.value = ELEMENT.value ?
-                    P.get('select', SETTINGS.formatSubmit) :
-                    ''
-            })
-    }
-
-
-    // Wait for transitions to end before focusing the holder. Otherwise, while
-    // using the `container` option, the view jumps to the container.
-    function focusPickerOnceOpened() {
-
-        if (IS_DEFAULT_THEME && supportsTransitions) {
-            P.$holder.find('.' + CLASSES.frame).one('transitionend', function() {
-                P.$holder[0].focus()
-            })
-        }
-        else {
-            P.$holder[0].focus()
-        }
-    }
-
-
-    function handleFocusToOpenEvent(event) {
-
-        // Stop the event from propagating to the doc.
-        event.stopPropagation()
-
-        // Add the “target” class.
-        $ELEMENT.addClass( CLASSES.target )
-
-        // Add the “focused” class to the root.
-        P.$root.addClass( CLASSES.focused )
-
-        // And then finally open the picker.
-        P.open()
-    }
-
-
-    // For iOS8.
-    function handleKeydownEvent( event ) {
-
-        var keycode = event.keyCode,
-
-            // Check if one of the delete keys was pressed.
-            isKeycodeDelete = /^(8|46)$/.test(keycode)
-
-        // For some reason IE clears the input value on “escape”.
-        if ( keycode == 27 ) {
-            P.close( true )
-            return false
-        }
-
-        // Check if `space` or `delete` was pressed or the picker is closed with a key movement.
-        if ( keycode == 32 || isKeycodeDelete || !STATE.open && P.component.key[keycode] ) {
-
-            // Prevent it from moving the page and bubbling to doc.
-            event.preventDefault()
-            event.stopPropagation()
-
-            // If `delete` was pressed, clear the values and close the picker.
-            // Otherwise open the picker.
-            if ( isKeycodeDelete ) { P.clear().close() }
-            else { P.open() }
-        }
-    }
-
-
-    // Return a new picker instance.
-    return new PickerInstance()
+
+  // Wait for transitions to end before focusing the holder. Otherwise, while
+  // using the `container` option, the view jumps to the container.
+  function focusPickerOnceOpened() {
+
+      if (IS_DEFAULT_THEME && supportsTransitions) {
+          P.$holder.find('.' + CLASSES.frame).one('transitionend', function() {
+              P.$holder.eq(0).focus()
+          })
+      }
+      else {
+          setTimeout(function() {
+              P.$holder.eq(0).focus()
+          }, 0)
+      }
+  }
+
+
+  function handleFocusToOpenEvent(event) {
+
+      // Stop the event from propagating to the doc.
+      event.stopPropagation()
+
+      // Add the “target” class.
+      $ELEMENT.addClass( CLASSES.target )
+
+      // Add the “focused” class to the root.
+      P.$root.addClass( CLASSES.focused )
+
+      // And then finally open the picker.
+      P.open()
+  }
+
+
+  // For iOS8.
+  function handleKeydownEvent( event ) {
+
+      var keycode = event.keyCode,
+
+          // Check if one of the delete keys was pressed.
+          isKeycodeDelete = /^(8|46)$/.test(keycode)
+
+      // For some reason IE clears the input value on “escape”.
+      if ( keycode == 27 ) {
+          P.close( true )
+          return false
+      }
+
+      // Check if `space` or `delete` was pressed or the picker is closed with a key movement.
+      if ( keycode == 32 || isKeycodeDelete || !STATE.open && P.component.key[keycode] ) {
+
+          // Prevent it from moving the page and bubbling to doc.
+          event.preventDefault()
+          event.stopPropagation()
+
+          // If `delete` was pressed, clear the values and close the picker.
+          // Otherwise open the picker.
+          if ( isKeycodeDelete ) { P.clear().close() }
+          else { P.open() }
+      }
+  }
+
+
+  // Return a new picker instance.
+  return new PickerInstance()
 } //PickerConstructor
 
 
 
 /**
- * The default classes and prefix to use for the HTML classes.
- */
+* The default classes and prefix to use for the HTML classes.
+*/
 PickerConstructor.klasses = function( prefix ) {
-    prefix = prefix || 'picker'
-    return {
+  prefix = prefix || 'picker'
+  return {
 
-        picker: prefix,
-        opened: prefix + '--opened',
-        focused: prefix + '--focused',
+      picker: prefix,
+      opened: prefix + '--opened',
+      focused: prefix + '--focused',
 
-        input: prefix + '__input',
-        active: prefix + '__input--active',
-        target: prefix + '__input--target',
+      input: prefix + '__input',
+      active: prefix + '__input--active',
+      target: prefix + '__input--target',
 
-        holder: prefix + '__holder',
+      holder: prefix + '__holder',
 
-        frame: prefix + '__frame',
-        wrap: prefix + '__wrap',
+      frame: prefix + '__frame',
+      wrap: prefix + '__wrap',
 
-        box: prefix + '__box'
-    }
+      box: prefix + '__box'
+  }
 } //PickerConstructor.klasses
 
 
 
 /**
- * Check if the default theme is being used.
- */
+* Check if the default theme is being used.
+*/
 function isUsingDefaultTheme( element ) {
 
-    var theme,
-        prop = 'position'
+  var theme,
+      prop = 'position'
 
-    // For IE.
-    if ( element.currentStyle ) {
-        theme = element.currentStyle[prop]
-    }
+  // For IE.
+  if ( element.currentStyle ) {
+      theme = element.currentStyle[prop]
+  }
 
-    // For normal browsers.
-    else if ( window.getComputedStyle ) {
-        theme = getComputedStyle( element )[prop]
-    }
+  // For normal browsers.
+  else if ( window.getComputedStyle ) {
+      theme = getComputedStyle( element )[prop]
+  }
 
-    return theme == 'fixed'
+  return theme == 'fixed'
 }
 
 
 
 /**
- * Get the width of the browser’s scrollbar.
- * Taken from: https://github.com/VodkaBears/Remodal/blob/master/src/jquery.remodal.js
- */
+* Get the width of the browser’s scrollbar.
+* Taken from: https://github.com/VodkaBears/Remodal/blob/master/src/jquery.remodal.js
+*/
 function getScrollbarWidth() {
 
-    if ( $html.height() <= $window.height() ) {
-        return 0
-    }
+  if ( $html.height() <= $window.height() ) {
+      return 0
+  }
 
-    var $outer = $( '<div style="visibility:hidden;width:100px" />' ).
-        appendTo( 'body' )
+  var $outer = $( '<div style="visibility:hidden;width:100px" />' ).
+      appendTo( 'body' )
 
-    // Get the width without scrollbars.
-    var widthWithoutScroll = $outer[0].offsetWidth
+  // Get the width without scrollbars.
+  var widthWithoutScroll = $outer[0].offsetWidth
 
-    // Force adding scrollbars.
-    $outer.css( 'overflow', 'scroll' )
+  // Force adding scrollbars.
+  $outer.css( 'overflow', 'scroll' )
 
-    // Add the inner div.
-    var $inner = $( '<div style="width:100%" />' ).appendTo( $outer )
+  // Add the inner div.
+  var $inner = $( '<div style="width:100%" />' ).appendTo( $outer )
 
-    // Get the width with scrollbars.
-    var widthWithScroll = $inner[0].offsetWidth
+  // Get the width with scrollbars.
+  var widthWithScroll = $inner[0].offsetWidth
 
-    // Remove the divs.
-    $outer.remove()
+  // Remove the divs.
+  $outer.remove()
 
-    // Return the difference between the widths.
-    return widthWithoutScroll - widthWithScroll
+  // Return the difference between the widths.
+  return widthWithoutScroll - widthWithScroll
 }
 
 
 
 /**
- * PickerConstructor helper methods.
- */
+* Get the target element from the event.
+* If ELEMENT is supplied and present in the event path (ELEMENT is ancestor of the target),
+* returns ELEMENT instead
+*/
+function getRealEventTarget( event, ELEMENT ) {
+
+  var path = []
+
+  if ( event.path ) {
+      path = event.path
+  }
+
+  if ( event.originalEvent && event.originalEvent.path ) {
+      path = event.originalEvent.path
+  }
+
+  if ( path && path.length > 0 ) {
+      if ( ELEMENT && path.indexOf( ELEMENT ) >= 0 ) {
+          return ELEMENT
+      } else {
+          return path[0]
+      }
+  }
+
+  return event.target
+}
+
+// taken from https://davidwalsh.name/javascript-debounce-function
+function debounce(func, wait, immediate) {
+  var timeout;
+  return function() {
+      var context = this, args = arguments;
+      var later = function() {
+          timeout = null;
+          if (!immediate) func.apply(context, args);
+      };
+      var callNow = immediate && !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+      if (callNow) func.apply(context, args);
+  };
+}
+
+/**
+* PickerConstructor helper methods.
+*/
 PickerConstructor._ = {
 
-    /**
-     * Create a group of nodes. Expects:
-     * `
-        {
-            min:    {Integer},
-            max:    {Integer},
-            i:      {Integer},
-            node:   {String},
-            item:   {Function}
-        }
-     * `
-     */
-    group: function( groupObject ) {
+  /**
+   * Create a group of nodes. Expects:
+   * `
+      {
+          min:    {Integer},
+          max:    {Integer},
+          i:      {Integer},
+          node:   {String},
+          item:   {Function}
+      }
+   * `
+   */
+  group: function( groupObject ) {
 
-        var
-            // Scope for the looped object
-            loopObjectScope,
+      var
+          // Scope for the looped object
+          loopObjectScope,
 
-            // Create the nodes list
-            nodesList = '',
+          // Create the nodes list
+          nodesList = '',
 
-            // The counter starts from the `min`
-            counter = PickerConstructor._.trigger( groupObject.min, groupObject )
-
-
-        // Loop from the `min` to `max`, incrementing by `i`
-        for ( ; counter <= PickerConstructor._.trigger( groupObject.max, groupObject, [ counter ] ); counter += groupObject.i ) {
-
-            // Trigger the `item` function within scope of the object
-            loopObjectScope = PickerConstructor._.trigger( groupObject.item, groupObject, [ counter ] )
-
-            // Splice the subgroup and create nodes out of the sub nodes
-            nodesList += PickerConstructor._.node(
-                groupObject.node,
-                loopObjectScope[ 0 ],   // the node
-                loopObjectScope[ 1 ],   // the classes
-                loopObjectScope[ 2 ]    // the attributes
-            )
-        }
-
-        // Return the list of nodes
-        return nodesList
-    }, //group
+          // The counter starts from the `min`
+          counter = PickerConstructor._.trigger( groupObject.min, groupObject )
 
 
-    /**
-     * Create a dom node string
-     */
-    node: function( wrapper, item, klass, attribute ) {
+      // Loop from the `min` to `max`, incrementing by `i`
+      for ( ; counter <= PickerConstructor._.trigger( groupObject.max, groupObject, [ counter ] ); counter += groupObject.i ) {
 
-        // If the item is false-y, just return an empty string
-        if ( !item ) return ''
+          // Trigger the `item` function within scope of the object
+          loopObjectScope = PickerConstructor._.trigger( groupObject.item, groupObject, [ counter ] )
 
-        // If the item is an array, do a join
-        item = $.isArray( item ) ? item.join( '' ) : item
+          // Splice the subgroup and create nodes out of the sub nodes
+          nodesList += PickerConstructor._.node(
+              groupObject.node,
+              loopObjectScope[ 0 ],   // the node
+              loopObjectScope[ 1 ],   // the classes
+              loopObjectScope[ 2 ]    // the attributes
+          )
+      }
 
-        // Check for the class
-        klass = klass ? ' class="' + klass + '"' : ''
-
-        // Check for any attributes
-        attribute = attribute ? ' ' + attribute : ''
-
-        // Return the wrapped item
-        return '<' + wrapper + klass + attribute + '>' + item + '</' + wrapper + '>'
-    }, //node
+      // Return the list of nodes
+      return nodesList
+  }, //group
 
 
-    /**
-     * Lead numbers below 10 with a zero.
-     */
-    lead: function( number ) {
-        return ( number < 10 ? '0': '' ) + number
-    },
+  /**
+   * Create a dom node string
+   */
+  node: function( wrapper, item, klass, attribute ) {
+
+      // If the item is false-y, just return an empty string
+      if ( !item ) return ''
+
+      // If the item is an array, do a join
+      item = $.isArray( item ) ? item.join( '' ) : item
+
+      // Check for the class
+      klass = klass ? ' class="' + klass + '"' : ''
+
+      // Check for any attributes
+      attribute = attribute ? ' ' + attribute : ''
+
+      // Return the wrapped item
+      return '<' + wrapper + klass + attribute + '>' + item + '</' + wrapper + '>'
+  }, //node
 
 
-    /**
-     * Trigger a function otherwise return the value.
-     */
-    trigger: function( callback, scope, args ) {
-        return typeof callback == 'function' ? callback.apply( scope, args || [] ) : callback
-    },
+  /**
+   * Lead numbers below 10 with a zero.
+   */
+  lead: function( number ) {
+      return ( number < 10 ? '0': '' ) + number
+  },
 
 
-    /**
-     * If the second character is a digit, length is 2 otherwise 1.
-     */
-    digits: function( string ) {
-        return ( /\d/ ).test( string[ 1 ] ) ? 2 : 1
-    },
+  /**
+   * Trigger a function otherwise return the value.
+   */
+  trigger: function( callback, scope, args ) {
+      return typeof callback == 'function' ? callback.apply( scope, args || [] ) : callback
+  },
 
 
-    /**
-     * Tell if something is a date object.
-     */
-    isDate: function( value ) {
-        return {}.toString.call( value ).indexOf( 'Date' ) > -1 && this.isInteger( value.getDate() )
-    },
+  /**
+   * If the second character is a digit, length is 2 otherwise 1.
+   */
+  digits: function( string ) {
+      return ( /\d/ ).test( string[ 1 ] ) ? 2 : 1
+  },
 
 
-    /**
-     * Tell if something is an integer.
-     */
-    isInteger: function( value ) {
-        return {}.toString.call( value ).indexOf( 'Number' ) > -1 && value % 1 === 0
-    },
+  /**
+   * Tell if something is a date object.
+   */
+  isDate: function( value ) {
+      return {}.toString.call( value ).indexOf( 'Date' ) > -1 && this.isInteger( value.getDate() )
+  },
 
 
-    /**
-     * Create ARIA attribute strings.
-     */
-    ariaAttr: ariaAttr
+  /**
+   * Tell if something is an integer.
+   */
+  isInteger: function( value ) {
+      return {}.toString.call( value ).indexOf( 'Number' ) > -1 && value % 1 === 0
+  },
+
+
+  /**
+   * Create ARIA attribute strings.
+   */
+  ariaAttr: ariaAttr
 } //PickerConstructor._
 
 
 
 /**
- * Extend the picker with a component and defaults.
- */
+* Extend the picker with a component and defaults.
+*/
 PickerConstructor.extend = function( name, Component ) {
 
-    // Extend jQuery.
-    $.fn[ name ] = function( options, action ) {
+  // Extend jQuery.
+  $.fn[ name ] = function( options, action ) {
 
-        // Grab the component data.
-        var componentData = this.data( name )
+      // Grab the component data.
+      var componentData = this.data( name )
 
-        // If the picker is requested, return the data object.
-        if ( options == 'picker' ) {
-            return componentData
-        }
+      // If the picker is requested, return the data object.
+      if ( options == 'picker' ) {
+          return componentData
+      }
 
-        // If the component data exists and `options` is a string, carry out the action.
-        if ( componentData && typeof options == 'string' ) {
-            return PickerConstructor._.trigger( componentData[ options ], componentData, [ action ] )
-        }
+      // If the component data exists and `options` is a string, carry out the action.
+      if ( componentData && typeof options == 'string' ) {
+          return PickerConstructor._.trigger( componentData[ options ], componentData, [ action ] )
+      }
 
-        // Otherwise go through each matched element and if the component
-        // doesn’t exist, create a new picker using `this` element
-        // and merging the defaults and options with a deep copy.
-        return this.each( function() {
-            var $this = $( this )
-            if ( !$this.data( name ) ) {
-                new PickerConstructor( this, name, Component, options )
-            }
-        })
-    }
+      // Otherwise go through each matched element and if the component
+      // doesn’t exist, create a new picker using `this` element
+      // and merging the defaults and options with a deep copy.
+      return this.each( function() {
+          var $this = $( this )
+          if ( !$this.data( name ) ) {
+              new PickerConstructor( this, name, Component, options )
+          }
+      })
+  }
 
-    // Set the defaults.
-    $.fn[ name ].defaults = Component.defaults
+  // Set the defaults.
+  $.fn[ name ].defaults = Component.defaults
 } //PickerConstructor.extend
 
 
 
 function aria(element, attribute, value) {
-    if ( $.isPlainObject(attribute) ) {
-        for ( var key in attribute ) {
-            ariaSet(element, key, attribute[key])
-        }
-    }
-    else {
-        ariaSet(element, attribute, value)
-    }
+  if ( $.isPlainObject(attribute) ) {
+      for ( var key in attribute ) {
+          ariaSet(element, key, attribute[key])
+      }
+  }
+  else {
+      ariaSet(element, attribute, value)
+  }
 }
 function ariaSet(element, attribute, value) {
-    element.setAttribute(
-        (attribute == 'role' ? '' : 'aria-') + attribute,
-        value
-    )
+  element.setAttribute(
+      (attribute == 'role' ? '' : 'aria-') + attribute,
+      value
+  )
 }
 function ariaAttr(attribute, data) {
-    if ( !$.isPlainObject(attribute) ) {
-        attribute = { attribute: data }
-    }
-    data = ''
-    for ( var key in attribute ) {
-        var attr = (key == 'role' ? '' : 'aria-') + key,
-            attrVal = attribute[key]
-        data += attrVal == null ? '' : attr + '="' + attribute[key] + '"'
-    }
-    return data
+  if ( !$.isPlainObject(attribute) ) {
+      attribute = { attribute: data }
+  }
+  data = ''
+  for ( var key in attribute ) {
+      var attr = (key == 'role' ? '' : 'aria-') + key,
+          attrVal = attribute[key]
+      data += attrVal == null ? '' : attr + '="' + attribute[key] + '"'
+  }
+  return data
 }
 
 // IE8 bug throws an error for activeElements within iframes.
 function getActiveElement() {
-    try {
-        return document.activeElement
-    } catch ( err ) { }
+  try {
+      return document.activeElement
+  } catch ( err ) { }
 }
 
 
@@ -19828,20 +20040,16 @@ return PickerConstructor
 
 }));
 
-
-
-
 /*!
- * Date picker for pickadate.js v3.5.6
+ * Date picker for pickadate.js v3.6.3
  * http://amsul.github.io/pickadate.js/date.htm
- * https://github.com/amsul/pickadate.js
  */
 
 (function (factory) {
 
   // AMD.
   if (typeof define == 'function' && define.amd)
-    define(['picker', 'jquery'], factory)
+    define(['./picker', 'jquery'], factory)
 
   // Node.js/browserify.
   else if (typeof exports == 'object')
@@ -20173,7 +20381,7 @@ return PickerConstructor
       isTargetObject = $.isPlainObject(value),
       viewsetObject = this.item.view
     /*,
-            safety = 100*/
+          safety = 100*/
 
 
     if (isTargetArray || isTargetObject) {
@@ -20233,21 +20441,21 @@ return PickerConstructor
 
     var calendar = this
 
+    // If it's an integer, get a date relative to today.
+    if (_.isInteger(value)) {
+      value = calendar.now(type, value, {
+        rel: value
+      })
+    }
+
     // If it’s anything false-y, remove the limits.
-    if (!value) {
+    else if (!value) {
       value = type == 'min' ? -Infinity : Infinity
     }
 
     // If it’s a string, parse it.
     else if (typeof value == 'string') {
       value = calendar.parse(type, value)
-    }
-
-    // If it's an integer, get a date relative to today.
-    else if (_.isInteger(value)) {
-      value = calendar.now(type, value, {
-        rel: value
-      })
     }
 
     return value
@@ -20303,7 +20511,7 @@ return PickerConstructor
       }).length
     /*,
 
-            safety = 100*/
+          safety = 100*/
 
 
 
@@ -20608,7 +20816,8 @@ return PickerConstructor
 
     // When we’re working with date representations, compare the “pick” value.
     if (
-      (_.isDate(one) || $.isArray(one)) && (_.isDate(two) || $.isArray(two))
+      (_.isDate(one) || $.isArray(one)) &&
+      (_.isDate(two) || $.isArray(two))
     ) {
       return calendar.create(one).pick === calendar.create(two).pick
     }
@@ -20859,7 +21068,7 @@ return PickerConstructor
 
         // Otherwise, return the created month tag.
         return _.node(
-          'div',
+          'button',
           ' ',
           settings.klass['nav' + (next ? 'Next' : 'Prev')] + (
 
@@ -20871,6 +21080,7 @@ return PickerConstructor
           'data-nav=' + (next || -1) + ' ' +
           _.ariaAttr({
             role: 'button',
+
             controls: calendar.$node[0].id + '_table'
           }) + ' ' +
           'title="' + (next ? settings.labelMonthNext : settings.labelMonthPrev) + '"'
@@ -20912,7 +21122,8 @@ return PickerConstructor
                 ]
               }
             }),
-            settings.klass.selectMonth, (isOpen ? '' : 'disabled') + ' ' +
+            settings.klass.selectMonth,
+            (isOpen ? '' : 'disabled') + ' ' +
             _.ariaAttr({
               controls: calendar.$node[0].id + '_table'
             }) + ' ' +
@@ -20979,7 +21190,8 @@ return PickerConstructor
                 ]
               }
             }),
-            settings.klass.selectYear, (isOpen ? '' : 'disabled') + ' ' + _.ariaAttr({
+            settings.klass.selectYear,
+            (isOpen ? '' : 'disabled') + ' ' + _.ariaAttr({
               controls: calendar.$node[0].id + '_table'
             }) + ' ' +
             'title="' + settings.labelYearSelect + '"'
@@ -20993,7 +21205,8 @@ return PickerConstructor
 
     // Create and return the entire calendar.
     return _.node(
-        'div', (settings.selectYears ? createYearLabel() + createMonthLabel() : createMonthLabel() + createYearLabel()) +
+        'div',
+        (settings.selectYears ? createYearLabel() + createMonthLabel() : createMonthLabel() + createYearLabel()) +
         createMonthNav() + createMonthNav(1),
         settings.klass.header
       ) + _.node(
@@ -21032,7 +21245,8 @@ return PickerConstructor
                     return [
                       _.node(
                         'div',
-                        targetDate.date, (function (klasses) {
+                        targetDate.date,
+                        (function (klasses) {
 
                           // Add the `infocus` or `outfocus` classes based on month in view.
                           klasses.push(viewsetObject.month == targetDate.month ? settings.klass.infocus : settings.klass.outfocus)
@@ -21144,6 +21358,9 @@ return PickerConstructor
       closeOnSelect: true,
       closeOnClear: true,
 
+      // Update input value on select/clear
+      updateInput: true,
+
       // The format to show on the `input` element
       format: 'd mmmm, yyyy',
 
@@ -21154,8 +21371,8 @@ return PickerConstructor
 
         header: prefix + 'header',
 
-        navPrev: prefix + 'nav--prev',
-        navNext: prefix + 'nav--next',
+        navPrev: prefix + 'nav--prev btn btn-flat',
+        navNext: prefix + 'nav--next btn btn-flat',
         navDisabled: prefix + 'nav--disabled',
 
         month: prefix + 'month',
@@ -21205,9 +21422,10 @@ $.extend($.fn.pickadate.defaults, {
     var year = this.get('highlight', 'yyyy');
     var day = this.get('highlight', 'dd');
     var month = this.get('highlight', 'mmm');
-    var labelday = this.get('highlight', 'dddd');
+    var labeldayFirstThreeLetters = this.get('highlight', 'dddd').slice(0, 3);
+    var monthFirstUC = month.charAt(0).toUpperCase() + month.slice(1)
 
-    $pickerInstance.find('.picker__header').prepend('<div class="picker__date-display"><div class="picker__weekday-display">' + labelday + '</div><div class="picker__month-display"><div>' + month + '</div></div><div class="picker__day-display"><div>' + day + '</div></div><div    class="picker__year-display"><div>' + year + '</div></div></div>');
+    $pickerInstance.find('.picker__header').prepend('<div class="picker__date-display"><div class="picker__weekday-display">' + labeldayFirstThreeLetters + ', </div><div class="picker__month-display"><div>' + monthFirstUC + '</div></div><div class="picker__day-display"><div>' + day + '</div></div><div    class="picker__year-display"><div>' + year + '</div></div></div>');
   }
 });
 
@@ -21422,7 +21640,7 @@ $.extend($.fn.pickadate.defaults, {
 		this.spanMinutes.click($.proxy(this.toggleView, this, 'minutes'));
 
 		// Show or toggle
-		input.on('focus.clockpicker click.clockpicker', debounce( $.proxy(this.show, this),300));
+		input.on('focus.clockpicker click.clockpicker', debounce( $.proxy(this.show, this), 100));
 
 		// Build ticks
 		var tickTpl = $('<div class="clockpicker-tick"></div>'),
@@ -21720,12 +21938,12 @@ ClockPicker.prototype.parseInputValue = function(){
 			var target = $(e.target);
 			if (target.closest(self.popover.find('.picker__wrap')).length === 0 && target.closest(self.input).length === 0)
 				self.hide();
-		}, 300));
+		}, 100));
 		// Hide when ESC is pressed
 		$doc.on('keyup.clockpicker.' + this.id, debounce( function(e){
 			if (e.keyCode === 27)
 				self.hide();
-		},300));
+		},100));
 		raiseCallback(this.options.afterShow);
 	};
 	// Hide popover
@@ -23814,8 +24032,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     });
   };
 })(jQuery);
-/* perfect-scrollbar v0.7.1 */
-!function t(e,n,r){function o(i,s){if(!n[i]){if(!e[i]){var a="function"==typeof require&&require;if(!s&&a)return a(i,!0);if(l)return l(i,!0);var c=new Error("Cannot find module '"+i+"'");throw c.code="MODULE_NOT_FOUND",c}var u=n[i]={exports:{}};e[i][0].call(u.exports,function(t){var n=e[i][1][t];return o(n?n:t)},u,u.exports,t,e,n,r)}return n[i].exports}for(var l="function"==typeof require&&require,i=0;i<r.length;i++)o(r[i]);return o}({1:[function(t,e,n){"use strict";var r=t("../main");"function"==typeof define&&define.amd?define(r):(window.PerfectScrollbar=r,"undefined"==typeof window.Ps&&(window.Ps=r))},{"../main":7}],2:[function(t,e,n){"use strict";function r(t,e){var n=t.className.split(" ");n.indexOf(e)<0&&n.push(e),t.className=n.join(" ")}function o(t,e){var n=t.className.split(" "),r=n.indexOf(e);r>=0&&n.splice(r,1),t.className=n.join(" ")}n.add=function(t,e){t.classList?t.classList.add(e):r(t,e)},n.remove=function(t,e){t.classList?t.classList.remove(e):o(t,e)},n.list=function(t){return t.classList?Array.prototype.slice.apply(t.classList):t.className.split(" ")}},{}],3:[function(t,e,n){"use strict";function r(t,e){return window.getComputedStyle(t)[e]}function o(t,e,n){return"number"==typeof n&&(n=n.toString()+"px"),t.style[e]=n,t}function l(t,e){for(var n in e){var r=e[n];"number"==typeof r&&(r=r.toString()+"px"),t.style[n]=r}return t}var i={};i.e=function(t,e){var n=document.createElement(t);return n.className=e,n},i.appendTo=function(t,e){return e.appendChild(t),t},i.css=function(t,e,n){return"object"==typeof e?l(t,e):"undefined"==typeof n?r(t,e):o(t,e,n)},i.matches=function(t,e){return"undefined"!=typeof t.matches?t.matches(e):"undefined"!=typeof t.matchesSelector?t.matchesSelector(e):"undefined"!=typeof t.webkitMatchesSelector?t.webkitMatchesSelector(e):"undefined"!=typeof t.mozMatchesSelector?t.mozMatchesSelector(e):"undefined"!=typeof t.msMatchesSelector?t.msMatchesSelector(e):void 0},i.remove=function(t){"undefined"!=typeof t.remove?t.remove():t.parentNode&&t.parentNode.removeChild(t)},i.queryChildren=function(t,e){return Array.prototype.filter.call(t.childNodes,function(t){return i.matches(t,e)})},e.exports=i},{}],4:[function(t,e,n){"use strict";var r=function(t){this.element=t,this.events={}};r.prototype.bind=function(t,e){"undefined"==typeof this.events[t]&&(this.events[t]=[]),this.events[t].push(e),this.element.addEventListener(t,e,!1)},r.prototype.unbind=function(t,e){var n="undefined"!=typeof e;this.events[t]=this.events[t].filter(function(r){return!(!n||r===e)||(this.element.removeEventListener(t,r,!1),!1)},this)},r.prototype.unbindAll=function(){for(var t in this.events)this.unbind(t)};var o=function(){this.eventElements=[]};o.prototype.eventElement=function(t){var e=this.eventElements.filter(function(e){return e.element===t})[0];return"undefined"==typeof e&&(e=new r(t),this.eventElements.push(e)),e},o.prototype.bind=function(t,e,n){this.eventElement(t).bind(e,n)},o.prototype.unbind=function(t,e,n){this.eventElement(t).unbind(e,n)},o.prototype.unbindAll=function(){for(var t=0;t<this.eventElements.length;t++)this.eventElements[t].unbindAll()},o.prototype.once=function(t,e,n){var r=this.eventElement(t),o=function(t){r.unbind(e,o),n(t)};r.bind(e,o)},e.exports=o},{}],5:[function(t,e,n){"use strict";e.exports=function(){function t(){return Math.floor(65536*(1+Math.random())).toString(16).substring(1)}return function(){return t()+t()+"-"+t()+"-"+t()+"-"+t()+"-"+t()+t()+t()}}()},{}],6:[function(t,e,n){"use strict";function r(t){return function(e,n){t(e,"ps--in-scrolling"),"undefined"!=typeof n?t(e,"ps--"+n):(t(e,"ps--x"),t(e,"ps--y"))}}var o=t("./class"),l=t("./dom"),i=n.toInt=function(t){return parseInt(t,10)||0},s=n.clone=function(t){if(t){if(Array.isArray(t))return t.map(s);if("object"==typeof t){var e={};for(var n in t)e[n]=s(t[n]);return e}return t}return null};n.extend=function(t,e){var n=s(t);for(var r in e)n[r]=s(e[r]);return n},n.isEditable=function(t){return l.matches(t,"input,[contenteditable]")||l.matches(t,"select,[contenteditable]")||l.matches(t,"textarea,[contenteditable]")||l.matches(t,"button,[contenteditable]")},n.removePsClasses=function(t){for(var e=o.list(t),n=0;n<e.length;n++){var r=e[n];0===r.indexOf("ps-")&&o.remove(t,r)}},n.outerWidth=function(t){return i(l.css(t,"width"))+i(l.css(t,"paddingLeft"))+i(l.css(t,"paddingRight"))+i(l.css(t,"borderLeftWidth"))+i(l.css(t,"borderRightWidth"))},n.startScrolling=r(o.add),n.stopScrolling=r(o.remove),n.env={isWebKit:"undefined"!=typeof document&&"WebkitAppearance"in document.documentElement.style,supportsTouch:"undefined"!=typeof window&&("ontouchstart"in window||window.DocumentTouch&&document instanceof window.DocumentTouch),supportsIePointer:"undefined"!=typeof window&&null!==window.navigator.msMaxTouchPoints}},{"./class":2,"./dom":3}],7:[function(t,e,n){"use strict";var r=t("./plugin/destroy"),o=t("./plugin/initialize"),l=t("./plugin/update");e.exports={initialize:o,update:l,destroy:r}},{"./plugin/destroy":9,"./plugin/initialize":17,"./plugin/update":21}],8:[function(t,e,n){"use strict";e.exports={handlers:["click-rail","drag-scrollbar","keyboard","wheel","touch"],maxScrollbarLength:null,minScrollbarLength:null,scrollXMarginOffset:0,scrollYMarginOffset:0,suppressScrollX:!1,suppressScrollY:!1,swipePropagation:!0,swipeEasing:!0,useBothWheelAxes:!1,wheelPropagation:!1,wheelSpeed:1,theme:"default"}},{}],9:[function(t,e,n){"use strict";var r=t("../lib/helper"),o=t("../lib/dom"),l=t("./instances");e.exports=function(t){var e=l.get(t);e&&(e.event.unbindAll(),o.remove(e.scrollbarX),o.remove(e.scrollbarY),o.remove(e.scrollbarXRail),o.remove(e.scrollbarYRail),r.removePsClasses(t),l.remove(t))}},{"../lib/dom":3,"../lib/helper":6,"./instances":18}],10:[function(t,e,n){"use strict";function r(t,e){function n(t){return t.getBoundingClientRect()}var r=function(t){t.stopPropagation()};e.event.bind(e.scrollbarY,"click",r),e.event.bind(e.scrollbarYRail,"click",function(r){var o=r.pageY-window.pageYOffset-n(e.scrollbarYRail).top,s=o>e.scrollbarYTop?1:-1;i(t,"top",t.scrollTop+s*e.containerHeight),l(t),r.stopPropagation()}),e.event.bind(e.scrollbarX,"click",r),e.event.bind(e.scrollbarXRail,"click",function(r){var o=r.pageX-window.pageXOffset-n(e.scrollbarXRail).left,s=o>e.scrollbarXLeft?1:-1;i(t,"left",t.scrollLeft+s*e.containerWidth),l(t),r.stopPropagation()})}var o=t("../instances"),l=t("../update-geometry"),i=t("../update-scroll");e.exports=function(t){var e=o.get(t);r(t,e)}},{"../instances":18,"../update-geometry":19,"../update-scroll":20}],11:[function(t,e,n){"use strict";function r(t,e){function n(n){var o=r+n*e.railXRatio,i=Math.max(0,e.scrollbarXRail.getBoundingClientRect().left)+e.railXRatio*(e.railXWidth-e.scrollbarXWidth);o<0?e.scrollbarXLeft=0:o>i?e.scrollbarXLeft=i:e.scrollbarXLeft=o;var s=l.toInt(e.scrollbarXLeft*(e.contentWidth-e.containerWidth)/(e.containerWidth-e.railXRatio*e.scrollbarXWidth))-e.negativeScrollAdjustment;c(t,"left",s)}var r=null,o=null,s=function(e){n(e.pageX-o),a(t),e.stopPropagation(),e.preventDefault()},u=function(){l.stopScrolling(t,"x"),e.event.unbind(e.ownerDocument,"mousemove",s)};e.event.bind(e.scrollbarX,"mousedown",function(n){o=n.pageX,r=l.toInt(i.css(e.scrollbarX,"left"))*e.railXRatio,l.startScrolling(t,"x"),e.event.bind(e.ownerDocument,"mousemove",s),e.event.once(e.ownerDocument,"mouseup",u),n.stopPropagation(),n.preventDefault()})}function o(t,e){function n(n){var o=r+n*e.railYRatio,i=Math.max(0,e.scrollbarYRail.getBoundingClientRect().top)+e.railYRatio*(e.railYHeight-e.scrollbarYHeight);o<0?e.scrollbarYTop=0:o>i?e.scrollbarYTop=i:e.scrollbarYTop=o;var s=l.toInt(e.scrollbarYTop*(e.contentHeight-e.containerHeight)/(e.containerHeight-e.railYRatio*e.scrollbarYHeight));c(t,"top",s)}var r=null,o=null,s=function(e){n(e.pageY-o),a(t),e.stopPropagation(),e.preventDefault()},u=function(){l.stopScrolling(t,"y"),e.event.unbind(e.ownerDocument,"mousemove",s)};e.event.bind(e.scrollbarY,"mousedown",function(n){o=n.pageY,r=l.toInt(i.css(e.scrollbarY,"top"))*e.railYRatio,l.startScrolling(t,"y"),e.event.bind(e.ownerDocument,"mousemove",s),e.event.once(e.ownerDocument,"mouseup",u),n.stopPropagation(),n.preventDefault()})}var l=t("../../lib/helper"),i=t("../../lib/dom"),s=t("../instances"),a=t("../update-geometry"),c=t("../update-scroll");e.exports=function(t){var e=s.get(t);r(t,e),o(t,e)}},{"../../lib/dom":3,"../../lib/helper":6,"../instances":18,"../update-geometry":19,"../update-scroll":20}],12:[function(t,e,n){"use strict";function r(t,e){function n(n,r){var o=t.scrollTop;if(0===n){if(!e.scrollbarYActive)return!1;if(0===o&&r>0||o>=e.contentHeight-e.containerHeight&&r<0)return!e.settings.wheelPropagation}var l=t.scrollLeft;if(0===r){if(!e.scrollbarXActive)return!1;if(0===l&&n<0||l>=e.contentWidth-e.containerWidth&&n>0)return!e.settings.wheelPropagation}return!0}var r=!1;e.event.bind(t,"mouseenter",function(){r=!0}),e.event.bind(t,"mouseleave",function(){r=!1});var i=!1;e.event.bind(e.ownerDocument,"keydown",function(c){if(!(c.isDefaultPrevented&&c.isDefaultPrevented()||c.defaultPrevented)){var u=l.matches(e.scrollbarX,":focus")||l.matches(e.scrollbarY,":focus");if(r||u){var d=document.activeElement?document.activeElement:e.ownerDocument.activeElement;if(d){if("IFRAME"===d.tagName)d=d.contentDocument.activeElement;else for(;d.shadowRoot;)d=d.shadowRoot.activeElement;if(o.isEditable(d))return}var p=0,f=0;switch(c.which){case 37:p=c.metaKey?-e.contentWidth:c.altKey?-e.containerWidth:-30;break;case 38:f=c.metaKey?e.contentHeight:c.altKey?e.containerHeight:30;break;case 39:p=c.metaKey?e.contentWidth:c.altKey?e.containerWidth:30;break;case 40:f=c.metaKey?-e.contentHeight:c.altKey?-e.containerHeight:-30;break;case 33:f=90;break;case 32:f=c.shiftKey?90:-90;break;case 34:f=-90;break;case 35:f=c.ctrlKey?-e.contentHeight:-e.containerHeight;break;case 36:f=c.ctrlKey?t.scrollTop:e.containerHeight;break;default:return}a(t,"top",t.scrollTop-f),a(t,"left",t.scrollLeft+p),s(t),i=n(p,f),i&&c.preventDefault()}}})}var o=t("../../lib/helper"),l=t("../../lib/dom"),i=t("../instances"),s=t("../update-geometry"),a=t("../update-scroll");e.exports=function(t){var e=i.get(t);r(t,e)}},{"../../lib/dom":3,"../../lib/helper":6,"../instances":18,"../update-geometry":19,"../update-scroll":20}],13:[function(t,e,n){"use strict";function r(t,e){function n(n,r){var o=t.scrollTop;if(0===n){if(!e.scrollbarYActive)return!1;if(0===o&&r>0||o>=e.contentHeight-e.containerHeight&&r<0)return!e.settings.wheelPropagation}var l=t.scrollLeft;if(0===r){if(!e.scrollbarXActive)return!1;if(0===l&&n<0||l>=e.contentWidth-e.containerWidth&&n>0)return!e.settings.wheelPropagation}return!0}function r(t){var e=t.deltaX,n=-1*t.deltaY;return"undefined"!=typeof e&&"undefined"!=typeof n||(e=-1*t.wheelDeltaX/6,n=t.wheelDeltaY/6),t.deltaMode&&1===t.deltaMode&&(e*=10,n*=10),e!==e&&n!==n&&(e=0,n=t.wheelDelta),t.shiftKey?[-n,-e]:[e,n]}function o(e,n){var r=t.querySelector("textarea:hover, select[multiple]:hover, .ps-child:hover");if(r){var o=window.getComputedStyle(r),l=[o.overflow,o.overflowX,o.overflowY].join("");if(!l.match(/(scroll|auto)/))return!1;var i=r.scrollHeight-r.clientHeight;if(i>0&&!(0===r.scrollTop&&n>0||r.scrollTop===i&&n<0))return!0;var s=r.scrollLeft-r.clientWidth;if(s>0&&!(0===r.scrollLeft&&e<0||r.scrollLeft===s&&e>0))return!0}return!1}function s(s){var c=r(s),u=c[0],d=c[1];o(u,d)||(a=!1,e.settings.useBothWheelAxes?e.scrollbarYActive&&!e.scrollbarXActive?(d?i(t,"top",t.scrollTop-d*e.settings.wheelSpeed):i(t,"top",t.scrollTop+u*e.settings.wheelSpeed),a=!0):e.scrollbarXActive&&!e.scrollbarYActive&&(u?i(t,"left",t.scrollLeft+u*e.settings.wheelSpeed):i(t,"left",t.scrollLeft-d*e.settings.wheelSpeed),a=!0):(i(t,"top",t.scrollTop-d*e.settings.wheelSpeed),i(t,"left",t.scrollLeft+u*e.settings.wheelSpeed)),l(t),a=a||n(u,d),a&&(s.stopPropagation(),s.preventDefault()))}var a=!1;"undefined"!=typeof window.onwheel?e.event.bind(t,"wheel",s):"undefined"!=typeof window.onmousewheel&&e.event.bind(t,"mousewheel",s)}var o=t("../instances"),l=t("../update-geometry"),i=t("../update-scroll");e.exports=function(t){var e=o.get(t);r(t,e)}},{"../instances":18,"../update-geometry":19,"../update-scroll":20}],14:[function(t,e,n){"use strict";function r(t,e){e.event.bind(t,"scroll",function(){l(t)})}var o=t("../instances"),l=t("../update-geometry");e.exports=function(t){var e=o.get(t);r(t,e)}},{"../instances":18,"../update-geometry":19}],15:[function(t,e,n){"use strict";function r(t,e){function n(){var t=window.getSelection?window.getSelection():document.getSelection?document.getSelection():"";return 0===t.toString().length?null:t.getRangeAt(0).commonAncestorContainer}function r(){c||(c=setInterval(function(){return l.get(t)?(s(t,"top",t.scrollTop+u.top),s(t,"left",t.scrollLeft+u.left),void i(t)):void clearInterval(c)},50))}function a(){c&&(clearInterval(c),c=null),o.stopScrolling(t)}var c=null,u={top:0,left:0},d=!1;e.event.bind(e.ownerDocument,"selectionchange",function(){t.contains(n())?d=!0:(d=!1,a())}),e.event.bind(window,"mouseup",function(){d&&(d=!1,a())}),e.event.bind(window,"keyup",function(){d&&(d=!1,a())}),e.event.bind(window,"mousemove",function(e){if(d){var n={x:e.pageX,y:e.pageY},l={left:t.offsetLeft,right:t.offsetLeft+t.offsetWidth,top:t.offsetTop,bottom:t.offsetTop+t.offsetHeight};n.x<l.left+3?(u.left=-5,o.startScrolling(t,"x")):n.x>l.right-3?(u.left=5,o.startScrolling(t,"x")):u.left=0,n.y<l.top+3?(l.top+3-n.y<5?u.top=-5:u.top=-20,o.startScrolling(t,"y")):n.y>l.bottom-3?(n.y-l.bottom+3<5?u.top=5:u.top=20,o.startScrolling(t,"y")):u.top=0,0===u.top&&0===u.left?a():r()}})}var o=t("../../lib/helper"),l=t("../instances"),i=t("../update-geometry"),s=t("../update-scroll");e.exports=function(t){var e=l.get(t);r(t,e)}},{"../../lib/helper":6,"../instances":18,"../update-geometry":19,"../update-scroll":20}],16:[function(t,e,n){"use strict";function r(t,e,n,r){function o(n,r){var o=t.scrollTop,l=t.scrollLeft,i=Math.abs(n),s=Math.abs(r);if(s>i){if(r<0&&o===e.contentHeight-e.containerHeight||r>0&&0===o)return!e.settings.swipePropagation}else if(i>s&&(n<0&&l===e.contentWidth-e.containerWidth||n>0&&0===l))return!e.settings.swipePropagation;return!0}function a(e,n){s(t,"top",t.scrollTop-n),s(t,"left",t.scrollLeft-e),i(t)}function c(){w=!0}function u(){w=!1}function d(t){return t.targetTouches?t.targetTouches[0]:t}function p(t){return!(!t.targetTouches||1!==t.targetTouches.length)||!(!t.pointerType||"mouse"===t.pointerType||t.pointerType===t.MSPOINTER_TYPE_MOUSE)}function f(t){if(p(t)){Y=!0;var e=d(t);g.pageX=e.pageX,g.pageY=e.pageY,v=(new Date).getTime(),null!==y&&clearInterval(y),t.stopPropagation()}}function h(t){if(!Y&&e.settings.swipePropagation&&f(t),!w&&Y&&p(t)){var n=d(t),r={pageX:n.pageX,pageY:n.pageY},l=r.pageX-g.pageX,i=r.pageY-g.pageY;a(l,i),g=r;var s=(new Date).getTime(),c=s-v;c>0&&(m.x=l/c,m.y=i/c,v=s),o(l,i)&&(t.stopPropagation(),t.preventDefault())}}function b(){!w&&Y&&(Y=!1,e.settings.swipeEasing&&(clearInterval(y),y=setInterval(function(){return l.get(t)&&(m.x||m.y)?Math.abs(m.x)<.01&&Math.abs(m.y)<.01?void clearInterval(y):(a(30*m.x,30*m.y),m.x*=.8,void(m.y*=.8)):void clearInterval(y)},10)))}var g={},v=0,m={},y=null,w=!1,Y=!1;n?(e.event.bind(window,"touchstart",c),e.event.bind(window,"touchend",u),e.event.bind(t,"touchstart",f),e.event.bind(t,"touchmove",h),e.event.bind(t,"touchend",b)):r&&(window.PointerEvent?(e.event.bind(window,"pointerdown",c),e.event.bind(window,"pointerup",u),e.event.bind(t,"pointerdown",f),e.event.bind(t,"pointermove",h),e.event.bind(t,"pointerup",b)):window.MSPointerEvent&&(e.event.bind(window,"MSPointerDown",c),e.event.bind(window,"MSPointerUp",u),e.event.bind(t,"MSPointerDown",f),e.event.bind(t,"MSPointerMove",h),e.event.bind(t,"MSPointerUp",b)))}var o=t("../../lib/helper"),l=t("../instances"),i=t("../update-geometry"),s=t("../update-scroll");e.exports=function(t){if(o.env.supportsTouch||o.env.supportsIePointer){var e=l.get(t);r(t,e,o.env.supportsTouch,o.env.supportsIePointer)}}},{"../../lib/helper":6,"../instances":18,"../update-geometry":19,"../update-scroll":20}],17:[function(t,e,n){"use strict";var r=t("../lib/helper"),o=t("../lib/class"),l=t("./instances"),i=t("./update-geometry"),s={"click-rail":t("./handler/click-rail"),"drag-scrollbar":t("./handler/drag-scrollbar"),keyboard:t("./handler/keyboard"),wheel:t("./handler/mouse-wheel"),touch:t("./handler/touch"),selection:t("./handler/selection")},a=t("./handler/native-scroll");e.exports=function(t,e){e="object"==typeof e?e:{},o.add(t,"ps");var n=l.add(t);n.settings=r.extend(n.settings,e),o.add(t,"ps--theme_"+n.settings.theme),n.settings.handlers.forEach(function(e){s[e](t)}),a(t),i(t)}},{"../lib/class":2,"../lib/helper":6,"./handler/click-rail":10,"./handler/drag-scrollbar":11,"./handler/keyboard":12,"./handler/mouse-wheel":13,"./handler/native-scroll":14,"./handler/selection":15,"./handler/touch":16,"./instances":18,"./update-geometry":19}],18:[function(t,e,n){"use strict";function r(t){function e(){a.add(t,"ps--focus")}function n(){a.remove(t,"ps--focus")}var r=this;r.settings=s.clone(c),r.containerWidth=null,r.containerHeight=null,r.contentWidth=null,r.contentHeight=null,r.isRtl="rtl"===u.css(t,"direction"),r.isNegativeScroll=function(){var e=t.scrollLeft,n=null;return t.scrollLeft=-1,n=t.scrollLeft<0,t.scrollLeft=e,n}(),r.negativeScrollAdjustment=r.isNegativeScroll?t.scrollWidth-t.clientWidth:0,r.event=new d,r.ownerDocument=t.ownerDocument||document,r.scrollbarXRail=u.appendTo(u.e("div","ps__scrollbar-x-rail"),t),r.scrollbarX=u.appendTo(u.e("div","ps__scrollbar-x"),r.scrollbarXRail),r.scrollbarX.setAttribute("tabindex",0),r.event.bind(r.scrollbarX,"focus",e),r.event.bind(r.scrollbarX,"blur",n),r.scrollbarXActive=null,r.scrollbarXWidth=null,r.scrollbarXLeft=null,r.scrollbarXBottom=s.toInt(u.css(r.scrollbarXRail,"bottom")),r.isScrollbarXUsingBottom=r.scrollbarXBottom===r.scrollbarXBottom,r.scrollbarXTop=r.isScrollbarXUsingBottom?null:s.toInt(u.css(r.scrollbarXRail,"top")),r.railBorderXWidth=s.toInt(u.css(r.scrollbarXRail,"borderLeftWidth"))+s.toInt(u.css(r.scrollbarXRail,"borderRightWidth")),u.css(r.scrollbarXRail,"display","block"),r.railXMarginWidth=s.toInt(u.css(r.scrollbarXRail,"marginLeft"))+s.toInt(u.css(r.scrollbarXRail,"marginRight")),u.css(r.scrollbarXRail,"display",""),r.railXWidth=null,r.railXRatio=null,r.scrollbarYRail=u.appendTo(u.e("div","ps__scrollbar-y-rail"),t),r.scrollbarY=u.appendTo(u.e("div","ps__scrollbar-y"),r.scrollbarYRail),r.scrollbarY.setAttribute("tabindex",0),r.event.bind(r.scrollbarY,"focus",e),r.event.bind(r.scrollbarY,"blur",n),r.scrollbarYActive=null,r.scrollbarYHeight=null,r.scrollbarYTop=null,r.scrollbarYRight=s.toInt(u.css(r.scrollbarYRail,"right")),r.isScrollbarYUsingRight=r.scrollbarYRight===r.scrollbarYRight,r.scrollbarYLeft=r.isScrollbarYUsingRight?null:s.toInt(u.css(r.scrollbarYRail,"left")),r.scrollbarYOuterWidth=r.isRtl?s.outerWidth(r.scrollbarY):null,r.railBorderYWidth=s.toInt(u.css(r.scrollbarYRail,"borderTopWidth"))+s.toInt(u.css(r.scrollbarYRail,"borderBottomWidth")),u.css(r.scrollbarYRail,"display","block"),r.railYMarginHeight=s.toInt(u.css(r.scrollbarYRail,"marginTop"))+s.toInt(u.css(r.scrollbarYRail,"marginBottom")),u.css(r.scrollbarYRail,"display",""),r.railYHeight=null,r.railYRatio=null}function o(t){return t.getAttribute("data-ps-id")}function l(t,e){t.setAttribute("data-ps-id",e)}function i(t){t.removeAttribute("data-ps-id")}var s=t("../lib/helper"),a=t("../lib/class"),c=t("./default-setting"),u=t("../lib/dom"),d=t("../lib/event-manager"),p=t("../lib/guid"),f={};n.add=function(t){var e=p();return l(t,e),f[e]=new r(t),f[e]},n.remove=function(t){delete f[o(t)],i(t)},n.get=function(t){return f[o(t)]}},{"../lib/class":2,"../lib/dom":3,"../lib/event-manager":4,"../lib/guid":5,"../lib/helper":6,"./default-setting":8}],19:[function(t,e,n){"use strict";function r(t,e){return t.settings.minScrollbarLength&&(e=Math.max(e,t.settings.minScrollbarLength)),t.settings.maxScrollbarLength&&(e=Math.min(e,t.settings.maxScrollbarLength)),e}function o(t,e){var n={width:e.railXWidth};e.isRtl?n.left=e.negativeScrollAdjustment+t.scrollLeft+e.containerWidth-e.contentWidth:n.left=t.scrollLeft,e.isScrollbarXUsingBottom?n.bottom=e.scrollbarXBottom-t.scrollTop:n.top=e.scrollbarXTop+t.scrollTop,s.css(e.scrollbarXRail,n);var r={top:t.scrollTop,height:e.railYHeight};e.isScrollbarYUsingRight?e.isRtl?r.right=e.contentWidth-(e.negativeScrollAdjustment+t.scrollLeft)-e.scrollbarYRight-e.scrollbarYOuterWidth:r.right=e.scrollbarYRight-t.scrollLeft:e.isRtl?r.left=e.negativeScrollAdjustment+t.scrollLeft+2*e.containerWidth-e.contentWidth-e.scrollbarYLeft-e.scrollbarYOuterWidth:r.left=e.scrollbarYLeft+t.scrollLeft,s.css(e.scrollbarYRail,r),s.css(e.scrollbarX,{left:e.scrollbarXLeft,width:e.scrollbarXWidth-e.railBorderXWidth}),s.css(e.scrollbarY,{top:e.scrollbarYTop,height:e.scrollbarYHeight-e.railBorderYWidth})}var l=t("../lib/helper"),i=t("../lib/class"),s=t("../lib/dom"),a=t("./instances"),c=t("./update-scroll");e.exports=function(t){var e=a.get(t);e.containerWidth=t.clientWidth,e.containerHeight=t.clientHeight,e.contentWidth=t.scrollWidth,e.contentHeight=t.scrollHeight;var n;t.contains(e.scrollbarXRail)||(n=s.queryChildren(t,".ps__scrollbar-x-rail"),n.length>0&&n.forEach(function(t){s.remove(t)}),s.appendTo(e.scrollbarXRail,t)),t.contains(e.scrollbarYRail)||(n=s.queryChildren(t,".ps__scrollbar-y-rail"),n.length>0&&n.forEach(function(t){s.remove(t)}),s.appendTo(e.scrollbarYRail,t)),!e.settings.suppressScrollX&&e.containerWidth+e.settings.scrollXMarginOffset<e.contentWidth?(e.scrollbarXActive=!0,e.railXWidth=e.containerWidth-e.railXMarginWidth,e.railXRatio=e.containerWidth/e.railXWidth,e.scrollbarXWidth=r(e,l.toInt(e.railXWidth*e.containerWidth/e.contentWidth)),e.scrollbarXLeft=l.toInt((e.negativeScrollAdjustment+t.scrollLeft)*(e.railXWidth-e.scrollbarXWidth)/(e.contentWidth-e.containerWidth))):e.scrollbarXActive=!1,!e.settings.suppressScrollY&&e.containerHeight+e.settings.scrollYMarginOffset<e.contentHeight?(e.scrollbarYActive=!0,e.railYHeight=e.containerHeight-e.railYMarginHeight,e.railYRatio=e.containerHeight/e.railYHeight,e.scrollbarYHeight=r(e,l.toInt(e.railYHeight*e.containerHeight/e.contentHeight)),e.scrollbarYTop=l.toInt(t.scrollTop*(e.railYHeight-e.scrollbarYHeight)/(e.contentHeight-e.containerHeight))):e.scrollbarYActive=!1,e.scrollbarXLeft>=e.railXWidth-e.scrollbarXWidth&&(e.scrollbarXLeft=e.railXWidth-e.scrollbarXWidth),e.scrollbarYTop>=e.railYHeight-e.scrollbarYHeight&&(e.scrollbarYTop=e.railYHeight-e.scrollbarYHeight),o(t,e),e.scrollbarXActive?i.add(t,"ps--active-x"):(i.remove(t,"ps--active-x"),e.scrollbarXWidth=0,e.scrollbarXLeft=0,c(t,"left",0)),e.scrollbarYActive?i.add(t,"ps--active-y"):(i.remove(t,"ps--active-y"),e.scrollbarYHeight=0,e.scrollbarYTop=0,c(t,"top",0))}},{"../lib/class":2,"../lib/dom":3,"../lib/helper":6,"./instances":18,"./update-scroll":20}],20:[function(t,e,n){"use strict";var r=t("./instances"),o=function(t){var e=document.createEvent("Event");return e.initEvent(t,!0,!0),e};e.exports=function(t,e,n){if("undefined"==typeof t)throw"You must provide an element to the update-scroll function";if("undefined"==typeof e)throw"You must provide an axis to the update-scroll function";if("undefined"==typeof n)throw"You must provide a value to the update-scroll function";"top"===e&&n<=0&&(t.scrollTop=n=0,t.dispatchEvent(o("ps-y-reach-start"))),"left"===e&&n<=0&&(t.scrollLeft=n=0,t.dispatchEvent(o("ps-x-reach-start")));var l=r.get(t);"top"===e&&n>=l.contentHeight-l.containerHeight&&(n=l.contentHeight-l.containerHeight,n-t.scrollTop<=1?n=t.scrollTop:t.scrollTop=n,t.dispatchEvent(o("ps-y-reach-end"))),"left"===e&&n>=l.contentWidth-l.containerWidth&&(n=l.contentWidth-l.containerWidth,n-t.scrollLeft<=1?n=t.scrollLeft:t.scrollLeft=n,t.dispatchEvent(o("ps-x-reach-end"))),void 0===l.lastTop&&(l.lastTop=t.scrollTop),void 0===l.lastLeft&&(l.lastLeft=t.scrollLeft),"top"===e&&n<l.lastTop&&t.dispatchEvent(o("ps-scroll-up")),"top"===e&&n>l.lastTop&&t.dispatchEvent(o("ps-scroll-down")),"left"===e&&n<l.lastLeft&&t.dispatchEvent(o("ps-scroll-left")),"left"===e&&n>l.lastLeft&&t.dispatchEvent(o("ps-scroll-right")),"top"===e&&n!==l.lastTop&&(t.scrollTop=l.lastTop=n,t.dispatchEvent(o("ps-scroll-y"))),"left"===e&&n!==l.lastLeft&&(t.scrollLeft=l.lastLeft=n,t.dispatchEvent(o("ps-scroll-x")))}},{"./instances":18}],21:[function(t,e,n){"use strict";var r=t("../lib/helper"),o=t("../lib/dom"),l=t("./instances"),i=t("./update-geometry"),s=t("./update-scroll");e.exports=function(t){var e=l.get(t);e&&(e.negativeScrollAdjustment=e.isNegativeScroll?t.scrollWidth-t.clientWidth:0,o.css(e.scrollbarXRail,"display","block"),o.css(e.scrollbarYRail,"display","block"),e.railXMarginWidth=r.toInt(o.css(e.scrollbarXRail,"marginLeft"))+r.toInt(o.css(e.scrollbarXRail,"marginRight")),e.railYMarginHeight=r.toInt(o.css(e.scrollbarYRail,"marginTop"))+r.toInt(o.css(e.scrollbarYRail,"marginBottom")),o.css(e.scrollbarXRail,"display","none"),o.css(e.scrollbarYRail,"display","none"),i(t),s(t,"top",t.scrollTop),s(t,"left",t.scrollLeft),o.css(e.scrollbarXRail,"display",""),o.css(e.scrollbarYRail,"display",""))}},{"../lib/dom":3,"../lib/helper":6,"./instances":18,"./update-geometry":19,"./update-scroll":20}]},{},[1]);
+/*!
+ * perfect-scrollbar v1.4.0
+ * (c) 2018 Hyunje Jun
+ * @license MIT
+ */
+!function(t,e){"object"==typeof exports&&"undefined"!=typeof module?module.exports=e():"function"==typeof define&&define.amd?define(e):t.PerfectScrollbar=e()}(this,function(){"use strict";function t(t){return getComputedStyle(t)}function e(t,e){for(var i in e){var r=e[i];"number"==typeof r&&(r+="px"),t.style[i]=r}return t}function i(t){var e=document.createElement("div");return e.className=t,e}function r(t,e){if(!v)throw new Error("No element matching method supported");return v.call(t,e)}function l(t){t.remove?t.remove():t.parentNode&&t.parentNode.removeChild(t)}function n(t,e){return Array.prototype.filter.call(t.children,function(t){return r(t,e)})}function o(t,e){var i=t.element.classList,r=m.state.scrolling(e);i.contains(r)?clearTimeout(Y[e]):i.add(r)}function s(t,e){Y[e]=setTimeout(function(){return t.isAlive&&t.element.classList.remove(m.state.scrolling(e))},t.settings.scrollingThreshold)}function a(t,e){o(t,e),s(t,e)}function c(t){if("function"==typeof window.CustomEvent)return new CustomEvent(t);var e=document.createEvent("CustomEvent");return e.initCustomEvent(t,!1,!1,void 0),e}function h(t,e,i,r,l){var n=i[0],o=i[1],s=i[2],h=i[3],u=i[4],d=i[5];void 0===r&&(r=!0),void 0===l&&(l=!1);var f=t.element;t.reach[h]=null,f[s]<1&&(t.reach[h]="start"),f[s]>t[n]-t[o]-1&&(t.reach[h]="end"),e&&(f.dispatchEvent(c("ps-scroll-"+h)),e<0?f.dispatchEvent(c("ps-scroll-"+u)):e>0&&f.dispatchEvent(c("ps-scroll-"+d)),r&&a(t,h)),t.reach[h]&&(e||l)&&f.dispatchEvent(c("ps-"+h+"-reach-"+t.reach[h]))}function u(t){return parseInt(t,10)||0}function d(t){return r(t,"input,[contenteditable]")||r(t,"select,[contenteditable]")||r(t,"textarea,[contenteditable]")||r(t,"button,[contenteditable]")}function f(e){var i=t(e);return u(i.width)+u(i.paddingLeft)+u(i.paddingRight)+u(i.borderLeftWidth)+u(i.borderRightWidth)}function p(t,e){return t.settings.minScrollbarLength&&(e=Math.max(e,t.settings.minScrollbarLength)),t.settings.maxScrollbarLength&&(e=Math.min(e,t.settings.maxScrollbarLength)),e}function b(t,i){var r={width:i.railXWidth},l=Math.floor(t.scrollTop);i.isRtl?r.left=i.negativeScrollAdjustment+t.scrollLeft+i.containerWidth-i.contentWidth:r.left=t.scrollLeft,i.isScrollbarXUsingBottom?r.bottom=i.scrollbarXBottom-l:r.top=i.scrollbarXTop+l,e(i.scrollbarXRail,r);var n={top:l,height:i.railYHeight};i.isScrollbarYUsingRight?i.isRtl?n.right=i.contentWidth-(i.negativeScrollAdjustment+t.scrollLeft)-i.scrollbarYRight-i.scrollbarYOuterWidth:n.right=i.scrollbarYRight-t.scrollLeft:i.isRtl?n.left=i.negativeScrollAdjustment+t.scrollLeft+2*i.containerWidth-i.contentWidth-i.scrollbarYLeft-i.scrollbarYOuterWidth:n.left=i.scrollbarYLeft+t.scrollLeft,e(i.scrollbarYRail,n),e(i.scrollbarX,{left:i.scrollbarXLeft,width:i.scrollbarXWidth-i.railBorderXWidth}),e(i.scrollbarY,{top:i.scrollbarYTop,height:i.scrollbarYHeight-i.railBorderYWidth})}function g(t,e){function i(e){b[d]=g+Y*(e[a]-v),o(t,f),R(t),e.stopPropagation(),e.preventDefault()}function r(){s(t,f),t[p].classList.remove(m.state.clicking),t.event.unbind(t.ownerDocument,"mousemove",i)}var l=e[0],n=e[1],a=e[2],c=e[3],h=e[4],u=e[5],d=e[6],f=e[7],p=e[8],b=t.element,g=null,v=null,Y=null;t.event.bind(t[h],"mousedown",function(e){g=b[d],v=e[a],Y=(t[n]-t[l])/(t[c]-t[u]),t.event.bind(t.ownerDocument,"mousemove",i),t.event.once(t.ownerDocument,"mouseup",r),t[p].classList.add(m.state.clicking),e.stopPropagation(),e.preventDefault()})}var v="undefined"!=typeof Element&&(Element.prototype.matches||Element.prototype.webkitMatchesSelector||Element.prototype.mozMatchesSelector||Element.prototype.msMatchesSelector),m={main:"ps",element:{thumb:function(t){return"ps__thumb-"+t},rail:function(t){return"ps__rail-"+t},consuming:"ps__child--consume"},state:{focus:"ps--focus",clicking:"ps--clicking",active:function(t){return"ps--active-"+t},scrolling:function(t){return"ps--scrolling-"+t}}},Y={x:null,y:null},X=function(t){this.element=t,this.handlers={}},w={isEmpty:{configurable:!0}};X.prototype.bind=function(t,e){void 0===this.handlers[t]&&(this.handlers[t]=[]),this.handlers[t].push(e),this.element.addEventListener(t,e,!1)},X.prototype.unbind=function(t,e){var i=this;this.handlers[t]=this.handlers[t].filter(function(r){return!(!e||r===e)||(i.element.removeEventListener(t,r,!1),!1)})},X.prototype.unbindAll=function(){var t=this;for(var e in t.handlers)t.unbind(e)},w.isEmpty.get=function(){var t=this;return Object.keys(this.handlers).every(function(e){return 0===t.handlers[e].length})},Object.defineProperties(X.prototype,w);var y=function(){this.eventElements=[]};y.prototype.eventElement=function(t){var e=this.eventElements.filter(function(e){return e.element===t})[0];return e||(e=new X(t),this.eventElements.push(e)),e},y.prototype.bind=function(t,e,i){this.eventElement(t).bind(e,i)},y.prototype.unbind=function(t,e,i){var r=this.eventElement(t);r.unbind(e,i),r.isEmpty&&this.eventElements.splice(this.eventElements.indexOf(r),1)},y.prototype.unbindAll=function(){this.eventElements.forEach(function(t){return t.unbindAll()}),this.eventElements=[]},y.prototype.once=function(t,e,i){var r=this.eventElement(t),l=function(t){r.unbind(e,l),i(t)};r.bind(e,l)};var W=function(t,e,i,r,l){void 0===r&&(r=!0),void 0===l&&(l=!1);var n;if("top"===e)n=["contentHeight","containerHeight","scrollTop","y","up","down"];else{if("left"!==e)throw new Error("A proper axis should be provided");n=["contentWidth","containerWidth","scrollLeft","x","left","right"]}h(t,i,n,r,l)},L={isWebKit:"undefined"!=typeof document&&"WebkitAppearance"in document.documentElement.style,supportsTouch:"undefined"!=typeof window&&("ontouchstart"in window||window.DocumentTouch&&document instanceof window.DocumentTouch),supportsIePointer:"undefined"!=typeof navigator&&navigator.msMaxTouchPoints,isChrome:"undefined"!=typeof navigator&&/Chrome/i.test(navigator&&navigator.userAgent)},R=function(t){var e=t.element,i=Math.floor(e.scrollTop);t.containerWidth=e.clientWidth,t.containerHeight=e.clientHeight,t.contentWidth=e.scrollWidth,t.contentHeight=e.scrollHeight,e.contains(t.scrollbarXRail)||(n(e,m.element.rail("x")).forEach(function(t){return l(t)}),e.appendChild(t.scrollbarXRail)),e.contains(t.scrollbarYRail)||(n(e,m.element.rail("y")).forEach(function(t){return l(t)}),e.appendChild(t.scrollbarYRail)),!t.settings.suppressScrollX&&t.containerWidth+t.settings.scrollXMarginOffset<t.contentWidth?(t.scrollbarXActive=!0,t.railXWidth=t.containerWidth-t.railXMarginWidth,t.railXRatio=t.containerWidth/t.railXWidth,t.scrollbarXWidth=p(t,u(t.railXWidth*t.containerWidth/t.contentWidth)),t.scrollbarXLeft=u((t.negativeScrollAdjustment+e.scrollLeft)*(t.railXWidth-t.scrollbarXWidth)/(t.contentWidth-t.containerWidth))):t.scrollbarXActive=!1,!t.settings.suppressScrollY&&t.containerHeight+t.settings.scrollYMarginOffset<t.contentHeight?(t.scrollbarYActive=!0,t.railYHeight=t.containerHeight-t.railYMarginHeight,t.railYRatio=t.containerHeight/t.railYHeight,t.scrollbarYHeight=p(t,u(t.railYHeight*t.containerHeight/t.contentHeight)),t.scrollbarYTop=u(i*(t.railYHeight-t.scrollbarYHeight)/(t.contentHeight-t.containerHeight))):t.scrollbarYActive=!1,t.scrollbarXLeft>=t.railXWidth-t.scrollbarXWidth&&(t.scrollbarXLeft=t.railXWidth-t.scrollbarXWidth),t.scrollbarYTop>=t.railYHeight-t.scrollbarYHeight&&(t.scrollbarYTop=t.railYHeight-t.scrollbarYHeight),b(e,t),t.scrollbarXActive?e.classList.add(m.state.active("x")):(e.classList.remove(m.state.active("x")),t.scrollbarXWidth=0,t.scrollbarXLeft=0,e.scrollLeft=0),t.scrollbarYActive?e.classList.add(m.state.active("y")):(e.classList.remove(m.state.active("y")),t.scrollbarYHeight=0,t.scrollbarYTop=0,e.scrollTop=0)},T={"click-rail":function(t){t.event.bind(t.scrollbarY,"mousedown",function(t){return t.stopPropagation()}),t.event.bind(t.scrollbarYRail,"mousedown",function(e){var i=e.pageY-window.pageYOffset-t.scrollbarYRail.getBoundingClientRect().top>t.scrollbarYTop?1:-1;t.element.scrollTop+=i*t.containerHeight,R(t),e.stopPropagation()}),t.event.bind(t.scrollbarX,"mousedown",function(t){return t.stopPropagation()}),t.event.bind(t.scrollbarXRail,"mousedown",function(e){var i=e.pageX-window.pageXOffset-t.scrollbarXRail.getBoundingClientRect().left>t.scrollbarXLeft?1:-1;t.element.scrollLeft+=i*t.containerWidth,R(t),e.stopPropagation()})},"drag-thumb":function(t){g(t,["containerWidth","contentWidth","pageX","railXWidth","scrollbarX","scrollbarXWidth","scrollLeft","x","scrollbarXRail"]),g(t,["containerHeight","contentHeight","pageY","railYHeight","scrollbarY","scrollbarYHeight","scrollTop","y","scrollbarYRail"])},keyboard:function(t){function e(e,r){var l=Math.floor(i.scrollTop);if(0===e){if(!t.scrollbarYActive)return!1;if(0===l&&r>0||l>=t.contentHeight-t.containerHeight&&r<0)return!t.settings.wheelPropagation}var n=i.scrollLeft;if(0===r){if(!t.scrollbarXActive)return!1;if(0===n&&e<0||n>=t.contentWidth-t.containerWidth&&e>0)return!t.settings.wheelPropagation}return!0}var i=t.element,l=function(){return r(i,":hover")},n=function(){return r(t.scrollbarX,":focus")||r(t.scrollbarY,":focus")};t.event.bind(t.ownerDocument,"keydown",function(r){if(!(r.isDefaultPrevented&&r.isDefaultPrevented()||r.defaultPrevented)&&(l()||n())){var o=document.activeElement?document.activeElement:t.ownerDocument.activeElement;if(o){if("IFRAME"===o.tagName)o=o.contentDocument.activeElement;else for(;o.shadowRoot;)o=o.shadowRoot.activeElement;if(d(o))return}var s=0,a=0;switch(r.which){case 37:s=r.metaKey?-t.contentWidth:r.altKey?-t.containerWidth:-30;break;case 38:a=r.metaKey?t.contentHeight:r.altKey?t.containerHeight:30;break;case 39:s=r.metaKey?t.contentWidth:r.altKey?t.containerWidth:30;break;case 40:a=r.metaKey?-t.contentHeight:r.altKey?-t.containerHeight:-30;break;case 32:a=r.shiftKey?t.containerHeight:-t.containerHeight;break;case 33:a=t.containerHeight;break;case 34:a=-t.containerHeight;break;case 36:a=t.contentHeight;break;case 35:a=-t.contentHeight;break;default:return}t.settings.suppressScrollX&&0!==s||t.settings.suppressScrollY&&0!==a||(i.scrollTop-=a,i.scrollLeft+=s,R(t),e(s,a)&&r.preventDefault())}})},wheel:function(e){function i(t,i){var r=Math.floor(o.scrollTop),l=0===o.scrollTop,n=r+o.offsetHeight===o.scrollHeight,s=0===o.scrollLeft,a=o.scrollLeft+o.offsetWidth===o.scrollWidth;return!(Math.abs(i)>Math.abs(t)?l||n:s||a)||!e.settings.wheelPropagation}function r(t){var e=t.deltaX,i=-1*t.deltaY;return void 0!==e&&void 0!==i||(e=-1*t.wheelDeltaX/6,i=t.wheelDeltaY/6),t.deltaMode&&1===t.deltaMode&&(e*=10,i*=10),e!==e&&i!==i&&(e=0,i=t.wheelDelta),t.shiftKey?[-i,-e]:[e,i]}function l(e,i,r){if(!L.isWebKit&&o.querySelector("select:focus"))return!0;if(!o.contains(e))return!1;for(var l=e;l&&l!==o;){if(l.classList.contains(m.element.consuming))return!0;var n=t(l);if([n.overflow,n.overflowX,n.overflowY].join("").match(/(scroll|auto)/)){var s=l.scrollHeight-l.clientHeight;if(s>0&&!(0===l.scrollTop&&r>0||l.scrollTop===s&&r<0))return!0;var a=l.scrollWidth-l.clientWidth;if(a>0&&!(0===l.scrollLeft&&i<0||l.scrollLeft===a&&i>0))return!0}l=l.parentNode}return!1}function n(t){var n=r(t),s=n[0],a=n[1];if(!l(t.target,s,a)){var c=!1;e.settings.useBothWheelAxes?e.scrollbarYActive&&!e.scrollbarXActive?(a?o.scrollTop-=a*e.settings.wheelSpeed:o.scrollTop+=s*e.settings.wheelSpeed,c=!0):e.scrollbarXActive&&!e.scrollbarYActive&&(s?o.scrollLeft+=s*e.settings.wheelSpeed:o.scrollLeft-=a*e.settings.wheelSpeed,c=!0):(o.scrollTop-=a*e.settings.wheelSpeed,o.scrollLeft+=s*e.settings.wheelSpeed),R(e),(c=c||i(s,a))&&!t.ctrlKey&&(t.stopPropagation(),t.preventDefault())}}var o=e.element;void 0!==window.onwheel?e.event.bind(o,"wheel",n):void 0!==window.onmousewheel&&e.event.bind(o,"mousewheel",n)},touch:function(e){function i(t,i){var r=Math.floor(h.scrollTop),l=h.scrollLeft,n=Math.abs(t),o=Math.abs(i);if(o>n){if(i<0&&r===e.contentHeight-e.containerHeight||i>0&&0===r)return 0===window.scrollY&&i>0&&L.isChrome}else if(n>o&&(t<0&&l===e.contentWidth-e.containerWidth||t>0&&0===l))return!0;return!0}function r(t,i){h.scrollTop-=i,h.scrollLeft-=t,R(e)}function l(t){return t.targetTouches?t.targetTouches[0]:t}function n(t){return!(t.pointerType&&"pen"===t.pointerType&&0===t.buttons||(!t.targetTouches||1!==t.targetTouches.length)&&(!t.pointerType||"mouse"===t.pointerType||t.pointerType===t.MSPOINTER_TYPE_MOUSE))}function o(t){if(n(t)){var e=l(t);u.pageX=e.pageX,u.pageY=e.pageY,d=(new Date).getTime(),null!==p&&clearInterval(p)}}function s(e,i,r){if(!h.contains(e))return!1;for(var l=e;l&&l!==h;){if(l.classList.contains(m.element.consuming))return!0;var n=t(l);if([n.overflow,n.overflowX,n.overflowY].join("").match(/(scroll|auto)/)){var o=l.scrollHeight-l.clientHeight;if(o>0&&!(0===l.scrollTop&&r>0||l.scrollTop===o&&r<0))return!0;var s=l.scrollLeft-l.clientWidth;if(s>0&&!(0===l.scrollLeft&&i<0||l.scrollLeft===s&&i>0))return!0}l=l.parentNode}return!1}function a(t){if(n(t)){var e=l(t),o={pageX:e.pageX,pageY:e.pageY},a=o.pageX-u.pageX,c=o.pageY-u.pageY;if(s(t.target,a,c))return;r(a,c),u=o;var h=(new Date).getTime(),p=h-d;p>0&&(f.x=a/p,f.y=c/p,d=h),i(a,c)&&t.preventDefault()}}function c(){e.settings.swipeEasing&&(clearInterval(p),p=setInterval(function(){e.isInitialized?clearInterval(p):f.x||f.y?Math.abs(f.x)<.01&&Math.abs(f.y)<.01?clearInterval(p):(r(30*f.x,30*f.y),f.x*=.8,f.y*=.8):clearInterval(p)},10))}if(L.supportsTouch||L.supportsIePointer){var h=e.element,u={},d=0,f={},p=null;L.supportsTouch?(e.event.bind(h,"touchstart",o),e.event.bind(h,"touchmove",a),e.event.bind(h,"touchend",c)):L.supportsIePointer&&(window.PointerEvent?(e.event.bind(h,"pointerdown",o),e.event.bind(h,"pointermove",a),e.event.bind(h,"pointerup",c)):window.MSPointerEvent&&(e.event.bind(h,"MSPointerDown",o),e.event.bind(h,"MSPointerMove",a),e.event.bind(h,"MSPointerUp",c)))}}},H=function(r,l){var n=this;if(void 0===l&&(l={}),"string"==typeof r&&(r=document.querySelector(r)),!r||!r.nodeName)throw new Error("no element is specified to initialize PerfectScrollbar");this.element=r,r.classList.add(m.main),this.settings={handlers:["click-rail","drag-thumb","keyboard","wheel","touch"],maxScrollbarLength:null,minScrollbarLength:null,scrollingThreshold:1e3,scrollXMarginOffset:0,scrollYMarginOffset:0,suppressScrollX:!1,suppressScrollY:!1,swipeEasing:!0,useBothWheelAxes:!1,wheelPropagation:!0,wheelSpeed:1};for(var o in l)n.settings[o]=l[o];this.containerWidth=null,this.containerHeight=null,this.contentWidth=null,this.contentHeight=null;var s=function(){return r.classList.add(m.state.focus)},a=function(){return r.classList.remove(m.state.focus)};this.isRtl="rtl"===t(r).direction,this.isNegativeScroll=function(){var t=r.scrollLeft,e=null;return r.scrollLeft=-1,e=r.scrollLeft<0,r.scrollLeft=t,e}(),this.negativeScrollAdjustment=this.isNegativeScroll?r.scrollWidth-r.clientWidth:0,this.event=new y,this.ownerDocument=r.ownerDocument||document,this.scrollbarXRail=i(m.element.rail("x")),r.appendChild(this.scrollbarXRail),this.scrollbarX=i(m.element.thumb("x")),this.scrollbarXRail.appendChild(this.scrollbarX),this.scrollbarX.setAttribute("tabindex",0),this.event.bind(this.scrollbarX,"focus",s),this.event.bind(this.scrollbarX,"blur",a),this.scrollbarXActive=null,this.scrollbarXWidth=null,this.scrollbarXLeft=null;var c=t(this.scrollbarXRail);this.scrollbarXBottom=parseInt(c.bottom,10),isNaN(this.scrollbarXBottom)?(this.isScrollbarXUsingBottom=!1,this.scrollbarXTop=u(c.top)):this.isScrollbarXUsingBottom=!0,this.railBorderXWidth=u(c.borderLeftWidth)+u(c.borderRightWidth),e(this.scrollbarXRail,{display:"block"}),this.railXMarginWidth=u(c.marginLeft)+u(c.marginRight),e(this.scrollbarXRail,{display:""}),this.railXWidth=null,this.railXRatio=null,this.scrollbarYRail=i(m.element.rail("y")),r.appendChild(this.scrollbarYRail),this.scrollbarY=i(m.element.thumb("y")),this.scrollbarYRail.appendChild(this.scrollbarY),this.scrollbarY.setAttribute("tabindex",0),this.event.bind(this.scrollbarY,"focus",s),this.event.bind(this.scrollbarY,"blur",a),this.scrollbarYActive=null,this.scrollbarYHeight=null,this.scrollbarYTop=null;var h=t(this.scrollbarYRail);this.scrollbarYRight=parseInt(h.right,10),isNaN(this.scrollbarYRight)?(this.isScrollbarYUsingRight=!1,this.scrollbarYLeft=u(h.left)):this.isScrollbarYUsingRight=!0,this.scrollbarYOuterWidth=this.isRtl?f(this.scrollbarY):null,this.railBorderYWidth=u(h.borderTopWidth)+u(h.borderBottomWidth),e(this.scrollbarYRail,{display:"block"}),this.railYMarginHeight=u(h.marginTop)+u(h.marginBottom),e(this.scrollbarYRail,{display:""}),this.railYHeight=null,this.railYRatio=null,this.reach={x:r.scrollLeft<=0?"start":r.scrollLeft>=this.contentWidth-this.containerWidth?"end":null,y:r.scrollTop<=0?"start":r.scrollTop>=this.contentHeight-this.containerHeight?"end":null},this.isAlive=!0,this.settings.handlers.forEach(function(t){return T[t](n)}),this.lastScrollTop=Math.floor(r.scrollTop),this.lastScrollLeft=r.scrollLeft,this.event.bind(this.element,"scroll",function(t){return n.onScroll(t)}),R(this)};return H.prototype.update=function(){this.isAlive&&(this.negativeScrollAdjustment=this.isNegativeScroll?this.element.scrollWidth-this.element.clientWidth:0,e(this.scrollbarXRail,{display:"block"}),e(this.scrollbarYRail,{display:"block"}),this.railXMarginWidth=u(t(this.scrollbarXRail).marginLeft)+u(t(this.scrollbarXRail).marginRight),this.railYMarginHeight=u(t(this.scrollbarYRail).marginTop)+u(t(this.scrollbarYRail).marginBottom),e(this.scrollbarXRail,{display:"none"}),e(this.scrollbarYRail,{display:"none"}),R(this),W(this,"top",0,!1,!0),W(this,"left",0,!1,!0),e(this.scrollbarXRail,{display:""}),e(this.scrollbarYRail,{display:""}))},H.prototype.onScroll=function(t){this.isAlive&&(R(this),W(this,"top",this.element.scrollTop-this.lastScrollTop),W(this,"left",this.element.scrollLeft-this.lastScrollLeft),this.lastScrollTop=Math.floor(this.element.scrollTop),this.lastScrollLeft=this.element.scrollLeft)},H.prototype.destroy=function(){this.isAlive&&(this.event.unbindAll(),l(this.scrollbarX),l(this.scrollbarY),l(this.scrollbarXRail),l(this.scrollbarYRail),this.removePsClasses(),this.element=null,this.scrollbarX=null,this.scrollbarY=null,this.scrollbarXRail=null,this.scrollbarYRail=null,this.isAlive=!1)},H.prototype.removePsClasses=function(){this.element.className=this.element.className.split(" ").filter(function(t){return!t.match(/^ps([-_].+|)$/)}).join(" ")},H});
 "use strict";
 
 (function ($) {
@@ -25464,6 +25686,7 @@ exports.cancel = cancel;
 
 /***/ })
 /******/ ]);
+
 /*!
  * Name    : Video Background Extension for Jarallax
  * Version : 1.0.1
@@ -26991,21 +27214,176 @@ for (i = 0; i < toggler.length; i++) {
     this.classList.toggle("down");
   });
 }
-"use strict";
+/*!
+ * bsCustomFileInput v1.3.2 (https://github.com/Johann-S/bs-custom-file-input)
+ * Copyright 2018 - 2019 Johann-S <johann.servoire@gmail.com>
+ * Licensed under MIT (https://github.com/Johann-S/bs-custom-file-input/blob/master/LICENSE)
+ */
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define(factory) :
+    (global = global || self, global.bsCustomFileInput = factory());
+}(this, function () {
+  'use strict';
 
-(function ($) {
-  $('.input-default-wrapper').on('change', '.input-default-js', function (e) {
-    var $this = $(e.target),
-        $label = $this.next('label'),
-        $files = $this[0].files;
-    var fileName = '';
+  var Selector = {
+    CUSTOMFILE: '.custom-file input[type="file"]',
+    CUSTOMFILELABEL: '.custom-file-label',
+    FORM: 'form',
+    INPUT: 'input'
+  };
 
-    if ($files && $files.length > 1) {
-      fileName = ($this.attr('data-multiple-target') || '').replace('{target}', $files.length);
-    } else if (e.target.value) {
-      fileName = e.target.value.split('\\').pop();
+  var textNodeType = 3;
+
+  var getDefaultText = function getDefaultText(input) {
+    var defaultText = '';
+    var label = input.parentNode.querySelector(Selector.CUSTOMFILELABEL);
+
+    if (label) {
+      defaultText = label.innerHTML;
     }
 
-    fileName ? $label.find('.span-choose-file').html(fileName) : $label.html($label.html());
-  });
-})(jQuery);
+    return defaultText;
+  };
+
+  var findFirstChildNode = function findFirstChildNode(element) {
+    if (element.childNodes.length > 0) {
+      var childNodes = [].slice.call(element.childNodes);
+
+      for (var i = 0; i < childNodes.length; i++) {
+        var node = childNodes[i];
+
+        if (node.nodeType !== textNodeType) {
+          return node;
+        }
+      }
+    }
+
+    return element;
+  };
+
+  var restoreDefaultText = function restoreDefaultText(input) {
+    var defaultText = input.bsCustomFileInput.defaultText;
+    var label = input.parentNode.querySelector(Selector.CUSTOMFILELABEL);
+
+    if (label) {
+      var element = findFirstChildNode(label);
+      element.innerHTML = defaultText;
+    }
+  };
+
+  var fileApi = !!window.File;
+  var FAKE_PATH = 'fakepath';
+  var FAKE_PATH_SEPARATOR = '\\';
+
+  var getSelectedFiles = function getSelectedFiles(input) {
+    if (input.hasAttribute('multiple') && fileApi) {
+      return [].slice.call(input.files).map(function (file) {
+        return file.name;
+      }).join(', ');
+    }
+
+    if (input.value.indexOf(FAKE_PATH) !== -1) {
+      var splittedValue = input.value.split(FAKE_PATH_SEPARATOR);
+      return splittedValue[splittedValue.length - 1];
+    }
+
+    return input.value;
+  };
+
+  function handleInputChange() {
+    var label = this.parentNode.querySelector(Selector.CUSTOMFILELABEL);
+
+    if (label) {
+      var element = findFirstChildNode(label);
+      var inputValue = getSelectedFiles(this);
+
+      if (inputValue.length) {
+        element.innerHTML = inputValue;
+      } else {
+        restoreDefaultText(this);
+      }
+    }
+  }
+
+  function handleFormReset() {
+    var customFileList = [].slice.call(this.querySelectorAll(Selector.INPUT)).filter(function (input) {
+      return !!input.bsCustomFileInput;
+    });
+
+    for (var i = 0, len = customFileList.length; i < len; i++) {
+      restoreDefaultText(customFileList[i]);
+    }
+  }
+
+  var customProperty = 'bsCustomFileInput';
+  var Event = {
+    FORMRESET: 'reset',
+    INPUTCHANGE: 'change'
+  };
+  var bsCustomFileInput = {
+    init: function init(inputSelector, formSelector) {
+      if (inputSelector === void 0) {
+        inputSelector = Selector.CUSTOMFILE;
+      }
+
+      if (formSelector === void 0) {
+        formSelector = Selector.FORM;
+      }
+
+      var customFileInputList = [].slice.call(document.querySelectorAll(inputSelector));
+      var formList = [].slice.call(document.querySelectorAll(formSelector));
+
+      for (var i = 0, len = customFileInputList.length; i < len; i++) {
+        var input = customFileInputList[i];
+        Object.defineProperty(input, customProperty, {
+          value: {
+            defaultText: getDefaultText(input)
+          },
+          writable: true
+        });
+        handleInputChange.call(input);
+        input.addEventListener(Event.INPUTCHANGE, handleInputChange);
+      }
+
+      for (var _i = 0, _len = formList.length; _i < _len; _i++) {
+        formList[_i].addEventListener(Event.FORMRESET, handleFormReset);
+
+        Object.defineProperty(formList[_i], customProperty, {
+          value: true,
+          writable: true
+        });
+      }
+    },
+    destroy: function destroy() {
+      var formList = [].slice.call(document.querySelectorAll(Selector.FORM)).filter(function (form) {
+        return !!form.bsCustomFileInput;
+      });
+      var customFileInputList = [].slice.call(document.querySelectorAll(Selector.INPUT)).filter(function (input) {
+        return !!input.bsCustomFileInput;
+      });
+
+      for (var i = 0, len = customFileInputList.length; i < len; i++) {
+        var input = customFileInputList[i];
+        restoreDefaultText(input);
+        input[customProperty] = undefined;
+        input.removeEventListener(Event.INPUTCHANGE, handleInputChange);
+      }
+
+      for (var _i2 = 0, _len2 = formList.length; _i2 < _len2; _i2++) {
+        formList[_i2].removeEventListener(Event.FORMRESET, handleFormReset);
+
+        formList[_i2][customProperty] = undefined;
+      }
+    }
+  };
+
+  return bsCustomFileInput;
+
+}));
+//# sourceMappingURL=bs-custom-file-input.js.map
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  bsCustomFileInput.init()
+});
